@@ -1,0 +1,73 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!FBUSH.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: Roughtly Replicates the functionality of
+!	a NASTRAN CBUSH element with stiff springs for all DOF
+!PRECONDITIONS:
+!	ARG1 = 1st Node For "FBUSH" to be attached to
+!	ARG2 = 2nd Node For "FBUSH" to be attached to
+!	ARG3 = Node Number of 2nd Node (If ARG2 is Blank)
+!POSTCONDITIONS'S
+!	MatNums used = 901-906
+! 	BushNodes = NODE component, created so nodes not 
+!		accedently merged
+! 	FlagBush = 1 to so rest of model knows that <*>BUSH
+!		has alread been run
+!NOTES: 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,tempNodes,NODE
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!MATERIALS
+FBushStiffness = 1e8
+FBushDamping = 0.0
+!------------------------------------------------------
+*DO,i,1,6 !Create Element Types
+	ET,900+i,COMBIN14,0,i !----------------UX Degree of Freedom
+*ENDDO
+
+R,901,FBushStiffness,FBushDamping
+MP,dens,901,0.0
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!GET STUFF
+*if,isIgnoreFBUSH,EQ,1,THEN  !Flag To Ignore the creation of FBUSHes
+	*GO,:FBUSH_RETURN
+*endif
+
+*IF,ARG1,NE,0,THEN  !GET NODE 1
+	node1=ARG1
+*ELSE
+	*GO,:FBUSH_RETURN
+*ENDIF
+
+*IF,ARG2,NE,0,THEN	!GET NODE 2
+	node2=ARG2
+*ELSE
+	NSEL,none
+	N,ARG3,NX(node1),NY(node1),NZ(node1)
+	*GET,node2,NODE,0,NUM,MAX
+	nsel,a,,,node1
+*ENDIF
+
+!Create Elements
+REAL,901
+MAT,901
+*DO,i,1,6
+	TYPE,900+i
+	E,node1,node2
+*ENDDO
+
+!Create Group So Nodes Don't Get Inadvertantly Merged
+NSEL,S,,,node1
+*IF,FlagBush,NE,1,THEN
+	flagBush=1
+	CM,bushNodes,NODE
+*ELSE
+  CMSEL,A,bushNodes
+  CM,bushNodes,NODE
+*ENDIF
+
+NSEL,S,,,node2
+:FBUSH_RETURN 
+CMSEL,A,tempNodes
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

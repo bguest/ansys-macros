@@ -1,0 +1,52 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_VDELEmac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro deletes volumes and associated 
+!   areas, lines and keypoints.
+!PRECONDITIONS: 
+!	ARG1 = First Volume to be deleted
+!	   ELSE = user prompted to select volume
+!	ARG2 = Last Volume to be selected 
+!	ARG3 = Increment of volumes
+!POSTCONDITIONS:
+!	Volumes and associated areas, lines and keypoints
+!       are deleted
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/NOPR		   !PREVENT ERROR MESSAGES
+FINISH
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI !--------SELECT VOLUME
+	SELECT VOLUMES TO BE DELETED  
+
+	vsel,s,p
+*ELSE
+	VSEL,S,,,ARG1,ARG2,ARG3,1
+*ENDIF
+
+VDELE,ALL,,,1			!DELETE S*
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_VOLU
+CMSEL,S,temp_AREA
+CMSEL,S,temp_LINE
+cMSEL,S,temp_KP
+
+/REPLOT
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+/GOPR			!TURN ERROR MESSAGES ON
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

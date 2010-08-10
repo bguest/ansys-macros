@@ -1,0 +1,79 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!import.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro imports an IGES file.  It devides all non-strait lines,
+!	line division helps with mesh failure problems.  This macro also selects
+!	all volumes and deletes any areas, lines, or keypoints not attached to it.
+!PRECONDITIONS:
+!	import, 'file name'
+!	ARG1 = name of file to import, single quotes needed, no ".igs" needed
+!POSTCONDITIONS:
+!	(default) Imported ProE solid model
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+fini
+/clear
+
+!! Error check file name			! Cant error check a string against a number
+!*if,ARG1,eq,' ',then				! havent figured this out yet
+!	! Insert error message here			! <----- work here
+!	*msg,warn
+!No file name passed to import command.
+!	/eof
+!*endif 
+
+! Import IGES
+model=ARG1
+/aux15
+ioptn,iges,nodefeat 
+ioptn,merge,yes 
+ioptn,solid,yes 
+ioptn,small,yes 
+ioptn,gtoler, defa  
+igesin,model,'igs',' '
+
+! Divide All Lines in Half, for meshing of semicircles
+/prep7
+nummrg,kp
+! Deletes Areas, Lines and KPs not attached to volume
+vsel,all
+aslv
+lsla
+ksll
+asel,inve
+lsel,inve
+ksel,inve
+adele,all,,,1
+ldele,all,,,1
+kdele,all
+allsel
+! Creates Array of Selected Line Numbers
+_LineSel=		$ *dim,_LineSel,,lsinqr(0,14)			! Array for all possible lines
+_LineNums=	$ *dim,_LineNums,,lsinqr(0,14)			! Array for recording line numbers of selected lines
+_Lines=		$ *dim,_Lines,,lsinqr(0,13)				! Array for numbers of selected lines
+*vget,_LineSel(1),line,1,lsel			! Gets status of lines
+*vfill,_LineNums(1),ramp,1,1
+*vmask,_LineSel(1)					! Mask Array
+*vfun,_Lines(1),comp,_LineNums(1)		! Deletes empty cells
+! Divides Selected Lines
+*do,i,1,lsinqr(0,13)
+	lsel,,,,_Lines(i)
+	ksll
+	*get,_KPmin,kp,0,num,min
+	*get,_KPmax,kp,0,num,max
+	_KPminX=kx(_KPmin)	$ _KPminY=ky(_KPmin)	$ _KPminZ=kz(_KPmin)
+	_KPmaxX=kx(_KPmax)	$ _KPmaxY=ky(_KPmax)	$ _KPmaxZ=kz(_KPmax)
+	_KPdist=( (_KPmaxX-_KPminX)**2 + (_KPmaxY-_KPminY)**2 + (_KPmaxZ-_KPminZ)**2 )**0.5
+	*get,_LLeng,line,_Lines(i),leng
+	*if,_LLeng,gt,_KPdist,then
+		ldiv,_Lines(i),,,2,0
+	*endif
+*enddo
+allsel
+numcmp,all
+vplot
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			import.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

@@ -1,0 +1,42 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!GROW.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro grows the selected element set
+!   by ARG1
+!PRECONDITIONS:
+!   -One element has been selected
+!   ARG1 = Number of elements to grow
+!     ELSE selected elements are grown by 1
+!   ARG2 = Flag to plot every step
+!     IF ARG2 = 1, every step is ploted
+!     IF ARG2 = 0, Only last step is plotted
+!POSTCONDITIONS: 
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_ELEM,ELEM  !Option to revert to original set up
+
+*IF,ARG1,EQ,0,THEN
+   ink=1
+*ELSE
+   ink=ARG1
+*ENDIF
+
+*DOWHILE,ink
+   NSLE
+   ESLN
+   ink=ink-1
+   *IF,ARG2,EQ,1,THEN
+      EPLOT
+   *ENDIF
+*ENDDO
+*IF,ARG2,EQ,0,THEN
+  EPLOT
+*ENDIF
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+! CMDELE,temp_ELEM 
+!--DELETE PARAMETERS
+*SET,ink
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

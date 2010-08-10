@@ -1,0 +1,83 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_VSWEEP.mac
+!DESCRIPTION: This Macro Meshes a volume with SOLID95
+!  elements
+!PRECONDITIONS:
+!  ARG1 = Material Number of Volume to be meshed
+!   802 -> Aluminum 7075-T73
+!   803 -> Titanium Ti-6Al-4V
+!     ELSE, User is prompted for mat number
+!  ARG2 = Element Size
+!  ARG3 = Volume to be meshed
+!     ELSE, User is prompted to select a volume
+!  NEEDS:
+!    _MAT.mac
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/NOPR
+/PREP7
+!-------------SAVE CURRENT SETUP
+CM,temp_VOLU,VOLU
+
+*IF,ARG1,EQ,0,THEN !---------------GET MatNum
+   *ASK,ans,ENTER MAT NUMBER,0
+   MNum=ans
+*ELSE
+   MNum=ARG1
+*ENDIF 
+
+*IF,ARG2,NE,0,THEN !--------------GET ESize
+   ESez=ARG2
+*ENDIF
+
+*IF,ARG3,EQ,0,THEN !--------SELECT VOLUME
+	*MSG,UI
+	SELECT VOLUMES     
+
+	vsel,s,p
+*ELSE
+	vsel,s,,,ARG3
+*ENDIF
+!========================================
+!MNum.SOLID 95: Solid Hex
+!----------------------------------------
+!3-D 20-Node Structural Solid
+ET,MNum,SOLID95
+R,MNum          !No Real Constants
+
+!CREATE MATERIAL
+*IF,MNum,GE,802,AND,MNum,LE,899,THEN 
+   _MAT,MNum
+*ENDIF
+
+*IF,MNum,EQ,0,THEN    !-----IF NO MatNum Provided
+   *MSG,WRN             !Warn User
+   NO MATNUM PROVIDED
+
+*ELSE
+   VCLEAR,ALL
+   *IF,ARG2,NE,0,THEN
+      ESIZE,Esez
+   *ENDIF
+   VATT,MNum,MNum,MNum
+   VSWEEP,ALL
+*ENDIF
+!=======================CLEAN UP=======================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_VOLU
+/REPLOT
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_LINE
+
+!--DELETE PARAMETERS
+*SET,MNum
+*SET,Esez
+!*SET,LNum
+*SET,ans
+/GOPR
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,62 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!GetMultiReaction.mac
+!B.GUEST - benguest@gmail.com
+!DESCRIPTION: Gets and Prints reaction forces for 
+!	multiple load cases
+!PRECONDITIONS:
+!	ARG1 = First Loadstep
+!		ELSE: 1 is the assumed Loadstep
+!	RRG2 = Last Loadstep
+!POSTCONDITIONS:
+!NOTES: 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+/POST1
+*IF,ARG1,NE,0,THEN		!Set First Loadstep
+	firstLoadStep = ARG1
+*ELSE
+	firstLoadStep = 1
+*ENDIF
+	
+*IF,ARG2,EQ,0,THEN 		!Get Last LoadStep
+   *ASK,ans,ENTER LAST Loadstep,0
+   lastLoadStep = ans
+*ELSE
+   lastLoadStep = ARG2
+*ENDIF 
+
+nodeNums= $ *DIM,nodeNums,ARRAY,8
+numNodes = 8
+nodeNums(1) = 1294
+nodeNums(2) = 1295
+nodeNums(3) = 1296
+nodeNums(4) = 1324
+nodeNums(5) = 2640
+nodeNums(6) = 2638
+nodeNums(7) = 2639
+nodeNums(8) = 2668
+
+*CFOPEN,OUT_ReactionForces,out
+
+*DO,i,firstLoadStep,lastLoadStep
+	SET,i,LAST
+	*vwrite
+$
+	*vwrite,i				!Header
+LOADCASE NUMBER: %5I
+	*vwrite
+NODEID          FX              FY              FZ              MX              MY              MZ
+	*DO,j,1,numNodes
+		*GET,FX,NODE,nodeNums(j),RF,FX
+		*GET,FY,NODE,nodeNums(j),RF,FY
+		*GET,FZ,NODE,nodeNums(j),RF,FZ
+		*GET,MX,Node,nodeNums(j),RF,MX
+		*GET,MY,NODE,nodeNums(j),RF,MY
+		*GET,MZ,NODE,nodeNums(j),RF,MZ
+		nodeID = nodeNums(j)
+		*VWRITE,nodeID,FX,FY,FZ,MX,MY,MZ
+%16I%16.5G%16.5G%16.5G%16.5G%16.5G%16.5G
+	*enddo
+*enddo
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

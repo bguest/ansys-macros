@@ -1,0 +1,22 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!ATT.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: Sets Selection of Type, Mat and Real to ARG1
+!PRECONDITIONS: 
+!   ARG1 = Atribute Number to be assinged
+!		ARG2 = ESYS To Be Assinged
+!POSTCONDITIONS:
+!   -Selection of TYPE, MAT and REAL set to ARG1
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/NOPR		   !PREVENT ERROR MESSAGES
+TYPE,ARG1
+MAT,ARG1
+REAL,ARG1
+SECNUM,ARG1
+*IF,ARG2,NE,0,THEN
+	ESYS,ARG2
+*END
+/REPLOT
+/GOPR			!TURN ERROR MESSAGES ON
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

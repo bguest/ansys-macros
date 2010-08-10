@@ -1,0 +1,25 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PRSMISC.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: This macro prints out the an elements
+!	SMISC Forces
+!PRECONDITIONS:
+!	ARG1 = Element To Print SMISC forces for
+!		ELSE: User is asked to select an element
+!	ARG2 = First SMISC Number
+!		ELSE:
+!		<...>
+!	Required Macros:
+!		<Macros Required to Run>.mac
+!	Required Inputs:
+!		<Other Required Files>.txt/.dat
+!	<Anything else required before run>
+!POSTCONDITIONS'S
+!	<Assigned Parameters or Files Created> = <Description of Variable> 
+!NOTES: 
+!	<Any other things the user must understand>
+!	<References>
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

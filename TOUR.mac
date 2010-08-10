@@ -1,0 +1,37 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION:
+!	THIS MACRO ADJUSTS THE COUNTOURS OF A COUNTOUR
+!	PLOT AND THEN REPLOTS
+!PRECONDITIONS:
+!	ARG1=MINIMUM CONTOUR VALUE
+!   IF(ARG1==99), MIN VALUE = AUTO;
+!	ARG2=MAXIMUM COUNTOUR VALUE
+!   IF(ARG2==99), MAX VALUE = AUTO;
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+PARSAV,ALL,F:\_ANSYS\TEMP\TOUR.txt
+!DETERMIN MINIMUMS AND MAXIMUMS
+/CONTOUR
+*GET,contMin,PLNSOL,0,MIN
+*GET,contMax,PLNSOL,0,MAX
+
+!GET MINIMUM VALUE----------
+*IF,ARG1,EQ,99,THEN
+  Low=contMin
+*ELSE
+  low=ARG1
+*ENDIF
+
+!GET MAXIMUM VALUE----------
+*IF,ARG2,EQ,99,THEN
+  high=contMax
+*ELSE
+  high=ARG2
+*ENDIF
+
+!UPDATE DISPLAY-------------
+/CONTOUR,1,9,Low,,High
+/REPLOT
+PARRES,,F:\_ANSYS\TEMP\TOUR.txt
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

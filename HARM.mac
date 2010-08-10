@@ -1,0 +1,115 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!HARM.mac
+!B.GUEST: bagvoo@gmail.com, 070607
+!DESCRIPTION: This macro plots a response value given
+!   A node 
+!PRECONDITIONS:
+!   ARG1 = Node Number
+!      ELSE user is prompted to pick node
+!   ARG2 = Results Direction (1=X,2=Y,3=Z)
+!      ELSE user is prompted to enter a direction
+!   ARG3 = Ploted Function 
+!      (-1=Amplitude,1=Phase angle,2=Real,3=Imaginary)
+!      ELSE user is prompted to enter answer
+!   ARG4 = Reference number of resulting variable
+!      ELSE reference number of resulting variable = 5
+!POSTCONDITIONS:
+!   Response plot is displayed on screen
+!   Response curve is output to file "OUT_Harm.ans"
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!------------------------------------SAVE CURRENT SETUP
+CM,temp_NODE,NODE
+!-----------------------------------------------OPTIONS
+!Flag for use with modal superposition results 
+MHarm=0           
+!----------------------------------------------GET NODE
+*IF,ARG1,EQ,0,THEN
+   *MSG,UI
+   SELECT NODE
+   
+   nsel,r,p
+   *GET,ND,NODE,,NUM,MAX
+*ELSE
+   ND=ARG1
+*ENDIF
+!-----------------------------------------GET DIRECTION
+*IF,ARG2,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG2
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='X'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='Y'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='Z'
+*ENDIF
+!------------------------------------------GET Function
+*IF,ARG3,EQ,0,THEN
+   *ASK,KEY,ENTER PLOT TYPE (0=Amplitude, 1=Phase, 2=Real, 3=Imaginary),0
+*ELSEIF,ARG3,EQ,-1,THEN
+   KEY=0
+*ELSE
+   KEY=ARG3
+*ENDIF
+!--------------------------Resulting Reference Variable
+*IF,ARG4,EQ,0,THEN
+   VAR = 5
+*ELSE
+   VAR = ARG3
+*ENDIF
+!------------------------------------------------------ 
+/POST26
+*IF,MHarm,EQ,1,THEN
+   FILE,,RFRQ      ! Postprocessing file is Jobname.RFRQ
+*ENDIF
+NSOL,VAR,ND,U,direction ! Store nodal result as a variable
+PLCPLX,KEY      ! Define how to plot complex variables
+PLVAR,VAR       ! Plot variables
+!------------------------PRINT
+*GET,NUM_PTS,VARI,,NSETS 
+*DIM,HZ,ARRAY,NUM_PTS
+*DIM,R_Res,ARRAY,NUM_PTS   !FOR REAL RESULTS
+*DIM,I_Res,ARRAY,NUM_PTS   !FOR IMAGINARY RESULTS
+*DIM,C_Res,ARRAY,NUM_PTS   !FOR CALCULATED RESULTS
+
+VGET,HZ,1,0.0
+VGET,R_Res,VAR,0.0,0
+VGET,I_Res,VAR,0.0,1
+!--------------------------------------CALCULATE RESULTS
+PI=ACOS(-1)
+*DO,j,1,NUM_PTS
+   *IF,KEY,EQ,0,THEN     !AMPLITUDE
+      C_RES(j)=(R_Res(j)**2+I_Res(j)**2)**0.5
+   *ELSEIF,KEY,EQ,1,THEN !PHASE ANGLE
+      C_RES(j)=180/PI*ATAN2(I_Res(j),R_Res(j))
+   *ELSEIF,KEY,EQ,2,THEN !REAL RESULTS
+      C_RES(j)=R_Res(J)
+   *ELSE
+      C_RES(j)=I_Res(j)
+   *ENDIF
+*ENDDO
+*CFOPEN,OUT_HARM,ans
+*VWRITE,HZ(1),C_Res(1),
+(E15.5,E15.5)
+*CFCLOS
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_NODE
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_NODE
+!--CLEAR PARAMETERS
+*SET,ND
+*SET,ans
+*SET,direction
+*SET,KEY
+*SET,VAR
+*SET,HZ
+*SET,R_RES
+*SET,I_RES
+*SET,C_RES
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

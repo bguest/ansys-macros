@@ -1,0 +1,57 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_KCENTER.mac
+!B.GUEST - benguest@gmail.com
+!DESCRIPTION: Creates a keypoint a the center of arcs
+!PRECONDITIONS:
+!	ANSYS V.11
+!	ARG1 = arc to create keypoints at the center of 
+!		ELSE: user is prompted to select an arcs
+!	Required Macros:
+!		<Macros Required to Run>.mac
+!	Required Inputs:
+!		<Other Required Files>.txt/.dat
+!	<Anything else required before run>
+!POSTCONDITIONS'S
+!	keypoint created at the center of the arc
+!NOTES: 
+!	<Any other things the user must understand>
+!	<References>
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!----------------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+
+!GET LINE
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	SELECT ARCs
+	
+	LSEL,R,P
+	*GET,numArcs,LINE,,COUNT !GET NUMBER OF SELECTED LINES
+	*VGET,arcLines,LINE,,LLIST 
+	CMSEL,A,temp_line
+*ELSE
+	*DIM,arcLines,ARRAY,1
+	arcLines(1) = ARG1
+	numArcs = 1
+*ENDIF
+
+!Create Keypoints
+*DO,i,1,numArcs
+	*GET,KP1,LINE,arcLines(i),KP,1   !GET KP AT ONE END
+	*GET,KP3,LINE,arcLines(i),KP,2   !GET KP AT OTHER END
+	
+	KL,arcLines(i),0.5 !Create Keypoint on line for KCENTER
+	KP2 = _return  !Get Keypoint Number
+	
+	KCENTER,KP,KP1,KP2,KP3
+	
+	KDELE,KP2
+*ENDDO
+
+!CLEANUP
+KP1= $ KP2= $ KP3=
+arcLines= $ numArcs=
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

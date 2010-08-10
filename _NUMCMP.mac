@@ -1,0 +1,33 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_NUMCMP.mac
+!DESCRIPTION: THIS MACRO Compresses THE NUMBERS OF
+!  GEOMETRIC (AND FEM w/ARG1) ENTINTIES (KP,LINE,AREA,
+!  VOLU (NODE,ELEM,MAT,TYPE,SECN) 
+!PRECONDITIONS:
+!  ARG1= FEM FLAG 
+!   1=> Nodes and Elements are Offset too
+!   2=> All FEM Entinties are offset
+!POSTCONDITIONS:
+!   See description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*if,FlagNoReadWrite,NE,1,THEN
+	SAVE,saved,db,,ALL
+*endif
+
+/PREP7
+NUMCMP,KP
+NUMCMP,LINE
+NUMCMP,AREA
+NUMCMP,VOLU
+*IF,ARG1,EQ,1,THEN
+   NUMCMP,NODE
+   NUMCMP,ELEM
+*ELSEIF,ARG1,EQ,2,THEN
+   NUMCMP,NODE
+   NUMCMP,ELEM
+	 NUMCMP,MAT 
+   NUMCMP,TYPE
+   NUMCMP,REAL
+*ENDIF
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

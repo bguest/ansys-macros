@@ -1,0 +1,21 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runMassP.mac
+!benguest@gmail.com
+!DESCRIPTION: Calculates the Mass of the Selected FEM
+!  FEM.
+!PRECONDITIONS:
+!
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+finish
+/solu
+
+/output,OUT_Mass.out
+
+psolve,elform
+
+/output
+finish
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

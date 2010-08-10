@@ -1,0 +1,63 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PRELOAD.MAC
+!DESCRIPTION:
+!	THIS MACRO PRELOADS "BOLTS" CREATED BY BOLT.MAC
+!PRECONDITIONS:
+!	BOLTS CREATED BY BOLTS.MAC
+!	ARG1=DIAMETER OF BOLT
+!	ARG2=BOLT PRELOAD
+!		ELSE PRELOAD=0.8*Sty*PI*D^2/4  !Juvinal,p420
+!	ARG3=SURFACE GAP
+!		ELSE GAP = 0
+!	ARG4=BOLT LENGTH
+!		ELSE BOLT LENGTH = 1
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_ELEM,ELEM
+BOLTD=ARG1
+!-------------------------------STAINLESS_STEEL_A286
+Sty=95000	!Yeild Strength
+BoltA=9.20E-06	!Bolt CTE
+BoltE=2.91E+07	!Bolt Modulus of Elasticity
+!-----------------------------------------------SOLUTION
+/SOLU
+Bolt_Area=PI/4*BoltD**2			!BOLT AREA
+
+*IF,ARG4,EQ,0,THEN !---------BOLT LENGTH
+	BoltL=1
+*ELSE
+	BoltL=ARG4
+*ENDIF !--------------------------------
+
+*IF,ARG2,EQ,0,THEN !---------PRELOAD CALC
+	PreLoad=0.8*Bolt_Area*Sty
+*ELSE
+	PreLoad=ARG2
+*ENDIF !---------------------------------
+
+*IF,ARG3,EQ,0,THEN !---------"SURFACE GAP"
+	delG=0
+*ELSE
+	delG=ARG3
+*ENDIF !---------------------------------
+
+DelT=delG/BoltA/BoltL + PreLoad/Bolt_Area/BoltE/BoltA
+
+ESEL,S,MAT,,BOLTD*10000
+BFE,ALL,TEMP,1,-DelT
+
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_ELEM
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_ELEM
+
+*SET,Sty
+*SET,BoltA
+*SET,BoltE
+*SET,BoltL
+*SET,Bolt_Area
+*SET,DelT
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

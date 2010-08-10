@@ -1,0 +1,9 @@
+!SELECTS NODES ATTACHED TO AREAS.
+/PMACRO
+asel,s,p
+lsla
+ksll
+nsla
+nsll,a  
+nslk,a 
+nplot  

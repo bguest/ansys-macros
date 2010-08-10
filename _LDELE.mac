@@ -1,0 +1,46 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LDELEmac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro deletes lines and associated 
+!   keypoints.
+!PRECONDITIONS: 
+!   ARG1 = First line to be deleted
+!      ELSE = user prompted to select lines
+!   ARG2 = line area to be selected 
+!   ARG3 = Increment of lines
+!POSTCONDITIONS:
+!   selected lines and associated keypoints are 
+!   deleted
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,SAVED,DB
+/NOPR		   !PREVENT ERROR MESSAGES
+FINISH
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI !--------SELECT VOLUME
+	SELECT LINES TO BE DELETED  
+
+	LSEL,r,p
+*ELSE
+	LSEL,S,,,ARG1,ARG2,ARG3,1
+*ENDIF
+
+LDELE,ALL,,,1			!DELETE S*
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_LINE
+cMSEL,S,temp_KP
+
+/REPLOT
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_LINE
+CMDELE,temp_KP
+/GOPR			!TURN ERROR MESSAGES ON
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

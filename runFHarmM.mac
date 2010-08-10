@@ -1,0 +1,94 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runFHarmM.mac
+!benguest@gmail.com
+!DESCRIPTION: This macro preforms a full method
+!  harmonic analysis using a large mass as a base
+!PRECONDITIONS:
+!  Component of nodes to be constrained for base
+!    movement specified as "BaseNodes" has been
+!    specified
+!  ARG1 = Results Direction (1=X,2=Y,3=Z)
+!    ELSE user is prompted to enter a direction
+!  ARG2 = Start Frequency
+!    ELSE = 0
+!  ARG3 = End Frequency 
+!    ELSE = 2000
+!  ARG4 = Number of Frequency Points
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/prep7
+CM,temp_Node,Node
+!-----------------------------------------GED DIRECTION
+*IF,ARG1,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG1
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='FX'
+   Cdirect1='UY' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='FY'
+   Cdirect1='UX' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='FZ'
+   Cdirect1='UX' $ Cdirect2='UY'
+*ENDIF
+!--------------------------------SETUP
+*IF,ARG2,EQ,0,THEN !Set Minimum Frequency
+   FMin=0
+*ELSE
+   FMin=ARG2
+*ENDIF
+
+*IF,ARG3,EQ,0,THEN !Set Maximum Frequency
+   FMax=2000
+*ELSE
+   FMin=ARG3
+*ENDIF
+
+*IF,ARG4,EQ,0,THEN !Set Number of PTS
+   NumPts=30
+*ELSE
+   NumPts=ARG4
+*ENDIF
+!------------------------------------------------------
+/TITLE,Full Harmonic Analysis-%direction% (Large Mass)
+!======================================================
+!LARGE MASS
+!------------------------------------------------------
+MASS = 10E3 	 !LARGE MASS Properties
+ET,701,MASS21
+R,701,MASS,MASS,MASS	 
+MP,DENS,701,0.1/G !Dumbie Material
+!======================================================
+!Boundary Conditions
+!------------------------------------------------------
+CMSEL,S,BaseNodes
+DDELE,ALL,ALL
+D,ALL,Cdirect1,0,,,,Cdirect2,ROTX,ROTY,ROTZ
+KSLN
+KATT,701,701,701
+KMESH,ALL
+F,ALL,direction,1.0*MASS
+ALLSEL
+!======================================================
+!Solution
+!------------------------------------------------------
+/SOLU
+ANTYPE,HARMIC             ! Harmonic response analysis
+HROPT,FULL                ! Full harmonic response
+HROUT,OFF                 ! Print results as amplitudes and phase angles
+OUTPR,BASIC,1
+NSUBST,300                 ! 30 Intervals within freq. range
+HARFRQ,Fmin,Fmax          ! Frequency range
+KBC,1                     ! Step boundary condition
+/OUTPUT,OUT_FharmM,out,,
+SAVE
+SOLVE
+SAVE
+/OUTPUT
+:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

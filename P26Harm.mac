@@ -1,0 +1,96 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!P26Harm.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro plots and harmonic response of
+!  a node.
+!PRECONDITIONS:
+!   ARG1 = Node number
+!      ELSE user is prompted to pick node
+!   ARG2 = Results Direction (1=X,2=Y,3=Z)
+!      ELSE user is prompted to enter a direction
+!   ARG3 = Reference number of resulting variable
+!      ELSE reference number of resulting variable = 5
+!POSTCONDITIONS:
+!   PLOT of response is displayed on screen
+!   PSD curve is output to file "OUT_P26Harm.out"
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!------------------------------------SAVE CURRENT SETUP
+CM,temp_NODE,NODE
+!----------------------------------------------GET NODE
+*IF,ARG1,EQ,0,THEN
+   *MSG,UI
+   SELECT NODE
+   
+   nsel,r,p
+   *GET,ND,NODE,,NUM,MAX
+*ELSE
+   ND=ARG1
+*ENDIF
+!-----------------------------------------GED DIRECTION
+*IF,ARG2,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG2
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='X'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='Y'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='Z'
+*ENDIF
+!--------------------------Resulting Reference Variable
+*IF,ARG3,EQ,0,THEN
+   IR = 5
+*ELSE
+   IR = ARG3
+*ENDIF
+!===================PSD POST-PROCESSING================
+/GROPT,LOGX,ON  
+/GROPT,LOGY,ON
+! Calculate Response PSD
+/POST26          ! Enter POST26
+!STORE,PSD,FrqPts ! Store frequency vector (variable 1)
+
+NSOL,IR,ND, U, direction, 'Response'    
+
+PLVAR,IR	!PLOT
+
+!------------------------PRINT
+*GET,NUM_PTS,VARI,,NSETS 
+HZ=       $ *DIM,HZ,ARRAY,NUM_PTS
+RSP_Real= $ *DIM,RSP_Real,ARRAY,NUM_PTS
+RSP_Imig= $ *DIM,RSP_Imig,ARRAY,NUM_PTS
+RSP_Magn= $ *DIM,RSP_Magn,ARRAY,NUM_PTS
+
+VGET,HZ,1,0.0
+VGET,Par,IR, TSTRT, KCPLX
+VGET,RSP_Real,IR,0,0
+VGET,RSP_Imig,IR,0,1
+
+!Calculate Magnitude
+!*VFUN, ParR, Func, Par1, CON1
+*VOPER,RSP_Real, RSP_Real, Mult, RSP_Real !Square Real
+*VOPER,RSP_Imig, RSP_Imig, Mult, RSP_Imig !Sauear Imaginary
+*VOPER,RSP_Magn, RSP_Real, ADD,  RSP_Imig !Add Squred Terms
+*VFUN,RSP_Magn,SQRT,RSP_Magn !Calculate Sqrt
+
+*CFOPEN,OUT_P26Harm,out
+*VWRITE,HZ(1),RSP_Magn(1),
+(E15.5,E15.5)
+*CFCLOS
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_NODE
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_NODE
+!--CLEAR PARAMETERS
+*SET,ND
+*SET,ans
+*SET,direction
+*SET,IR
+*SET,FrqPts
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

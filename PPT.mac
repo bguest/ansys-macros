@@ -1,0 +1,6 @@
+!/GRAPHICS,FULL  
+/CMAP,WHITE,TXT,F:\_KNOWLEDGE\ANSYS\MACROS
+*if,arg1,lt,1,then
+	/WINDOW,1,-1,.15,-1,-.2  
+*endif
+/REPLOT 

@@ -1,0 +1,15 @@
+!SELECTS NODES ATTACHED TO LINES
+/PMACRO
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+
+lsel,s,p
+ksll
+nsll
+nslk,a
+
+CMSEL,S,temp_LINE
+CMSEL,S,temp_KP
+
+CMDELE,temp_LINE
+CMDELE,temp_KP

@@ -1,0 +1,227 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!ATA.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro creates a volume between two
+!   areas.
+!CAUTION: ERRORS MAY OCCUR, THIS IS NORMAL, HOWEVER BE
+!   SURE TO CHECK RESULTING VOLUMES.
+!PRECONDITIONS: 
+!	ARG1 = number of first area 
+!	   ELSE = user prompted to select area
+!	ARG2 = number of second area 
+!	   ELSE = user prompted to select second area
+!POSTCONDITIONS:
+!	Volume is created between two areas
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/NERR,,,,,0
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+!------------------SELECT AREA 1
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	SELECT 1st AREA
+
+	ASEL,S,P
+	*GET,Area1,AREA,0,NUM,MAX !GET SELECTED AREA
+	CMSEL,S,temp_AREA
+*ELSE
+	Area1=ARG1
+*ENDIF
+!------------------SELECT AREA 2
+*IF,ARG2,EQ,0,THEN
+	*MSG,UI
+	SELECT 2st AREA
+
+	ASEL,S,P
+	*GET,Area2,AREA,0,NUM,MAX !GET SELECTED AREA
+	CMSEL,S,temp_AREA
+*ELSE
+	Area2=ARG2
+*ENDIF
+!--------------------------------------Get KP locations on Area1
+ASEL,S,,,Area1,,,1
+!*VGET,A1KP,KP,,KLIST !V11.0
+
+!------------------------V10.0
+*GET,HighKP,KP,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED KP
+*GET,LowKP,KP,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED KP
+*GET,numKP1,KP,0,Count   !GET number of kps
+*DIM,A1KP,ARRAY,NumKP1	 !ARRAY FOR KP NUMBERS
+*DIM,SelKP,Array,HighKP	 !Array FOR SELECTION STATUS OF KPS
+
+*VGET,SelKP,KP,,KSEL    	!Get Selection Status of KPS
+j=1       		!SET j to Number of KPs
+*DO,i,LowKP,HighKP		    		!For active KPs
+	*IF,SelKP(i),EQ,1,THEN      !If the KP is selected
+		A1KP(j)=i           !Store KP Number in A1KPs
+		j=j+1
+	*ENDIF
+*ENDDO
+!---------------------------
+
+*DIM,Loc1,ARRAY,numKP1,3
+loop=numKP1		
+*DOWHILE,Loop
+	curKP=A1KP(loop)
+	*GET,Loc1(loop,1),KP,curKP,LOC,X
+	*GET,Loc1(loop,2),KP,curKP,LOC,Y
+	*GET,Loc1(loop,3),KP,curKP,LOC,Z
+	Loop=loop-1
+*ENDDO
+!------------------Get KP locations on Area2
+ASEL,S,,,Area2,,,1
+!*VGET,A2KP,KP,,KLIST     !v11.0
+
+!------------------------V10.0
+*GET,HighKP,KP,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED KP
+*GET,LowKP,KP,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED KP
+*GET,numKP2,KP,0,Count    !GET number of kps
+*DIM,A2KP,ARRAY,NumKP2	 !ARRAY FOR KP NUMBERS
+*SET,SELKP
+*DIM,SelKP,Array,HighKP	 !Array FOR SELECTION STATUS OF KPS
+
+*VGET,SelKP,KP,,KSEL    	!Get Selection Status of KPS
+j=1       			!SET j to Number of KPs
+*DO,i,LowKP,HighKP		    	!For active KPs
+	*IF,SelKP(i),EQ,1,THEN      !If the KP is selected
+		A2KP(j)=i           !Store KP Number in A1KPs
+		j=j+1
+	*ENDIF
+*ENDDO
+!---------------------------
+*GET,numKP2,KP,0,Count    !GET number of kps
+*DIM,Loc2,ARRAY,numKP2,3
+loop=numKP2
+*DOWHILE,Loop
+	curKP=A2KP(loop)
+	*GET,Loc2(loop,1),KP,curKP,LOC,X
+	*GET,Loc2(loop,2),KP,curKP,LOC,Y
+	*GET,Loc2(loop,3),KP,curKP,LOC,Z
+	Loop=loop-1
+*ENDDO
+!-------------------DETERMINE DISTANCE BETWEEN KPS
+*DIM,Dist,ARRAY,numKP1,numKP2,2
+loop1=numKP1
+loop2=numKP2
+*DO,Loop1,1,NumKp1
+	*DO,Loop2,1,NumKp2
+		DX=Loc1(Loop1,1)-Loc2(Loop2,1)
+		DY=Loc1(Loop1,2)-Loc2(Loop2,2)
+		DZ=Loc1(Loop1,3)-Loc2(Loop2,3)
+		Dist(Loop1,Loop2,1)=sqrt(DX**2+DY**2+DZ**2)
+	*ENDDO
+*ENDDO
+!---------------------DETERMINE AREA HAS MORE NODES
+*IF,numKP1,GE,numKP2,THEN
+	numKP=NumKP1
+	LgArea=Area1
+	LgNum=1
+	SmNum=2
+*ELSE
+	numKP=NumKP2
+	LgArea=Area2
+	LgNum=2
+	SmNum=1
+*ENDIF
+!--------------------ORDER DISTANCES
+*DIM,Order,ARRAY,NumKP,2  !Array to store KPS
+
+*DO,Loop,1,numKP
+  minDist=99999		!minimum distance = large number
+  *DO,Loop1,1,NumKp1
+    *DO,Loop2,1,NumKp2
+      *IF,Dist(Loop1,Loop2,1),LT,minDist,AND,Dist(Loop1,Loop2,2),EQ,0,THEN
+	minDist=Dist(Loop1,Loop2,1)
+	MinNum1=Loop1
+	MinNum2=Loop2
+	Order(Loop,1)=A1KP(loop1)
+	Order(Loop,2)=A2KP(loop2)
+      *ENDIF
+    *ENDDO
+  *ENDDO
+  *IF,LgNum,EQ,2,THEN
+     *DO,loop3,1,NumKP1	    !SET COLUMS EQ,1
+       Dist(Loop3,MinNum2,2)=1
+     *ENDDO
+  *ELSE
+     *DO,loop3,1,NumKP2
+       Dist(MinNum1,Loop3,2)=1
+     *ENDDO
+  *ENDIF
+*ENDDO
+
+ASEL,S,,,area1,
+ASEL,A,,,area2,
+LSLA
+KSLL
+
+!!--------------------DRAW LINES
+*DO,Loop,1,numKP
+	LSTR,Order(Loop,1),Order(Loop,2)
+*ENDDO
+
+
+!---------------------CREATE ADDITIONAL AREAS
+*SET,TEST
+*DIM,Test,ARRAY,numKP,4
+*DO,loop,1,numKP
+	*GET,currLine,AREA,LgArea,LOOP,1,LINE,loop	
+	*GET,A1,LINE,currLine,KP,1
+	*GET,B1,LINE,currLine,KP,2
+	*DO,loop1,1,numKP
+		*IF,Order(loop1,LgNum),EQ,A1,THEN
+			A2=Order(Loop1,SmNum)
+		*ENDIF
+		*IF,Order(loop1,LgNum),EQ,B1,THEN
+			B2=Order(Loop1,SmNum)
+		*ENDIF
+	*ENDDO
+	A,A1,A2,B2,B1
+	Test(loop,1)=A1
+	Test(loop,2)=A2
+	Test(loop,3)=B1
+	Test(loop,4)=B2
+*ENDDO
+	
+VA,ALL
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_VOLU
+CMSEL,A,temp_AREA
+CMSEL,A,temp_LINE
+cMSEL,A,temp_KP
+
+/replot
+
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+
+*SET,ORDER
+*SET,DIST
+*SET,A1
+*SET,A1KP
+*SET,A2KP
+*SET,A2
+*SET,B1
+*SET,B2
+*SET,LgNum
+*SET,SmNum
+*SET,Loop
+*SET,Loop1
+*SET,Loop2
+*SET,Loop3
+*SET,LOC1
+*SET,LOC2
+*SET,SELKP
+/NERR
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

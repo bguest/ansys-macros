@@ -1,0 +1,28 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_DISP.MAC
+!benguest@gmail.com
+!DESCRIPTION: This macro plots the displacement in 
+!  the selected elements.
+!PRECONDITIONS:
+!   ARG1=Load Step to be ploted
+!     ELSE Last load spep is ploted
+!   ARG2=SubStep to be be ploted
+!   ARG3=Display Type
+!		0: Do not overlay undeformed structure display
+!		1: Overlay displaced contour plot with undeformed display (appearance is system-dependent)
+!		2: Overlay displaced contour plot with undeformed edge display (appearance is system-dependent)
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/POST1
+*IF,ARG1,EQ,0,THEN
+   SET,LAST
+*ELSE
+   SET,ARG1,ARG2
+*ENDIF
+
+!/DSCALE,1,AUTO
+!PLNSOL, Item, Comp, KUND
+PLNSOL,U,SUM,ARG3
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,31 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runMassP.mac
+!benguest@gmail.com
+!DESCRIPTION: Calculates the Precice Mass of the Selected
+!  FEM.
+!PRECONDITIONS:
+!
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+finish
+/solu
+
+! outpr,basic,all
+
+irlf,-1
+
+/output,OUT_MassP,out
+
+irlist
+
+psolve,elform
+psolve,elprep
+
+/output
+Finish
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
+
+
+

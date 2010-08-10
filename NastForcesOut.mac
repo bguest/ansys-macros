@@ -1,0 +1,50 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!NastForcesOut.mac
+!B.GUEST-benguest@gmail.com
+!DESCRIPTION: Outputs "FORCE3*" cards for use with 
+!	FEMwad post processing.
+!NOTES: 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db
+/POST1
+*CFOPEN,NAST_Forces,bdf
+*GET,elmCount,ELEM,0,COUNT  !Get Number of Elements
+elmNum=  $ *VGET,elmNum,ELEM,,ELIST    !Get Element Numbers (V11.0)
+!WRITE HEADER------------------------------------------
+*VWRITE
+$ELEMENT FORCES:
+*VWRITE
+$FORCE3*              EID              NX              NY             NXY
+*VWRITE
+$                      MX              MY             MXY              VX
+*VWRITE
+$                      VY
+!------------------------------------------------------
+*DO,i,1,elmCount
+  !=====================GET FORCES=================
+  *GET,Nx ,ELEM,elmNum(i),SMISC,1 $ Nx =abs(Nx )
+  *GET,Ny ,ELEM,elmNum(i),SMISC,2 $ Ny =abs(Ny )
+  *GET,Nxy,ELEM,elmNum(i),SMISC,3 $ Nxy=abs(Nxy)
+  *GET,Mx ,ELEM,elmNum(i),SMISC,4 $ Mx =abs(Mx )
+  *GET,My ,ELEM,elmNum(i),SMISC,5 $ My =abs(My )
+  *GET,Mxy,ELEM,elmNum(i),SMISC,6 $ Mxy=abs(Mxy)
+  *GET,Vx ,ELEM,elmNum(i),SMISC,7 $ Vx =abs(Vx )
+  *GET,Vy ,ELEM,elmNum(i),SMISC,8 $ Vy =abs(Vy )
+  EID = elmNum(i)
+  
+  !CREATE FORCE3* cards
+  *VWRITE,EID,NX,NY,NXY
+FORCE3* %16I%16.5G%16.5G%16.5G
+  *VWRITE,MX,MY,MXY,VX
+        %16.5G%16.5G%16.5G%16.5G
+  *VWRITE,VY
+        %16.5G
+
+*ENDDO
+
+!FOOTER------------------------------------------------
+*VWRITE
+$=======THE--END========THE--END========THE--END========THE--END========
+ 
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

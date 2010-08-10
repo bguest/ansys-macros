@@ -1,0 +1,53 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!GETSEC.MAC
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro calculateds the section
+!  properties from an area
+!PRECONDTIONS:
+!  ARG1 = Area Number
+!     ELSE user is prompted to pick an area
+!  ARG2 = Element size used for calculations
+!     ELSE Default is used
+!POSTCONDITIONS:
+!  Area information is printed to the screen
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/prep7
+CM,temp_AREA,AREA
+!---------------------------GET AREA
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	SELECT AREA
+
+	ASEL,R,P
+*ELSE
+	ASEL,S,,,ARG1
+*ENDIF
+
+!---------------------------GET ELEMENT SIZE
+*IF,ARG2,NE,0,THEN
+  ESIZE,ARG2
+*ENDIF
+!------------------------------------------------------
+!Mesh Area
+/Prep7
+ET,996,MESH200,7 
+TYPE,996 $ MAT,996 $ REAL,996
+AMESH,ALL 
+
+!Do Section Stuff
+SECWRITE,TempBeam,SECT,,996 
+SECTYPE,996,BEAM,MESH,
+SECOFFSET,CENT,,,   
+SECREAD,'TempBeam','SECT',' ',MESH   
+
+ACLEAR,ALL
+
+SLIST, 996, 996, 1, 44, ALL
+SECPLOT,996,1 !SectionID,PlotElementsFlag 
+
+
+CMSEL,S,temp_Area
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,98 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!AMPC.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro creates a "syider web" of
+!   rigid MPC184 elements given an area and a node
+!PRECONDITIONS:
+!   Macros:
+!			ATT.mac
+!   ARG3=Number of rigid regions to be created
+!POSTCONDITIONS:
+!   Master = Node number of last base node
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!997.MPC184: Rigid Link
+!------------------------------------------------------
+!Multipoint Constraint Element: Rigid Link / Rigid Beam
+MatNum = 997
+!-----------------------------------------------OPTIONS
+!KEY1=0			!RIGID LINK
+KEY1=1			!RIGID BEAM
+KEY2=0    !Direct elimination method (default)
+!KEY2=1     !Lagrange multiplier method
+!------------------------------------------------------
+ET,MatNum,MPC184
+KEYOPT,MatNum,1,KEY1	!LINK / BEAM
+KEYOPT,MatNum,2,KEY2    !METHOD 
+R,MatNum		!No Real Constants
+MP,ALPX,MatNum,0.0	!CTE
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!--------------Set NUMBER OF AMPCs
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+!-------------SAVE CURRENT SETUP
+CM,temp_NODE,NODE
+*DOWHILE,loop
+   CM,temp_AREA,AREA
+   CM,temp_LINE,LINE
+   CM,temp_KP,KP
+   !-------------------------------
+   *MSG,UI
+   SELECT MASTER NODE
+   
+   nsel,r,p
+   *GET,Master,NODE,,NUM,MAX
+   *MSG,UI
+   SELECT AREAS
+   
+   asel,r,p
+
+   *ASK,ans,ENTER 0 to stop or 1 to try again,2
+   *IF,ans,EQ,0,THEN
+      loop=0
+   *ELSEIF,ans,EQ,2,THEN !----------------CREATE SPIDER
+      NSLA,S,1           !Select Nodes (Line 53)
+      NSEL,U,,,MASTER            !Uselect Master Node
+      TYPE,997
+      MAT,997
+      REAL,997
+      *GET,NumND,NODE,0,COUNT
+      *VGET,A1ND,NODE,,NLIST   !V11.0 
+      *DO,ink,1,NumND	       !CREATE SPIDER
+         E,Master,A1ND(ink)
+      *ENDDO
+      loop=loop-1
+      TYPE,1			!RESET TYPE,MAT,REAl
+      MAT,1
+      REAL,1
+   *ENDIF
+   !--RESUME TEMPORARY COMPONENTS
+   CMSEL,S,temp_NODE
+   CMSEL,A,temp_AREA
+   CMSEL,A,temp_LINE
+   CMSEL,A,temp_KP
+   /REPLOT
+   *SET,A1ND
+*ENDDO
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,S,temp_NODE
+CMDELE,S,temp_AREA
+CMDELE,S,temp_LINE
+CMDELE,S,temp_KP
+!--Clear Parameters
+!*SET,loop
+*SET,ANS
+*SET,A1ND
+*SET,NumND
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

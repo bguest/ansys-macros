@@ -1,0 +1,21 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SoftCLE.mac
+!B.Guest - bagvoo@gmail.com
+!DESCRIPTION: Clears Model, Leaving APDL Untouched
+!PRECONDITIONS:
+!POSTCONDITIONS:
+!  Esentally the same as /CLE
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/PREP7
+vclear,all
+aclear,all
+lclear,all
+kclear,all
+edele,all
+ndele,all
+vdele,all,,,1
+adele,all,,,1
+ldele,all,,,1
+kdele,all
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

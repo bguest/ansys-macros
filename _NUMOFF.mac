@@ -1,0 +1,42 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_NUMOFF.mac
+!DESCRIPTION: THIS MACRO OFFSETS THE NUMBERS OF GEOMETRIC
+!   (AND FEM w/ARG2) ENTINTIES (KP,LINE,AREA,VOLU (NODE,
+!   ELEM,MAT,TYPE,SECN) BY A SET NUMBER (ARG1)
+!PRECONDITIONS:
+!	ARG1= OFFSET NUMBER
+! ARG2= FEM FLAG 
+!   1=> Nodes and Elements are Offset too
+!   2=> All FEM Entinties are offset
+!POSTCONDITIONS:
+!	KP NUMBERS   = KP NUMBERS + ARG1
+!	LINE NUMBERS = LINE NUMBERS + ARG1
+!	AREA NUMBERS = AREA NUMBERS + ARG1
+!	VOLU NUMBERS = VOLU NUMBERS + ARG1
+! IF ARG2=1 THEN:
+!   Node Numbers= Node Numbers + ARG1
+!   ELEM Numbers= ELEM Numbers + ARG1
+!   MAT Numbers=  MAT Numbers + ARG1
+!   TYPE Numbers= TYPE Numbers + ARG1
+!   REAL Numbers= REAL Numbers + ARG1
+!   SECN Numbers= SECN Numbers + ARG1
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/PREP7
+NUMOFF,KP,ARG1
+NUMOFF,LINE,ARG1
+NUMOFF,AREA,ARG1
+NUMOFF,VOLU,ARG1
+*IF,ARG2,EQ,1,THEN
+   NUMOFF,NODE,10*ARG1
+   NUMOFF,ELEM,10*ARG1
+*ELSEIF,ARG2,EQ,2,THEN
+   NUMOFF,NODE,10*ARG1
+   NUMOFF,ELEM,10*ARG1
+	 NUMOFF,MAT ,ARG1
+	 NUMOFF,TYPE,ARG1
+   NUMOFF,REAL,ARG1
+   NUMOFF,SECN,ARG1
+*ENDIF
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

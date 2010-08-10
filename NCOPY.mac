@@ -1,0 +1,32 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!NCOPY.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: copies a node
+!PRECONDITIONS:
+!	ARG1 = Node number to be copied
+!	ARG2 = New node number (or blank)
+!	ARG3 = DeltaX
+!	ARG4 = DeltaY
+!	ARG5 = DeltaZ
+!POSTCONDITIONS'S
+!	_return = newNode Number
+!NOTES: 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+*if,ARG1,EQ,0,then
+	*GO,:RETURN_NCOPY
+*endif
+
+*if,ARG2,NE,0,then
+	nodeB =ARG2
+*else
+	*get,maxID,NODE,0,NUM,MAXD
+	nodeB = maxID+1
+*endif
+
+N,nodeB,NX(ARG1)+ARG3,NY(ARG1)+ARG4,NZ(ARG1)+ARG5
+_return = nodeB
+
+:RETURN_NCOPY
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

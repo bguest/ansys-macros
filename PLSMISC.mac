@@ -1,0 +1,17 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PLSMISC.mac
+!B.Guest - BenGuest@gmail.com
+!DESCRIPTION: Plots element SMISC forces
+!PRECONDITIONS:
+!	ARG1 = Componennt Number
+!	ARG2 = 1 --> Averaging
+!			 0 --> No Averaging
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*IF,ARG2,EQ,0,THEN
+	ETABLE,aTable,SMISC,ARG1
+	PLETAB,aTable,AVG
+*ELSEIF,ARG2,EQ,1,THEN
+	PLESOL,SMISC,ARG1
+*ENDIF
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

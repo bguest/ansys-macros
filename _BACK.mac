@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_BACK.mac
+!B.GUEST: benguest@gmail.com
+!DESCRIPTION: Plots view from the back.
+!PRECONDITIONS:
+!POSTCONDITIONS: 
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/VIEW, 1 ,,,-1  
+/angle, 1 
+/REP,FAST  
+!=======THE--END========THE--END========THE--END=======
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

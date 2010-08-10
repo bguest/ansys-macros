@@ -1,0 +1,45 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SpringForces.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This Macro Returns a Text File of Spring
+!   Location Distance VS Spring Force.
+!PRECONDITIONS:
+!   ARG1 = SMISC Data (Default = 1)
+!   USING ANSYS V.11
+!POSTCONDITIONS: 
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+PARSAV,ALL
+
+!CHOOSE SMISC DATA
+*IF,ARG1,EQ,0,THEN
+	smiscNum=1
+*ELSE
+  smiscNum=ARG1
+*ENDIF
+
+ESYS,0
+
+ElmNums= $ *VGET,ElmNums,ELEM,,ELIST  !Create Array OF Selected Elements
+*GET,NumElm,ELEM,,COUNT                !Get Number of Selected Elements
+X= $ *DIM,X,ARRAY,NumElm                   !Create Array For Locations
+Force= $ *DIM,Force,ARRAY,NumElm               !Create Array For Force
+!X= $ *VGET,X,ELEM,,CENT,X     
+*DO,i,1,NumElm
+  X(i)=CENTRX(ElmNums(i))
+*ENDDO
+
+*DO,i,1,NumELm
+  *GET,Force(i),ELEM,ElmNums(i),SMISC,smiscNum
+*ENDDO
+
+*CFOPEN,OUT_SpringForces,csv
+*VWRITE,X(1),Force(1)
+(E16.5,E16.5)
+
+*CFCLOS
+
+PLESOL,SMISC,smiscNum  !Plot
+PARRES
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

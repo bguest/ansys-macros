@@ -1,0 +1,167 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!LTL.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro creates an area from two lines
+!PRECONDITIONS:
+!  ARG1= number of first line
+!     ELSE user is prompted to select first line
+!  ARG2= number of second line
+!     ELSE user is prompted to select second line
+!POST-CONDITIONS: 
+!   See description
+!NOTE: !!!!!!!!!!!!!!!!!!!NOT WORKING !!!!!!!!!!!!!!!!!!!
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+!------------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+!------------------SELECT LINE1
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	SELECT 1st Line
+
+	LSEL,S,P
+	*GET,Line1,LINE,0,NUM,MAX !GET SELECTED AREA
+	CMSEL,S,temp_Line
+*ELSE
+	Line1=ARG1
+*ENDIF
+!------------------SELECT LINE 2
+*IF,ARG2,EQ,0,THEN
+	*MSG,UI
+	SELECT 2st Line
+
+	LSEL,S,P
+	*GET,Line2,LINE,0,NUM,MAX !GET SELECTED AREA
+	CMSEL,S,temp_LINE
+*ELSE
+	Line2=ARG2
+*ENDIF
+!--------------------Get KP locations on Line 1
+LSEL,S,,,Line1,,,1
+*VGET,L1KP,KP,,KLIST     !V11.0 (See ATA.mac for V10.0)
+*GET,numKP1,KP,0,Count   !GET number of kps
+
+*DIM,Loc1,ARRAY,numKP1,3 
+loop=numKP1		
+*DOWHILE,Loop
+	curKP=L1KP(loop)
+  *GET,Loc1(loop,1),KP,curKP,LOC,X
+	*GET,Loc1(loop,2),KP,curKP,LOC,Y
+	*GET,Loc1(loop,3),KP,curKP,LOC,Z
+	Loop=loop-1
+*ENDDO
+
+!------------------Get KP locations on Line2
+LSEL,S,,,Line2,,,1
+*VGET,L2KP,KP,,KLIST     !V11.0 (See ATA.mac for V10.0)
+*GET,numKP2,KP,0,Count   !GET number of kps
+
+*DIM,Loc2,ARRAY,numKP2,3
+loop=numKP2
+*DOWHILE,Loop
+	curKP=L2KP(loop)
+	*GET,Loc2(loop,1),KP,curKP,LOC,X
+	*GET,Loc2(loop,2),KP,curKP,LOC,Y
+	*GET,Loc2(loop,3),KP,curKP,LOC,Z
+	Loop=loop-1
+*ENDDO
+
+!-------------------DETERMINE DISTANCE BETWEEN KPS
+*DIM,Dist,ARRAY,numKP1,numKP2,2
+loop1=numKP1
+loop2=numKP2
+*DO,Loop1,1,NumKp1
+	*DO,Loop2,1,NumKp2
+		DX=Loc1(Loop1,1)-Loc2(Loop2,1)
+		DY=Loc1(Loop1,2)-Loc2(Loop2,2)
+		DZ=Loc1(Loop1,3)-Loc2(Loop2,3)
+		Dist(Loop1,Loop2,1)=sqrt(DX**2+DY**2+DZ**2)
+	*ENDDO
+*ENDDO
+
+!------DETERMINE AREA HAS MORE NODES
+*IF,numKP1,GE,numKP2,THEN
+	numKP=NumKP1
+	LgArea=Area1
+	LgNum=1
+	SmNum=2
+*ELSE
+	numKP=NumKP2
+	LgArea=Area2
+	LgNum=2
+	SmNum=1
+*ENDIF
+
+!--------------------ORDER DISTANCES
+*DIM,Order,ARRAY,NumKP,2  !Array to store KPS
+
+*DO,Loop,1,numKP
+  minDist=99999		!minimum distance = large number
+  *DO,Loop1,1,NumKp1
+    *DO,Loop2,1,NumKp2
+      *IF,Dist(Loop1,Loop2,1),LT,minDist,AND,Dist(Loop1,Loop2,2),EQ,0,THEN
+	      minDist=Dist(Loop1,Loop2,1)
+	      MinNum1=Loop1
+	      MinNum2=Loop2
+	      Order(Loop,1)=L1KP(loop1)
+	      Order(Loop,2)=L2KP(loop2)
+      *ENDIF
+    *ENDDO
+  *ENDDO
+  *IF,LgNum,EQ,2,THEN
+     *DO,loop3,1,NumKP1	    !SET COLUMS EQ,1
+       Dist(Loop3,MinNum2,2)=1
+     *ENDDO
+  *ELSE
+     *DO,loop3,1,NumKP2
+       Dist(MinNum1,Loop3,2)=1
+     *ENDDO
+  *ENDIF
+*ENDDO
+
+LSEL,S,,,Line1
+LSEL,A,,,Line2
+KSLL
+LSEL,NONE
+!--------------------DRAW LINES
+*DO,Loop,1,numKP
+	LSTR,Order(Loop,1),Order(Loop,2)
+*ENDDO
+!Get New Lines
+*VGET,NewLines,LINE,,LLIST   !V11.0 (See ATA.mac for V10.0)
+cmsel,a,temp_LINE
+
+AL,Line1,NewLines(1),Line2,NewLines(2)!Create New Area
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_LINE
+CMSEL,A,temp_KP
+
+/replot
+
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_LINE
+CMDELE,temp_KP
+
+*SET,ORDER
+*SET,DIST
+*SET,A1KP
+*SET,A2KP
+*SET,LgNum
+*SET,SmNum
+*SET,Loop
+*SET,Loop1
+*SET,Loop2
+*SET,Loop3
+*SET,LOC1
+*SET,LOC2
+*SET,NewLines
+*SET,NumKP1
+*SET,NUMKP2
+*SET,SELKP
+/NERR
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

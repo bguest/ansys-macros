@@ -1,0 +1,90 @@
+!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runAcoustic.mac
+!Ben Guest: benguest@gmail.com
+!DESCRIPTION: This macro preforms an acoustic vibration 
+!	anlysis given a component of areas and a pressure
+!	power spectral density
+!PRECONDITIONS:
+!  ARG1 = Number of Modes ELSE:
+     NModes=200
+!  ARG2 = Start Frequence: ELSE:
+     FMin=''
+!  ARG3 = End Frequency ELSE:
+     FMax=''
+!  ARG4 = Structural Damping Ration (DMPRAT)
+     DampRatio=0.10
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!--------------------------------SETUP
+*IF,ARG1,NE,0,THEN !Set Number of Modes
+   NModes=ARG2
+*ENDIF
+
+*IF,ARG2,NE,0,THEN !Set Minimum Frequency
+   FMin=ARG3
+*ENDIF
+
+*IF,ARG3,NE,0,THEN !Set Maximum Frequency
+   FMin=ARG4
+*ENDIF
+
+*IF,ARG4,NE,0,THEN !Set Maximum Frequency
+   DampRatio=ARG4
+*ENDIF
+
+!------------------------------------------------------
+/TITLE,Acoustic Pressure PSD Analysis
+!=================MODAL ANALYSIS=======================
+/solution
+/nerr,,99999999
+
+ANTYPE,MODAL      !SET ANALYSIS TYPE TO MODAL
+MODOPT,LANB,NModes,FMin,FMax   !Modal Options
+MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
+
+!Apply Pressure
+CMSEL,S,acousticAreas
+SFA,ALL,1,PRES,1
+
+/OUTPUT,AcousticModes_Out,out
+solve
+/OUTPUT
+
+!=================Spectrial Analysis=================
+tabNum=1			!INPUT TABLE
+FINISH
+/solution
+ANTYPE,SPECTR  !SET ANALSYIS TYPE TO SPECTRUM
+SPOPT,PSD,NModes,yes 
+PSDUNIT,tabNum,PRES
+DMPRAT,DampRatio !DAMPENING RATIO
+!-----------------INPUT SPECTRUM------------------
+PSDFRQ					!ERASE TABLES
+/input,ANSYS_APSD.inp
+!-----------------DEFINE INPUT DIRECTION----------
+SFADELE,ALL,2,ALL !DELETE PREVIOUS DATA
+LVSCALE,1			 !LOAD SCALE FACTOR
+ALLSEL         !SELECT EVERYTHING
+!-------------------------------------------------
+PFACT,TabNum,NODE !Calculate Participation Factors
+PSDRES, DISP, REL	!Calculate Displacements at run
+!PSDRES, VELO, ABS !Calculate Velocites at run
+PSDRES, ACEL, ABS !Calculate Acclerations at run
+!-------------------SOLVE-------------------------
+/OUTPUT,Acoustic_Out,out
+sptopt $ stat
+SOLVE
+/OUTPUT
+FINISH
+!--------Combine modes using PSD method----------
+/solution
+ANTYPE,SPECTR !SET ANALSYIS TYPE TO SPECTRUM
+PSDCOM,,Nmodes
+/OUTPUT,Acoustic_Out,out, ,APPEND
+SOLVE
+/OUTPUT
+FINISH
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
