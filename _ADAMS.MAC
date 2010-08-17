@@ -1,0 +1,218 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_ADAMS.mac
+!DESCRIPTION: This macro creates a ADAMS MNF
+!   Most of the code was derived from the "ADAMS.mac"
+!   macro provided with ANSYS, with a few commented tweeks
+!PRECONDITIONS:
+!   ARG1=nModes (See below) Tweeked from ADAMS.mac
+!   ARG2=kStress (See below)
+!   ARG3=kShell  (See below)
+!   ARG4=kCMS    (See below)
+!POSTCONDITIONS:
+!   DEFAULT UNITS ARE BIN
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+! ANSYS $RCSfile: ADAMS.MAC,v $
+! Modified on $Date: 2006/06/13 15:15:33 $ 
+! Source ID = $Revision: 60.1 $
+!      MACRO TO WRITE ADAMS MODAL NEUTRAL FILE
+
+!      Usage:    ADAMS,nModes,kStress,kShell,kCMS
+
+!      Input:
+!        Upon input the boundary set of nodes is the selected set
+!        nModes  - the number of dynamic modes desired
+!        kStress - 0, no stresses or strains
+!                  1, include stress results
+!                  2, include strain results
+!                  3, include stress and strain results
+!        kShell  - 0 or 1, shell TOP
+!                  2, shell MID
+!                  3, shell BOT
+!        kCMS    - 2, use Wave PSD procedure to compute information
+!                - 1, use CMS procedure
+!          The node component STRESS is the nodes used to determine the element
+!          facets for display (and the nodes for stresses if kStress>0)
+
+SAVE,SAVED,DB,,ALL  !FOR UNDO ADDED
+/UNITS,BIN          !SET UNITS
+FINI
+
+_NMODES=arg1
+_KSTRESS=arg2
+*if,_KSTRESS,gt,0,then
+   _ELCALC=1
+*else
+   _ELCALC=0
+*endif
+_KSHELL=arg3
+_UseCMS=arg4
+*if,_UseCMS,eq,0,then
+   _UseCMS=1
+*endif
+*if,_UseCMS,eq,2,then
+   _UseCMS=0
+*endif
+
+! save arguments for GUI (AdamsInterface.eui)
+_eigenmodesCount=arg1
+_elemresult=arg2
+_shelresult=arg3
+
+*MSG,UI !----------------SELECT INTERFACE NODES (ADDED)
+SELECT CONNECTION NODES
+
+nsel,s,p
+!------------------------------------------------------
+cm,INTRFACE,node
+*get,_numInterfaceNodes,node,,count
+NSLE
+SAVE,,dbmnf
+
+/prep7                     ! identify connection nodes
+CMSEL,s,INTRFACE
+m,all,all
+nsle
+lumpm,on
+finish
+
+*if,_UseCMS,eq,0,then
+
+  /solution        ! substructure generation; form Kcc and Mcc
+  antype,substruc
+  seopt,subelem,2,0,,resolve
+  eqslv,sparse
+  solve
+  finish
+  
+  /solu                    ! constrained modal analysis; compute normal modes
+  antype,modal
+  direct,off               !    (use emat file; speeds up psd with many constrained DOFs)
+  modopt,lanb,_NMODES
+  mxpand,_NMODES,,,_ELCALC
+  cmsel,s,INTRFACE
+  d,all,all,0
+  nsle
+  solve
+  fini
+  
+  /solu                    ! wave-excited PSD; compute constrained static modes
+  antype,spectrum
+  spopt,psd,_NMODES,_ELCALC
+  psdwav,1,100
+  cmsel,s,INTRFACE
+  d,all,all,1
+  nsle
+  pfact,1,base,wave
+  finish
+
+*else
+
+   *get,_nDOFperNode,common,,dofcom,,int,1
+   _NSTATIC=_numInterfaceNodes*_nDOFperNode
+
+  *get,jobname1,active,,jobname,,start,1
+  *get,jobname2,active,,jobname,,start,9
+  *get,jobname3,active,,jobname,,start,17
+  *get,jobname4,active,,jobname,,start,25
+  /filnam,genCMS
+  /solu                   ! CMS substructure generation; form K-hat and M-hat
+  antyp,substructure
+  seopt,subelem,2
+  cmsopt,fix,_NMODES
+  eqslv,sparse
+  ematwrite,yes            ! create emat to get mass matrix
+  solve
+  save
+  fini
+  
+  parsav,,parms
+  /clear,nostart           ! compute orthonormalized modes
+  parres,,parms
+  !_NMODES = _NMODES + _NSTATIC   ! include all modes   COMMENTED OUT (CREATES TOO MANY MODE SHAPES)
+  _NMODES = _NMODES + _nDOFperNode   !ADDED
+  _NSTATIC = 0
+  /filname,useCMS
+  /prep7
+  et,1,matrix50
+  type,1
+  se,subelem
+  finish
+  
+  /solu
+  antype,modal
+  modopt,lanb,_NMODES
+  mxpand,_NMODES
+  solve
+  finish
+  
+  parsav,,parms
+  /clear,nostart           ! expand the modes
+  /filnam,genCMS
+  resume
+  parres,,parms
+  /solu
+  expass,on
+  seexp,subelem,useCMS
+  numexp,all,,,_ELCALC
+  solve
+  finish
+  /filnam,%jobname1%%jobname2%%jobname3%%jobname4%
+
+*endif
+
+/post1                     ! write MNF file  (jobname.MNF)
+*if,_KSHELL,eq,2,then
+   SHELL,MID
+*elseif,_KSHELL,eq,3,then
+   SHELL,BOT
+*else
+   SHELL,TOP
+*endif
+*if,_UseCMS,eq,0,then
+   set,last
+   *get,_NSTATIC,active,,set,sbst
+*endif
+ernorm,off
+MNF,_NMODES,_NSTATIC,_KSTRESS,_UseCMS
+FINISH
+
+cmdel,INTRFACE             ! clean up variables
+_NMODES=
+_KSTRESS=
+_NSTATIC=
+_ELCALC=
+_KSHELL=
+_numInterfaceNodes=
+_nDOFperNode=
+/delete,subelem,sub
+*if,_UseCMS,eq,1,then
+  /delete,genCMS,esav
+  /delete,genCMS,emat
+  /delete,genCMS,full
+  /delete,genCMS,mode
+  /delete,genCMS,seld
+  /delete,genCMS,cms
+  /delete,genCMS,db
+  /delete,genCMS,BCS
+  /delete,genCMS,LN22
+  /delete,genCMS,PVTS
+  /delete,useCMS,esav
+  /delete,useCMS,emat
+  /delete,useCMS,full
+  /delete,useCMS,mode
+  /delete,useCMS,rst
+  /delete,useCMS,dsub
+  /delete,useCMS,sord
+  /delete,useCMS,BCS
+  /delete,useCMS,PVTS
+  /delete,parms
+*endif
+_UseCMS=
+RESUME,,dbmnf              ! restore previous database
+/anno,dele
+/prep7                      !ADDED FOR CONVENIENCE
+eplot
+

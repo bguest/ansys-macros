@@ -1,0 +1,27 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SMISCABS.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This Macro Takes the Absolute value of an
+! etable and then plots it.
+!PRECONDITIONS:
+   PARSAV,ALL !Parameters Saved 
+!  ARG1 = SMISC Data Default:
+    smiscNum=1
+!POSTCONDITIONS: 
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!CHOOSE SMISC DATA
+*IF,ARG1,NE,0,THEN
+  smiscNum=ARG1
+*ENDIF
+
+ETABLE,E_tab,SMISC,smiscNum
+SABS,1                         !Set SADD to take absolute value
+SADD, E_tab2, E_tab            !Multiply by 
+PLETAB,E_tab2,AVG
+
+SABS,0
+PARRES
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,65 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_VOFF.mac
+!B.Guest - bagvoo@gmail.com
+!DESCRIPTION: Extended Function of VOFFST function
+!PRECONDITIONS:
+!	Arguments:
+! -ARG1 = Area to be offset or <0 for all Areas
+! -ARG2 = Volume thickness
+!POSTCONDITIONS:
+!  See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/NERR,0
+PARSAV,ALL,D:\_ANSYS\TEMP\_VOFF.txt  !Save Parameters
+CM,temp_Area,AREA  !Save Currently Selected Areas
+!GET AREA------------------------
+*IF,ARG1,NE,0,THEN
+	selArea=ARG1
+*ELSE  !GET AREA FROM USER
+	*MSG,UI !--------SELECT VOLUME
+	SELECT AREAS TO BE DELETED  
+
+	asel,r,p
+*ENDIF
+
+!GET THICKNESS-------------------
+*IF,ARG2,EQ,0,THEN
+	*ASK,thickness, Enter Thickness of OffSet,0
+*ELSE
+	Thickness = ARG2
+*ENDIF
+
+!ERROR CHECKING------------------
+
+!Make sure areas are selected
+*IF,selArea,GT,0,THEN
+	ASEL,S,,,selArea
+*ENDIF
+
+*GET,numArea,Area,,count !Get Number of Areas
+
+*IF,numArea,EQ,0,AND,selArea,EQ,0,THEN
+	*GO,:END
+*ENDIF
+
+!Make Sure thickenss not equal to zero
+*IF,thickness,EQ,0,THEN
+	*GO,:END
+*ENDIF
+
+!CREATE VOLUMES------------------
+*IF,selArea,LE,0,THEN   
+	AA= $ *VGET,AA,AREA,,ALIST
+	!*GET,numArea,Area,,count  (Moved To Error Checking)
+	*DO,i,1,numArea
+		VOFFST, AA(i), thickness,
+	*ENDDO
+*ELSE
+	VOFFST,selArea,thickness
+*ENDIF
+
+CMSEL,S,temp_area  !resume previously selected areas
+PARRES,,D:\_ANSYS\TEMP\_VOFF.txt  !Resume Saved Parameters
+/NERR,5
+!:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

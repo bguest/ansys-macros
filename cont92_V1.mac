@@ -1,0 +1,99 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!cont92.mac
+!DESCRIPTION:
+!	CREATES CONTACT BETWEEN TWO SURFACES
+!	MESHED WITH SOLID 92 ELEMENTS
+!PRECONDITIONS:
+!	ARG1=COEF FRICTION
+!		ELSE COF = 0
+!	ARG2=MAT NUMBER
+!		ELSE MAT1 = 800
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& 
+SAVE,saved,db,,ALL
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+/PREP7
+!------------------------------SELECT ARES
+*MSG,UI			!target surface
+SELECT TARGET SURFACE
+
+ASEL,S,P   	
+CM,AREA_TARG,AREA
+CMSEL,S,temp_AREA
+
+*MSG,UI			!contact surface
+SELECT CONTACT SURFACE
+
+ASEL,S,P 	
+CM,AREA_CONT,AREA
+CMSEL,S,temp_AREA
+!-------------------------------------
+!------------------ARG2=MATERIAL NUMBERS
+*IF,arg2,EQ,0,THEN
+	mat1=800
+*ELSE
+	mat1=arg2
+*ENDIF
+mat2=mat1+1
+
+ET,mat1,TARGE170 	!stiffer surface
+ET,mat2,CONTA174 	!flexible surface
+R,mat1
+
+!------------------ARG1=FRICTION
+*IF,ARG1,EQ,0,THEN
+	MP,mu,mat1,0
+*ELSE
+	MP,mu,mat1,ARG1
+*ENDIF !-----------------------
+
+!-----------------MESH target surface
+CMSEL,S,AREA_TARG 
+NSLA,S,1	
+ESLN,S,0
+MAT,mat1  
+REAL,mat1	
+TYPE,mat1 
+ESURF,ALL
+CM,ELEM_TARG,ELEM
+
+!-----------------MESH contact surface
+CMSEL,S,AREA_CONT
+NSLA,S,1	
+ESLN,S,0
+MAT,mat1   
+REAL,mat1	!must have same real constant as target
+TYPE,mat2 	!must have different type than target
+ESURF,ALL
+CM,ELEM_CONT,ELEM
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_VOLU
+CMSEL,S,temp_AREA
+CMSEL,S,temp_LINE
+cMSEL,S,temp_KP
+CMSEL,S,temp_NODE
+CMSEL,S,temp_ELEM
+CMSEL,S,temp_NODE
+
+CMSEL,A,ELEM_TARG
+CMSEL,A,ELEM_CONT
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+CMDELE,ELEM_TARG
+CMDELE,ELEM_CONT
+
+*SET,MAT1
+*SET,MAT2

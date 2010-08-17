@@ -1,0 +1,25 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PLRPSD.mac
+!DESCRIPTION: This Macro Plots the contents of 
+! /INPUT,ANSYS_RPSD.dat
+!PRECONDITIONS:
+!	ARG1 = Imput Name
+!		ELSE: ANSYS_RPSD.dat
+!POST-CONDITIONS:
+!  PSD data is plotted to the ANSYS Screen
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*IF,ARG1,EQ,'',THEN
+	inputName = 'ANSYS_RPSD.inp'
+*ELSE
+	inputName = ARG1
+*ENDIF
+
+FINISH
+TabNum=1
+/solution
+PSDFRQ        ! Erase tables
+/INPUT,inputName
+PSDGRAPH,TabNum  !GRAPH INPUT TABLE
+/GROPT,VIEW,1   !TO ZOOM GRAPH
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

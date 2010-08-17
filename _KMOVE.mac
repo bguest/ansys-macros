@@ -1,0 +1,56 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_KMOVE.mac
+!B.GUEST- BenGuest@gmail.com
+!DESCRIPTION: Moves A keypoint to another keypoint then
+!	merges the two keypoints
+!PRECONDITIONS:
+!	ARG1 = Keypoint to move
+!	ARG2 = Keypoint to move too
+
+!POSTCONDITIONS'S
+!NOTES: 
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/PREP7
+PARSAV,ALL,F:\_ANSYS\TEMP\_KMOVEK.txt  !Save Parameters
+
+CM,temp_KP,KP
+!==========================================GET STUFF
+*IF,ARG1,EQ,0,THEN 
+  *MSG,UI
+  Select Keypoint to Move FROM
+  
+  KSEL,R,P
+  *GET,KP1,KP,,NUM,MAX 
+  CMSEL,S,temp_KP
+*ELSE
+  KP1=ARG1
+*ENDIF
+
+*IF,ARG2,EQ,0,THEN 
+	*MSG,UI
+  Select Keypoint to Move TO
+  
+  KSEL,R,P
+  *GET,KP2,KP,,NUM,MAX 
+  CMSEL,S,temp_KP
+*ELSE
+  KP2=ARG1
+*ENDIF
+
+!------------------------------------------------------
+*GET,X2,KP,KP2,LOC,X    !GET LOCATION OF KP2
+*GET,Y2,KP,KP2,LOC,Y
+*GET,Z2,KP,KP2,LOC,Z
+
+KMODIF, KP1, X2, Y2, Z2
+
+KSEL,S,,,KP1
+KSEL,A,,,KP2
+NUMMRG,KP
+
+CMSEL,s,temp_KP
+PARRES,,F:\_ANSYS\TEMP\_KMOVEK.txt  !RESUME PREVIOUS PARAMETERS
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

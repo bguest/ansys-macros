@@ -1,0 +1,64 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!ARIG.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro creates a rigid region given a
+!   node and an area
+!PRECONDITIONS:
+!   ARG3=Number of rigid regions to be created
+!POSTCONDITIONS:
+!   Master = Node number of last base node
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/PREP7
+SAVE,saved,db,,ALL
+CM,temp_NODE,NODE
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+!--------------Set NUMBER OF ARIGs
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+
+*DOWHILE,loop
+   *MSG,UI
+   SELECT MASTER NODE
+   
+   nsel,r,p
+   *GET,Master,NODE,,NUM,MAX
+   *MSG,UI
+   SELECT AREAS
+   
+   asel,r,p
+   lsla
+   ksll
+   nsla,a
+   nsll,a  
+   nslk,a 
+   *ASK,ans,ENTER 0 to stop or 1 to try again,2
+   *IF,ans,EQ,0,THEN
+      loop=0
+   *ELSEIF,ans,EQ,2,THEN
+      CERIG,Master,ALL,ALL,
+      loop=loop-1
+   *ENDIF
+   !--RESUME TEMPORARY COMPONENTS
+   CMSEL,S,temp_NODE
+   CMSEL,S,temp_AREA
+   CMSEL,S,temp_LINE
+   CMSEL,S,temp_KP
+*ENDDO
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,S,temp_NODE
+CMDELE,S,temp_AREA
+CMDELE,S,temp_LINE
+CMDELE,S,temp_KP
+!--Clear Parameters
+!*SET,loop
+*SET,ANS
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

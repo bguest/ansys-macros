@@ -1,0 +1,100 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!P26PSDAccl.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro plots and acceleration PSD
+!   curve given a node
+!PRECONDITIONS:
+!   ARG1 = Node number of PSD point
+!      ELSE user is prompted to pick node
+!   ARG2 = Results Direction (1=X,2=Y,3=Z)
+!      ELSE user is prompted to enter a direction
+!   ARG3 = Reference number of resulting variable
+!      ELSE reference number of resulting variable = 5
+!   ARG4 = Points per frequency
+!      ELSE Pts per frequency = 5
+!POSTCONDITIONS:
+!   PLOT OF PSD is displayed on screen
+!   PSD curve is output to file "OUT_psd_accl.out"
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!------------------------------------SAVE CURRENT SETUP
+CM,temp_NODE,NODE
+!----------------------------------------------GET NODE
+*IF,ARG1,EQ,0,THEN
+   *MSG,UI
+   SELECT NODE
+   
+   nsel,r,p
+   *GET,ND,NODE,,NUM,MAX
+*ELSE
+   ND=ARG1
+*ENDIF
+!-----------------------------------------GED DIRECTION
+*IF,ARG2,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG2
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='X'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='Y'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='Z'
+*ENDIF
+!--------------------------Resulting Reference Variable
+IA_ACCLX = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
+*IF,ARG3,EQ,0,THEN
+   IR_ACCLX = 5
+*ELSE
+   IR_ACCLX = ARG3
+*ENDIF
+!-------------------------------------PTS Per Frequency
+*IF,ARG4,EQ,0,THEN
+   FrqPts = 5
+*ELSE
+   FrqPts = ARG4
+*ENDIF
+!===================PSD POST-PROCESSING================
+/GROPT,LOGX,ON  
+/GROPT,LOGY,ON
+! Calculate Response PSD
+/POST26          ! Enter POST26
+STORE,PSD,FrqPts ! Store frequency vector (variable 1)
+
+NSOL,IA_ACCLX,ND, U, direction, 'ACCL'    
+RPSD,IR_ACCLX,IA_ACCLX,,3, 1, 'ACCL' 
+
+PLVAR,IR_ACCLX	!PLOT
+
+!------------------------PRINT
+*GET,NUM_PTS,VARI,,NSETS 
+HZ=    $ *DIM,HZ,ARRAY,NUM_PTS
+ACCLX= $ *DIM,ACCLX,ARRAY,NUM_PTS
+
+VGET,HZ,1,0.0
+VGET,ACCLX,IR_ACCLX,0.0
+
+*CFOPEN,OUT_psd_accl,out
+*VWRITE,HZ(1),ACCLX(1),
+(E15.5,E15.5)
+*CFCLOS
+
+_FRONT
+_FIT
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_NODE
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_NODE
+!--CLEAR PARAMETERS
+*SET,ND
+*SET,ans
+*SET,direction
+*SET,IA_ACCLX
+*SET,IR_ACCLX
+*SET,FrqPts
+*SET,HZ
+*SET,ACCLX
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

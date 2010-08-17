@@ -1,0 +1,80 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LMESH.mac
+!DESCRIPTION: This macro meshes lines such that the with
+!  one element
+!PRECONDITIONS:
+!  ARG1 = Line to be meshed
+!     ELSE, User prompted to select lines
+!  ARG2 = Material Number of Line to be meshed
+!     ELSE, User is prompted for mat number
+!  ARG3 = Number of Elements per line (Default = 1)
+!  ARG4 = Keypoint To Orient Beam (Default No KP)
+!			99 -> User Selected
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*IF,FlagNoReadWrite,NE,1,THEN
+	SAVE,saved,db
+*ENDIF
+/NOPR
+/PREP7
+!-------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+
+*IF,ARG2,EQ,0,THEN !---------------GET MatNum
+   *ASK,ans,ENTER MAT NUMBER,0
+   MNum=ans
+*ELSE
+   MNum=ARG2
+*ENDIF 
+
+*IF,ARG3,EQ,0,THEN  !---GET NUMBER OF ELEMENTS
+   LNum=1
+*ELSE
+   LNum=ARG3
+*ENDIF
+
+*IF,ARG4,EQ,99,THEN  !---GET NUMBER OF ELEMENTS
+	*MSG,UI
+  Select Orientation Point
+  
+  KSEL,R,P
+  *GET,orientKP,KP,,NUM,MAX 
+  CMSEL,S,temp_KP
+*ELSE
+  orientKP=ARG4
+*ENDIF
+
+*IF,MNum,EQ,0,THEN    !-----IF NO MatNum Provided
+   *MSG,WRN             !Warn User
+   NO MATNUM PROVIDED
+                        !Do Nothing
+*ELSE                   !----ELSE
+   *IF,ARG1,EQ,0,THEN
+      *MSG,UI
+      SELECT LINE TO BE MESHED
+   
+      LSEL,r,p
+   *ELSE
+      LSEL,S,,,ARG1
+   *ENDIF
+   LCLEAR,ALL
+   LESIZE,ALL,,,LNum,,1
+   LATT,MNum,MNum,MNum,,orientKP
+   LMESH,ALL
+*ENDIF
+
+!=======================CLEAN UP=======================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_LINE
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_LINE
+
+*IF,FlagNoReadWrite,NE,1,THEN
+	/REPLOT
+*ENDIF
+/GOPR
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

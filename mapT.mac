@@ -1,0 +1,121 @@
+!WRITEN BY TOM.TROUT
+
+fini
+/prep7
+
+nelem=88				! number of ANSYS elements
+ntemps=3885				! number of Thermal Desktop temperatures
+offset=1000				! offset for keypoint numbering
+
+			
+allsel
+!ksel,u,,,1,offset			
+!kdele,all
+/output,elements,txt
+/output
+
+
+!*************** Tolerances **********************************
+ntol=5				! number of tolerance levels
+*dim,tol,array,ntol
+tol(1)=10, 5, 1, 0.5, 0.1
+
+!*********************** Dimension arrays *******************************
+*dim,elem,array,nelem
+*dim,tnode,array,nelem
+*dim,xcenter,array,nelem		
+*dim,ycenter,array,nelem		
+*dim,zcenter,array,nelem
+
+
+!*************************** Read in array of x,y,z and temperatures **********
+*dim,T,array,ntemps,4
+*VREAD,T(1,1),4MBnodeinfo,txt,,JIK,4,ntemps,1,0
+(15x,4F14.0)	
+
+!************************* Read in table of x,y,z and temperatures **************
+
+!*dim,T,table,ntemps,4	! T is a table with nelem rows and 4 columns not including indices
+
+!*TREAD,T,tdata,txt,,2	! tdata.txt is a tab or comma delimited file.
+			! Skip 2 rows before reading in data.
+			! The first row read in has the column numbers, 1 thru 5.
+			! The first column has the row numbers, 1 thru nelem.
+
+			! List table in ANSYS using following menu steps:
+			!    >list >status >parameters >named parameters
+			! or >Parameters >array parameters >define/edit >T >edit
+
+
+!******************** Associate elements with keypoints at element centroids *********
+ALLSEL
+CSYS,0
+n=0
+!-------------------------------------------
+*do,i,1,nelem
+  allsel
+  n=elnext(n)
+  elem(i)=n
+  ESEL,S,,,n
+  *GET, xcenter(i), ELEM, n, cent, x
+  *GET, ycenter(i), ELEM, n, cent, y
+  *GET, zcenter(i), ELEM, n, cent, z
+  K,offset+i,xcenter(i),ycenter(i),zcenter(i)   
+*enddo
+!----------------------------------------
+
+
+
+!************************ Associate thermal node with elements
+k=0				! initialize k for counting number of tolerance levels
+:label1
+  k=k+1
+  i=0				! initialize i for counting thermal nodes
+    :label2
+    i=i+1
+    KSEL,S,LOC,X,T(i,1)-tol(k),T(i,1)+tol(k)  
+    KSEL,R,LOC,Y,T(i,2)-tol(k),T(i,2)+tol(k)  
+    KSEL,R,LOC,Z,T(i,3)-tol(k),T(i,3)+tol(k)
+    KSEL,R,,,offset+1,offset+nelem			
+    CM,kps,KP			! make component of keypoints
+    :label3
+    *GET, n, KP, 0, num, max	! Pick the highest numbered of selected keypoints
+    *IF,n,LT,offset+1,:label4	! If there are no keypoints then go to :label4
+    j=n-offset			! elem(j)=element associated with keypoint n
+    tnode(j)=i			! tnode(j)=i=thermal node associated with elem(j)
+    CMSEL,S,KPS			! Select previous keypoint component
+    KSEL,u,,,n			! Remove one keypoint from component
+    CM,kps,KP			! Make new component with one less keypoint
+    *go,:label3			! Go back to :label3 to associate remaining keypoints
+    			        !  and associated elements with thermal node
+    :label4
+  *IF,i,LT,ntemps,:label2		! go back to :label2 to start next thermal node		
+*IF,k,LT,ntol,:label1		! go back to :label1 to start next tolerance zone
+!----------------------------------------
+
+
+!*********************** Apply temperatures to elements *********************
+ALLSEL
+BFEDELE,ALL,TEMP 			! Delete old temperatures  
+*do,i,1,nelem
+  ESEL,S,,,elem(i)
+  *IF,tnode(i),GT,0,THEN
+    BFE,ALL,TEMP,1,T(tnode(i),4),,,		! apply temperature of thermal node node(i) to associated element elem(i)
+  *ENDIF
+*enddo
+!-------------------------------------------------
+
+
+!******************************* Write element and associated temperature node *****************
+*do,i,1,nelem
+  /output,elements,txt,,append		! Write to elements.txt
+  *msg,info,elem(i),tnode(i)		
+  %I,%I
+  /output
+*enddo
+
+
+
+
+
+

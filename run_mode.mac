@@ -1,0 +1,93 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!run_mode.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro runs a simple modal analysis of the current model using the block lanczos option.  
+!	It can also run a prestressed modal analysis based on a previous linear or nonlinear run.
+!PRECONDITIONS:
+!	run_mode,NumModes,Signif,PreStress
+!	ARG1=Number of modes to expand
+!	ARG2=Mode significance
+!	ARG3=0 or > 2 run regular modal analysis
+!	ARG3=1 run prestressed modal from linear                                                     
+!		Note: Use pstres,on in the previous loading run, if this macro is not run in a diffrent folder
+!		the previous loadstep will be overwritten
+!	ARG3=2 run prestressed modal from nonlinear
+!		Note: Use EMATWRITE,YES in static load step prior to modal analysis
+!		In pre-stressed model, go to last step in general post processor and save everything
+!		Then copy file.db, file.esav, and file.emat into folder for running modes.
+!		If ansys crashes without an error, try deleting file.* and doing it again, it worked 080409
+!POSTCONDITIONS:
+!	Plots first mode Usum
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+save
+
+! Number of modes to expand
+*if,ARG1,eq,0,then
+	AR20=10
+*else
+	AR20=ARG1
+*endif 
+
+! Mode significance to expand
+*if,ARG2,eq,0,then
+	AR21=0.001		! This is default anyways
+*else
+	AR21=ARG3
+*endif
+
+! Prestressed or Not
+*if,ARG3,eq,2,then
+	! Solves NonLinear-PreStressed Modal
+	/output,out_mode_NLPreStress,txt
+	/solu
+	upcoord,1,on
+	antype,modal
+	pstres,on
+	modopt,lanb,AR20
+	mxpand,AR20,,,yes,AR21
+	psolve,eiglanb
+	fini
+	/solu
+	outres,all,all
+	expass,on
+	psolve,eigexp
+	/output
+	! Plots Solution
+	/post1
+	set,first
+	plnsol,u,sum,0
+*elseif,arg3,eq,1,then
+	! Solves Linear-PreStressed Modal
+	/output,out_mode_PreStress,txt
+	/solu
+	antype,modal
+	pstres,on
+	mxpand,AR20,,,yes,AR21
+	modopt,lanb,AR20,,,,off
+	solve
+	/output
+	! plots Solution
+	/post1
+	set,first
+	plnsol,u,sum,0
+*else
+   	! Solves Modal
+	/solu
+	/output,out_mode,txt
+	/solu 
+	antype,modal
+	mxpand,AR20,,,yes,AR21
+	modopt,lanb,AR20,,,,off
+	solve
+	/output
+	! Plots Solution
+	/post1
+	set,first
+	plnsol,u,sum,0
+*endif
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			run_mode.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

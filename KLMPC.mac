@@ -1,0 +1,127 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!KLMPC.mac
+!B.GUEST benguest@gmail.com
+!DESCRIPTION: This macro creates a "spider web" of
+!  MPC184 rigid element between a meshed line and a KP
+!PRECONDITIONS:
+!  Keypoint to be used has not been KMESHed
+!  NEEDS:
+!    ATT.mac  
+!  ARG1=KP from base of spider web
+!    ELSE user is prompted to select Keypoint
+!  ARG2=Line for ends of spider web
+!    ELSE user is prompted to select line
+!POSTCONDITIONS:
+!  See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+Save,saved,db,,ALL
+
+CM,temp_KP,KP
+CM,temp_LINE,LINE
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!998.MASS21: TEMP MASS
+!======================================================
+MatNum = 998
+!-------------------Mass Properties---------------
+MASS = 0.0
+!-------------------------------------------------
+ET,MatNum,MASS21
+KEYOPT,MatNum,3,2      !3-D mass w/o rotary inertia
+R,MatNum,MASS,MASS,MASS
+!------------------Dumbie Material-----------------
+MP,DENS,MatNum,0.0
+!======================================================
+!997.MPC184: Rigid Link
+!------------------------------------------------------
+!Multipoint Constraint Element: Rigid Link / Rigid Beam
+MatNum = 997
+!-----------------------------------------------OPTIONS
+!KEY1=0			!RIGID LINK
+KEY1=1			!RIGID BEAM
+KEY2=0    !Direct elimination method (default)
+!KEY2=1     !Lagrange multiplier method
+!------------------------------------------------------
+ET,MatNum,MPC184
+KEYOPT,MatNum,1,KEY1	!LINK / BEAM
+KEYOPT,MatNum,2,KEY2    !METHOD 
+R,MatNum		!No Real Constants
+MP,ALPX,MatNum,0.0	!CTE
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!Get Things
+!--------------------------GET KP
+*IF,ARG1,EQ,0,THEN
+  *MSG,UI
+  Select Keypoints
+  
+  KSEL,R,P
+*ELSE
+  KSEL,S,,,ARG1
+*ENDIF
+CM,KP_Sel,KP
+CMSEL,S,temp_KP
+!---------------------------GET LINES
+*IF,ARG2,EQ,0,THEN
+  *MSG,UI
+  Select Lines
+  
+  LSEL,R,P
+*ELSE
+  LSEL,S,,,ARG2
+*ENDIF
+CM,Line_Sel,Line
+CMSEL,S,temp_Line
+
+!================FOR SET OF KPs========================
+CMSEL,S,KP_Sel	          	!Select Keypoints
+*GET,KP_high,KP,0,NUM,MAX   !GET HIGHEST KP NUMBER IN SEL
+
+!-------GET KP1 LOCATION
+KSUM			   !GET KP INFO
+*GET,centX1,KP,0,CENT,X	
+*GET,centY1,KP,0,CENT,Y
+*GET,centZ1,KP,0,CENT,Z
+
+!-----------CHECK TO SEE IF ONLY ONE KP SELECTED
+*GET,KP_count,KP,0,COUNT  !GET NUMBER OF NODES
+*IF,KP_Count,EQ,1,THEN
+  KP1=KP_High
+*ELSE !-------Create New KP at KP Centroid Location
+  KP1=KP_max+1
+  KSEL,NONE
+  K,KP1,centX1,centY1,centZ1
+*ENDIF !-------------------------------------------
+!--------------MESH KP1
+KSEL,S,,,KP1
+KCLEAR,ALL
+KATT,998,998,998
+ESEL,NONE
+KMESH,ALL
+NSLE
+*GET,Master,NODE,,NUM,MAX  !Get Master Node
+
+CMSEL,S,Line_Sel !Select Lines to be "spider-webed"
+NSLL,S,1         !Select nodes on line
+ATT,997
+*GET,NumND,NODE,0,COUNT
+*VGET,L1ND,NODE,,NLIST   !V11.0 
+*DO,ink,1,NumND	       !CREATE SPIDER
+  E,Master,L1ND(ink)
+*ENDDO
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_NODE
+CMSEL,A,temp_LINE
+CMSEL,A,temp_KP
+CMSEL,A,temp_ELEM
+!--Clear Parameters
+!*SET,loop
+*SET,A1ND
+*SET,NumND
+*SET,KP1
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

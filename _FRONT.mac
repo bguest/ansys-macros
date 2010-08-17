@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_FRONT.mac
+!B.GUEST: benguest@gmail.com
+!DESCRIPTION: Plots view from the front.
+!PRECONDITIONS:
+!POSTCONDITIONS: 
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/VIEW, 1 ,,,1   
+/ANG, 1 
+/REP,FAST  
+!=======THE--END========THE--END========THE--END=======
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

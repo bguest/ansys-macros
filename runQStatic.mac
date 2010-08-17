@@ -1,0 +1,52 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runQStatic.inp
+!B.GUEST; benguest@gmail.com
+/title,Quasi-Static Analysis
+!DESCRIPTION: This file preforms a qusi-static
+!  Acceleration Analysis
+!PRECONDITIONS:
+!  Model built and constrained
+!  ARG1=Applied G's in X direction, ELSE:
+     Gx=0
+!  ARG2=Applied G's in Y direction, ELSE:
+     Gy=0
+!  ARG3=Applied G's in Z direction, ELSE:
+     Gz=0
+!POSTCONDITIONS:
+!  See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*if,ARG1,NE,0,THEN
+  Gx=ARG1
+*ENDIF
+
+*IF,ARG2,NE,0,THEN
+  Gy=ARG2
+*ENDIF
+
+*IF,ARG3,NE,0,THEN
+  Gz=ARG3
+*ENDIF
+
+/Solution
+ANTYPE,STATIC
+NLGEOM,OFF
+LSDELE,ALL
+!PSTRES,ON
+
+!Apply Loading Unless no Gravity Loads Appliedw
+*IF,Gx,EQ,0,AND,Gy,EQ,0,THEN
+	*IF,Gz,EQ,0,THEN
+		!Do Nothing.
+	*ELSE
+		ACEL,Gx*386.09,Gy*386.09,Gz*386.09
+	*ENDIF
+*ELSE
+	ACEL,Gx*386.09,Gy*386.09,Gz*386.09
+*ENDIF
+
+/output,OUT_QStatic.ans
+SOLVE
+/OUTPUT
+SAVE
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE.

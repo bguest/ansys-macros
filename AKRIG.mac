@@ -1,0 +1,146 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!ARIG2.MAC
+!DESCRIPTION: THIS MACRO CREATES A RIGID ELEMENT WITH
+!  A NODE AT THE CENTER OF THE KEYPOINTS OF THE AREA
+!PRECONDITIONS:
+!   ARG3=Number of rigid regions to be created
+!POSTCONDITIONS:
+!  Master = Node number of base node
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!998.MASS21: TEMP MASS
+!======================================================
+MatNum = 998
+!-------------------Mass Properties---------------
+MASS = 0.0
+!-------------------------------------------------
+ET,MatNum,MASS21
+R,MatNum,MASS,MASS,MASS
+!------------------Dumbie Material-----------------
+MP,DENS,MatNum,0.0
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!--------------Set NUMBER OF ARIGs
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+
+*DOWHILE,loop
+   *GET,KP_max,KP,0,NUM,MAXD		!GET MAX KP NUMBER
+   !====================SELECT STUFF=====================
+   *MSG,UI					!AREAS
+   SELECT AREAS
+   
+   ASEL,R,P	
+   CM,A1_Area,AREA
+   CMSEL,S,temp_AREA
+   
+   *MSG,UI					!KEYPOINTS
+   SELECT KEYPOINTS
+   
+   KSEL,R,P
+   CM,A1_KP1,KP
+   CMSEL,S,temp_KP
+   
+   !================FOR SET OF KPs========================
+   CMSEL,S,A1_KP1		!SELECT KP1
+   *GET,KP_high,KP,0,NUM,MAX  !GET HIGHEST KP NUMBER IN SEL
+   
+   !-------GET KP1 LOCATION
+   KSUM			   !GET KP INFO
+   *GET,centX1,KP,0,CENT,X	
+   *GET,centY1,KP,0,CENT,Y
+   *GET,centZ1,KP,0,CENT,Z
+   
+   !-----------CHECK TO SEE IF ONLY ONE KP SELECTED
+   *GET,KP_count,KP,0,COUNT  !GET NUMBER OF NODES
+   *IF,KP_Count,EQ,1,THEN
+   	 KP1=KP_High
+   *ELSE !-------Create New KP at KP Centroid Location
+     KP1=KP_max+1
+     KSEL,NONE
+     K,KP1,centX1,centY1,centZ1
+   *ENDIF !-----------------------------------------------
+   !-------MESH KP1
+   KSEL,S,,,KP1
+   KATT,998,998,998
+   KMESH,ALL
+   
+   CM,A1_ELEM,ELEM
+   CM,A1_NODE,NODE
+   
+   !======================================================
+   !CREATE CERIG
+   !------------------------------------------------------
+   !KSEL,S,,,KP1           !NOT NEEDED BECAUE OF ~LINE82
+   NSLK	
+   *GET,Master,NODE,,NUM,MAX
+   CMSEL,A,A1_KP1		!ADD NODES AT KPs
+   NSLK,A
+   CMSEL,S,A1_Area		!ADD NODES AT AREAS
+   NSLA,A,1
+   *ASK,ans,ENTER 0 to stop or 1 to try again,2
+   *IF,ans,EQ,0,THEN
+      loop=0
+   *ELSEIF,ans,EQ,2,THEN
+      CERIG,Master,ALL,ALL,
+      loop=loop-1
+   *ENDIF
+   
+   CM,A1_KP,KP             !Redefine A2_KP
+   CM,A1_ELEM,ELEM
+   CM,A1_NODE,NODE   
+   
+   !--RESUME TEMPORARY COMPONENTS
+   CMSEL,A,temp_VOLU
+   CMSEL,A,temp_AREA
+   CMSEL,A,temp_LINE
+   cMSEL,A,temp_KP
+   CMSEL,A,temp_NODE
+   CMSEL,A,temp_ELEM
+*ENDDO
+
+!=======================CLEAN UP=========================
+!--DELETE CREATED COMPONENTS
+CMDELE,A1_AREA
+CMDELE,A1_ELEM
+CMDELE,A1_NODE
+CMDELE,A1_KP
+CMDELE,A1_KP1
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+!---DELETE PARAMETERS
+*SET,ANS
+*SET,CENTX1
+*SET,CENTY1
+*SET,CENTZ1
+*SET,KP_COUNT
+*SET,KP_HIGH
+*SET,KP_MAX
+*SET,KP1     !
+*SET,MASS
+*SET,LOOP
+!*SET,MASTER
+*SET,MatNum
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

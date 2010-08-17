@@ -1,0 +1,140 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!AMPC2.MAC
+!DESCRIPTION: THIS MACRO CREATES A "SPIDER WEB OF RIGID
+!  MPC184 RIGID ELEMENT WITH A NODE AT THE CENTER OF THE
+!  KEYPOINTS OF THE AREA
+!PRECONDITIONS:
+!  ARG1 = Number of the first area
+!    ELSE = user propted to select areas
+!  ARG2 = Number of the last area
+!  ARG3=Number of rigid regions to be created
+!POSTCONDITIONS:
+!  Master = Node number of base node
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_node,NODE
+CM,temp_area,AREA
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!998.MASS21: TEMP MASS
+!------------------------------------------------------
+MatNum = 998
+!-------------------Mass Properties---------------
+MASS = 0.0
+!-------------------------------------------------
+ET,MatNum,MASS21
+R,MatNum,MASS,MASS,MASS
+!------------------Dumbie Material-----------------
+MP,DENS,MatNum,0.0
+!======================================================
+!997.MPC184: Rigid Link
+!------------------------------------------------------
+!Multipoint Constraint Element: Rigid Link / Rigid Beam
+MatNum = 997
+!-----------------------------------------------OPTIONS
+!KEY1=0			!RIGID LINK
+KEY1=1			!RIGID BEAM
+KEY2=0    !Direct elimination method (default)
+!KEY2=1     !Lagrange multiplier method
+!------------------------------------------------------
+ET,MatNum,MPC184
+KEYOPT,MatNum,1,KEY1	!LINK / BEAM
+KEYOPT,MatNum,2,KEY2    !METHOD 
+R,MatNum		!No Real Constants
+MP,ALPX,MatNum,0.0	!CTE
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!--------------Set NUMBER OF AMPCs
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+
+*DOWHILE,loop
+   !-------------SAVE CURRENT SETUP
+   CM,temp_AREA,AREA
+   CM,temp_LINE,LINE
+   CM,temp_KP,KP
+   CM,temp_NODE,NODE
+   CM,temp_ELEM,ELEM     
+   
+   *GET,KP_max,KP,0,NUM,MAXD   !GET MAX KP NUMBER
+   !------------------SELECT AREAS 1
+   *IF,ARG1,EQ,0,THEN
+   	*MSG,UI
+   	SELECT AREAs
+   
+   	ASEL,S,P
+   *ELSE
+   		Area1=ARG1
+   		Area2=ARG2
+   		ASEL,S,,,Area1,,Area2	
+   *ENDIF
+   CM,A1_Area,AREA
+   !================FOR SET OF AREAS=====================
+   CMSEL,S,A1_Area		!SELECT AREAS
+   LSLA		
+   KSLL			!GET KP associated with AREAS
+   
+   *GET,KP_high,KP,,NUM,MAX  !GET HIGHEST KP NUMBER IN SEL
+   
+   !-------GET KP CENTROID LOCATION
+   KSUM			   !GET KP INFO
+   *GET,centX1,KP,0,CENT,X	
+   *GET,centY1,KP,0,CENT,Y
+   *GET,centZ1,KP,0,CENT,Z
+   
+   !-------Create New KP at KP Centroid Location
+   KP1=KP_max+1
+   KSEL,NONE
+   ESEL,NONE
+   NSEL,NONE
+
+   !-------CREATE "AMPC"
+   K,KP1,centX1,centY1,centZ1 !CREATE NODE AT "CG
+   KATT,998,998,998           !by meshing KP
+   KMESH,ALL
+   *GET,Master,NODE,,NUM,MAX  !Get Master Node
+   NSLA,S,1                   !Select Nodes (Line 74)
+   NSEL,U,,,MASTER            !Uselect Master Node
+   ATT,997
+   *GET,NumND,NODE,0,COUNT
+   *SET,A1ND,               !CLEAR A1ND
+   *VGET,A1ND,NODE,,NLIST   !V11.0 
+   *DO,ink,1,NumND	       !CREATE SPIDER
+   		E,Master,A1ND(ink)
+   *ENDDO
+   loop=loop-1
+   TYPE,1			!RESET TYPE,MAT,REAl
+   MAT,1
+   REAL,1
+   !--------------------------------------------
+   
+   !=======================CLEAN UP=======================
+   !--RESUME TEMPORARY COMPONENTS
+   CMSEL,A,temp_AREA
+   CMSEL,A,temp_LINE
+   CMSEL,A,temp_KP
+   CMSEL,A,temp_NODE
+   CMSEL,A,temp_ELEM   
+   NSEL,S,,,MASTER    !RESELECT MASTER
+   /REPLOT
+*ENDDO
+
+CMSEL,A,temp_Node
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+CMDELE,A1_Area
+	
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

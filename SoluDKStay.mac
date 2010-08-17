@@ -1,0 +1,68 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SoluDKStay.mac
+!B.GUEST
+!DESCRIPTION: This Macro Applys Constraints to the
+!	to the selected keypoints so they don't move in the
+!	next loadstep
+!PRECONDITIONS:
+!	ARG1 = 1 --> UX of selected nodes is constrained
+!		  = 0 --> UX not constrained
+!	ARG2 = 1 --> UY of selected nodes is constrained
+!		  = 0 --> UY not constrained
+!	ARG3 = 1 --> UZ of selected nodes is constrained
+!		  = 0 --> UZ not constrained
+!	ARG4 = 1 --> ROTX of selected nodes is constrained
+!		  = 0 --> ROTX not constrained
+!	ARG5 = 1 --> ROTY of selected nodes is constrained
+!		  = 0 --> ROTY not constrained
+!	ARG6 = 1 --> ROTZ of selected nodes is constrained
+!		  = 0 --> ROTZ not constrained
+!	Required Macros:
+!		<Macros Required to Run>.mac
+!	Required Inputs:
+!		<Other Required Files>.txt/.dat
+!	<Anything else required before run>
+!POSTCONDITIONS'S
+!	soluDKnodes = Component of nodes that now have 
+!		constraints on them
+!	nodeNums = Array of node numbers of nodes that now 
+!		have constraints on them
+!NOTES: 
+!	You can remove constraints in solution using
+!	SoluDKAway.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+NSLK
+
+CM,soluDKStayNodes,node
+
+*get,nodeCount,NODE,,COUNT             !Get Number of Nodes
+nodeNums= $ *VGET,nodeNums,NODE,,NLIST
+*DO,i,1,nodeCount
+	
+	*IF,ARG1,EQ,1,then
+		D,nodeNums(i),UX,UX(nodeNums(i))
+	*endif
+	
+	*IF,ARG2,EQ,1,then
+		D,nodeNums(i),UY,UY(nodeNums(i))
+	*ENDIF
+	
+	*IF,ARG3,EQ,1,then
+		D,nodeNums(i),UZ,UZ(nodeNums(i))
+	*ENDIF
+	
+	*IF,ARG4,EQ,1,then
+		D,nodeNums(i),ROTX,ROTX(nodeNums(i))
+	*endif
+	
+	*IF,ARG5,EQ,1,then
+		D,nodeNums(i),ROTY,ROTY(nodeNums(i))
+	*ENDIF
+	
+	*IF,ARG6,EQ,1,then
+		D,nodeNums(i),ROTZ,ROTZ(nodeNums(i))
+	*ENDIF
+*ENDDO
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

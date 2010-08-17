@@ -1,0 +1,5 @@
+!/GRAPHICS,FULL  
+/PSYMB,LDIV,0
+!/WINDOW,1,LBOT  
+!/REPLOT 
+lplot

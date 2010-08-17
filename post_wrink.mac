@@ -1,0 +1,74 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!post_wrink.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro finds and plots the wrinkling of a membrane (2-D element).
+!PRECONDITIONS:
+!	post_wrink,Set#
+!		Note: Assumes membrane can not take any compressive stress.
+! 			wrinkling Ratio = 1-Smin/Smax
+! 			if Ratio < 0, Smin, Smax both negative, definite wrinkling
+! 			if 0 < Ratio < 1, Smin, Smax both positive
+!				0+ is no wrinkling, 0- is definite wrinkling, closer to 1 might cause wrinkling
+! 			if Ratio > 1, Smin is negative, Smax is positive, definite wrinkling 				
+!	ARG1=set number to get results
+!POSTCONDITIONS:
+!	(default) plots wrinkling ratio of last result set
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+/post1
+! Set Number to Calculate Wrinkling At
+*if,ARG1,le,0,then
+	set,last
+*else
+	set,ARG1
+*endif 
+AVPRIN,0
+
+! Uses mohrs circle to guarantee corect values are used for S1 and S2
+etable,Sx,S,X   
+etable,Sy,S,Y   
+etable,TAUxy,S,XY
+sadd,Sav,Sx,Sy,0.5,0.5,0			! Sav=(Sx*0.5)+(Sy*0.5)+0
+sadd,C1,Sx,Sy,0.5,-0.5,0			! C1=0.5*Sx-0.5*Sy+0=(Sx-Sy)/2
+sexp,C12,C1,,2					! C12=|C1|^2
+sexp,TAUxy2,TAUxy,,2			! TAUxy2=|TAUxy|^2
+sadd,C2,C12,TAUxy2,1,1,0			! C2=C12+TAUxy2
+sexp,TAUmax,C2,,0.5				! TAUmax=|C2|^(1/2)
+sadd,S1,Sav,TAUmax,1,1,0			! S1=Sav+TAUmax
+sadd,S2,Sav,TAUmax,1,-1,0		! S2=Sav-TAUmax
+sexp,S1Ainv,S1,,-1				! S1Ainv=1*|S1|^-1
+smult,S1sign,S1,S1Ainv,1,1		! S1sign=S1*S1Ainv=S1/|S1|
+smult,S1inv,S1sign,S1Ainv,1,1		! S1inv=S1sign*S1Ainv=1/S1
+smult,WRat,S2,S1inv,1,1			! WRat=S2*S1inv=S2/S1
+sadd,Wrink,WRat,,-1,,1			! Wrink=1-WRat
+
+! Smart Plotting of Wrinkling Ratio,   min...0,1,...max
+esort,etab,Wrink,1,0			! Sorts etab in ascending order
+*get,AR31,sort,0,min			! Gets min of last sorted etable
+*get,AR49,sort,0,max			! Gets max of last sorted etable
+AR39=AR49-1
+*if,AR31,lt,0,then
+	*if,AR49,gt,0,and,AR49,lt,1,then
+		/cval,1,6*AR31/7,5*AR31/7,4*AR31/7,3*AR31/7,2*AR31/7,AR31/7,0,AR49
+	*elseif,AR49,gt,1,then
+		/cval,1,2*AR31/3,AR31/3,0,1,1+AR39/4,1+2*AR39/4,1+3*AR39/4,AR49
+	*else
+		/contour,1,,auto
+	*endif
+*elseif,AR31,gt,0,and,AR31,lt,1,then
+	*if,AR49,gt,1,then
+		/cval,1,1,1+AR39/7,1+2*AR39/7,1+3*AR39/7,1+4*AR39/7,1+5*AR39/7,1+6*AR39/7,AR49
+	*else
+		/contour,1,,auto
+	*endif
+*else
+	/contour,1,,auto
+*endif
+! Plots Stress Based Wrinkling
+pletab,Wrink					! Plots Wrinkling
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			post_wrink.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

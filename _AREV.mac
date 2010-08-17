@@ -1,0 +1,57 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_AREV.mac
+!B.Guest - bagvoo@gmail.com
+!DESCRIPTION: Extended Function of AREVERSE function
+!PRECONDITIONS:
+!	Arguments:
+! -ARG1 = First Area to be Reversed 
+!         or <0 for all Areas
+!		ELSE: User Prompted To Pick Areas
+! -ARG2 = LAST area to be reversed
+! -ARG3 = Increment of areas to be reversed
+!POSTCONDITIONS:
+!  A bunch of reversed areas
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/NERR,0
+!PARSAV,ALL,D:\_ANSYS\TEMP\_AREV.txt  !Save Parameters
+CM,temp_Area,AREA  !Save Currently Selected Areas
+
+!GET AREA------------------------
+*IF,ARG1,NE,0,THEN
+	firstArea=ARG1
+*ELSE  !GET AREA FROM USER
+	*MSG,UI !--------SELECT VOLUME
+	SELECT AREAS TO BE DELETED  
+
+	asel,r,p
+*ENDIF
+
+lastArea=ARG2
+incArea = ARG3
+
+!ERROR CHECKING------------------
+
+!Make sure areas are selected
+*IF,firstArea,GT,0,THEN
+	ASEL,S,,,firstArea,lastArea,incArea
+*ENDIF
+
+*GET,numArea,Area,,count !Get Number of Areas
+
+*IF,numArea,EQ,0,AND,firstArea,EQ,0,THEN
+	*GO,:END
+*ENDIF
+
+!Reverse AREASs------------------
+!*GET,numArea,Area,,count  (Moved To Error Checking)
+AA= $ *VGET,AA,AREA,,ALIST
+*DO,i,1,numArea
+	AREVERSE, AA(i)
+*ENDDO
+
+:END
+CMSEL,S,temp_area  !resume previously selected areas
+!PARRES,,D:\_ANSYS\TEMP\_AREV.txt  !Resume Saved Parameters
+/NERR,5
+!:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

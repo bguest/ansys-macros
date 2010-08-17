@@ -1,0 +1,22 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!VM.MAC
+!DESCRIPTION: This macro plots the von-mises stress in 
+!  the selected elements.
+!PRECONDITIONS:
+!   ARG1=Load Step to be ploted
+!     ELSE Last load spep is ploted
+!   ARG2=SubStep to be be ploted
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/POST1
+*IF,ARG1,EQ,0,THEN
+   SET,LAST
+*ELSE
+   SET,ARG1,ARG2
+*ENDIF
+
+/title,Von-Mises Stress
+PLESOL,S,EQV
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

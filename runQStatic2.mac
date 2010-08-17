@@ -1,0 +1,45 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runQStatic2.inp
+!B.GUEST; benguest@gmail.com
+/title,Quasi-Static Analysis
+!DESCRIPTION: This file preforms a qusi-static
+!  Acceleration Analysisi
+!PRECONDITIONS:
+!  Model built and constrained
+!  ARG1=Applied G's
+!   ELSE 1G quasi-static accleration
+!  ARG2=Direction 1->X, 2->Y, 3->Z
+!   ELSE all directions applied.
+!POSTCONDITIONS:
+!  See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*if,ARG1,EQ,0,THEN
+   Gx=1 $ Gy=1 $ Gz=1
+*ELSE
+   Gx=ARG1 $ Gy=ARG1 $ Gz=ARG1
+*ENDIF
+
+/Solution
+ANTYPE,STATIC
+LSDELE,ALL
+
+NumSolves=0
+*IF,ARG2,EQ,1,OR,ARG2,EQ,0,THEN
+  ACEL,Gx*386.09,0,0  !X Load Case
+  NumSolves=NumSolves+1
+  LSWRITE,NumSolve $ *ENDIF
+*IF,ARG2,EQ,2,OR,ARG2,EQ,0,THEN
+  ACEL,0,Gy*386.09,0  !Y Load Case
+  NumSolves=NumSolves+1
+  LSWRITE,NumSolve $ *ENDIF
+*IF,ARG2,EQ,3,OR,ARG2,EQ,0,THEN
+  ACEL,0,0,Gz*386.09  !Z Load Case
+  NumSolves=NumSolves+1
+  LSWRITE,NumSolve $ *ENDIF
+
+/OUTPUT,OUT_Static.ans
+LSSOLVE,1,NumSolves,1
+/OUTPUT
+SAVE
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE.

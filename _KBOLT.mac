@@ -1,0 +1,336 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!KBOLT.MAC
+!DESCRIPTION: THIS MACRO CREATES A "BOLT" LINE ELEMENT
+!   THAT TIES TOGETHER A SURFACE AND A GROUP OF
+!   KEYPOINTS. The ENDs OF THE BOLT ARE DEFINED
+!CAUTIONs: 
+!	BOLT MATNUM = BOLT DIA * 10000
+!PRECONDITIONS:
+!	ARG1=DIAMETER OF BOLT
+!		ELSE DIAMETER=BOLTD (SEE BELOW)
+!	ARG2=BOLT PRELOAD
+!		ELSE PRELOAD=0.8*Sty*PI*D^2/4  !Juvinal,p420
+!	ARG3=SURFACE GAP
+!		ELSE GAP = 0
+!POSTCONDITIONS:
+!	DELT=TEMP DIFF APPLIED TO BOLT
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+FINISH
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+!-------------------------------------------------OPTIONS
+*IF,ARG1,EQ,0,THEN	!Bolt Diameter
+	BoltD=0.19	
+*ELSE
+	BoltD=ARG1	
+*ENDIF
+!-------------------------------STAINLESS_STEEL_A286
+Sty=95000	!Yeild Strength
+BoltA=9.20E-06	!Bolt CTE
+BoltE=2.91E+07	!Bolt Modulus of Elasticity
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+!======================================================
+!998.BEAM4: Temp Beam
+!======================================================
+!3-D Elastic Beam: WIMPY BEAM
+MatNum = 998
+!-------------CUSTOM CROSS-SECTION----------------
+TKZ = .1
+TKY = 0.1
+AA = 10e-3         !AREA
+IYY = 10e-3
+IZZ = 10e-3
+IXX = 10e-3
+TH = 0                 !Theata
+ISTRN = 0  !INITIAL STRAIN
+SHEARZ = 0
+SHEARY = 0
+SPIN = 0
+ADDMAS = 0
+!-------------------------------------------------
+ET,MatNum,BEAM4
+R,MatNum,AA, IZZ,    IYY,    TKZ,  TKY, TH 
+RMORE,ISTRN, IXX, SHEARZ, SHEARY, SPIN, ADDMAS 
+!------------Material Definition: WIMPY----------------
+MP,EX,MatNum,1
+MP,PRXY,MatNum,0.33
+MP,DENS,MatNum,0    !NO DENSITY
+!======================================================
+!899.BEAM4: BOLT
+!======================================================
+!3-D Elastic Beam
+MatNum = BOLTD*10000
+!---------Options: Circular X-Section-------------
+D=BoltD
+TKZ=D
+TKY=D
+AA=PI/4*D**2
+IYY=1/64*PI*D**4
+IZZ=1/64*PI*D**4
+IXX=IYY+IZZ
+TH = 0              !Theata
+ISTRN = 0           !INITIAL STRAIN
+SHEARZ = 0
+SHEARY = 0
+SPIN = 0
+ADDMAS = 0
+!-------------------------------------------------
+ET,MatNum,BEAM4
+R,MatNum,AA, IZZ,    IYY,    TKZ,  TKY, TH 
+RMORE,ISTRN, IXX, SHEARZ, SHEARY, SPIN, ADDMAS 
+!-------Material Definition: STAINLESS_STEEL_A286------           !REF:PRO_E
+MP,EX,MatNum,BOLTE
+MP,PRXY,MatNum,3.10E-01
+MP,DENS,MatNum,2.87E-01/G
+MP,ALPX,MatNum,BOLTA
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+*GET,KP_max,KP,0,NUM,MAXD		!GET MAX KP NUMBER
+
+!====================SELECT STUFF=====================
+*MSG,UI					!AREAS
+SELECT AREAS
+
+ASEL,R,P	
+CM,A1_Area,AREA
+CMSEL,S,temp_AREA
+
+*MSG,UI					!KP1
+SELECT AREA END OF BOLT (Any Keypoint)
+
+KSEL,S,P
+CM,A1_KP1,KP
+CMSEL,S,temp_KP
+
+*MSG,UI					!KEYPOINTS
+SELECT KEYPOINTS
+
+KSEL,R,P	
+CM,A2_KP,KP
+CMSEL,S,temp_KP
+
+*MSG,UI					!KP2
+SELECT KEYPOINT END OF BOLT (Any Keypoint)
+
+KSEL,S,P
+CM,A2_KP2,KP
+CMSEL,S,temp_KP
+
+*ASK,ANS,ENTER 0 TO STOP,1
+*IF,ANS,EQ,0,THEN
+	*GO,:END
+*ENDIF
+!================FOR SET  OF AREAS=================
+CMSEL,S,A1_KP1		!SELECT KP1
+*GET,KP1,KP,,NUM,MAX	!GET KP1 NUMBER
+
+!-------GET KP1 LOCATION
+KSUM			   !GET KP INFO
+*GET,centX1,KP,0,CENT,X	
+*GET,centY1,KP,0,CENT,Y
+*GET,centZ1,KP,0,CENT,Z
+
+CMSEL,S,A1_Area		!SELECT AREAS
+LSLA
+KSLL
+*GET,KP_high,KP,,NUM,MAX  !GET HIGHEST KP NUMBER IN SEL
+
+CMSEL,A,A1_KP1
+LSEL,NONE
+L,KP_High,KP1,1		!Create Line To KP centroid
+LATT,998,998,998
+LMESH,ALL
+
+CM,A1_Line,LINE
+CM,A1_ELEM,ELEM
+CM,A1_NODE,NODE
+
+!-------CREATE "ARIG"
+KSEL,S,,,KP1		!GET NODE AT KP1
+NSLK
+*GET,Master,NODE,,NUM,MAX
+nsla,a,1
+CERIG,Master,ALL,ALL
+
+CM,A1_KP,KP
+
+!================FOR SET OF KPs=================
+CMSEL,S,A2_KP2
+*GET,KP2,KP,0,NUM,MAX	!GET KP2 NUMBER
+
+!-------GET NODE CENTROID LOCATION
+KSUM			   !GET KP2 INFO
+*GET,centX2,KP,0,CENT,X	
+*GET,centY2,KP,0,CENT,Y
+*GET,centZ2,KP,0,CENT,Z
+
+CMSEL,S,A2_KP 	!SELECT KEYPOINTS
+*GET,KP_high,KP,0,NUM,MAX  !GET HIGHEST KP NUMBER IN SEL
+
+!-----------CHECK TO SEE IF ONLY ONE KP SELECTED
+*GET,KP_count,KP,0,COUNT  !GET NUMBER OF NODES
+*IF,KP_Count,EQ,1,THEN
+	LSEL,NONE	!TO PREVENT ERROR AT END
+	ESEL,NONE
+	CM,A2_Line,LINE		
+	CM,A2_ELEM,ELEM
+	CM,A2_NODE,NODE
+*ELSE !-----------------------------
+
+
+CMSEL,A,A2_KP2
+NSLK
+LSEL,NONE
+L,KP_High,KP2,1		!Create Line To KP centroid
+LATT,998,998,998
+LMESH,ALL
+
+CM,A2_Line,LINE
+CM,A2_ELEM,ELEM
+CM,A2_NODE,NODE
+
+!-------CREATE "ARIG"
+KSEL,S,,,KP2		!GET NODE AT KP2
+NSLK
+*GET,Master,NODE,,NUM,MAX
+CMSEL,A,A2_KP		!GET NODES AT KPs
+NSLK
+CERIG,Master,ALL,ALL
+
+CM,A2_KP,KP
+
+*ENDIF !-----------------------------------------
+!=======================CREATE BOLT======================
+LSEL,NONE
+ESEL,NONE
+KSEL,S,,,KP1
+KSEL,A,,,KP2
+L,KP1,KP2,1		!Create Line To KP centroid
+LATT,MatNum,MatNum,MatNum
+LMESH,ALL
+
+CM,Bolt_Line,LINE
+CM,Bolt_elem,ELEM
+
+!-----------------------------------------------SOLUTION
+/SOLU
+Bolt_Area=PI/4*BoltD**2			!BOLT AREA
+Lx=centX1-centX2		!X distance
+LY=centY1-centY2		!Y distance
+Lz=centZ1-centZ2		!Z distance
+BoltL=sqrt(Lx**2+Ly**2+Lz**2)	!"BOLT LENGTH"
+
+*IF,ARG2,EQ,0,THEN !---------PRELOAD CALC
+	PreLoad=0.8*Bolt_Area*Sty
+*ELSE
+	PreLoad=ARG2
+*ENDIF !---------------------------------
+
+*IF,ARG3,EQ,0,THEN !---------"SURFACE GAP"
+	delG=0
+*ELSE
+	delG=ARG3
+*ENDIF !---------------------------------
+
+DelT=delG/BoltA/BoltL + PreLoad/Bolt_Area/BoltE/BoltA
+
+CMSEL,S,Bolt_Elem
+BFE,ALL,TEMP,1,-DelT
+
+/PREP7
+
+:END
+!=======================CLEAN UP=========================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_VOLU
+CMSEL,S,temp_AREA
+CMSEL,S,temp_LINE
+CMSEL,S,temp_KP
+CMSEL,S,temp_NODE
+CMSEL,S,temp_ELEM
+
+*IF,ANS,EQ,1,THEN
+	CMSEL,A,A1_LINE
+	CMSEL,A,A1_KP
+	CMSEL,A,A1_ELEM
+	CMSEL,A,A1_NODE
+	
+	CMSEL,A,A2_LINE
+	CMSEL,A,A2_KP
+	CMSEL,A,A2_ELEM
+	CMSEL,A,A2_NODE
+	
+	CMSEL,A,Bolt_Line
+	CMSEL,A,Bolt_elem
+*ENDIF
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+*IF,ANS,EQ,1,THEN
+	CMDELE,A1_LINE
+	CMDELE,A1_KP
+	CMDELE,A1_ELEM
+	CMDELE,A1_NODE
+	
+	CMDELE,A2_LINE
+	CMDELE,A2_KP
+	CMDELE,A2_ELEM
+	CMDELE,A2_NODE
+	
+	CMDELE,Bolt_Line
+	CMDELE,Bolt_elem
+*ENDIF
+
+*SET,Bolt_Area
+*SET,BoltL
+*SET,centX1
+*SET,centY1
+*SET,centZ1
+*SET,centX2
+*SET,centY2
+*SET,centZ2
+*SET,delG
+*SET,KP_MAX
+*SET,KP_HIGH
+*SET,KP1
+*SET,KP2
+*SET,KP_COUNT
+*SET,LX
+*SET,LY
+*SET,LZ
+*SET,Master
+*SET,TKZ
+*SET,TKY
+*SET,IXX
+*SET,IYY
+*SET,IZZ
+*SET,TH
+*SET,ISTRN
+*SET,SHEARZ
+*SET,SHEARY
+*SET,SPIN
+*SET,Sty
+*SET,ADDMAS
+*SET,BOLTD
+*SET,BOLTA
+*SET,BOLTE
+*SET,PreLoad
+*SET,D
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

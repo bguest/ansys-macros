@@ -1,0 +1,191 @@
+! *****************************************************************************
+!
+!                  Sample START.ANS file provided by Ansys, Inc.
+!                     for the ANSYS Program
+!                                    9/08/97
+!
+! All of the commands included in this file are commented.  If you want to
+! have any command executed at ANSYS start-up, simply remove the ! from the
+! beginning of the line.
+!
+!
+!/NOPR                            ! Suppresses printout of the START.ANS file
+!
+!
+! Suggested ANSYS abbreviations for the Toolbar:
+!
+!*ABBR,REPLOT  ,/REPLOT           ! Replots the last graphics display
+!*ABBR,ISO     ,/VIEW,,1,1,1      ! Changes the view to isometric
+!*ABBR,FRONT   ,/VIEW,,0,0,1      ! Changes the view to front view 
+!*ABBR,VECTOR  ,/DEVICE,VECT,ON   ! Specifies vector mode for graphics displays
+!*ABBR,RASTER  ,/DEVICE,VECT,OFF  ! Specifies raster mode for graphics displays
+!*ABBR,NOERASE ,/NOERASE          ! Does not erase the screen between plots
+!*ABBR,ERASE   ,/ERASE            ! Erases the screen between plots
+!*ABBR,HID_LINE,Fnc_Pl_Hidden     ! Brings up dialog box for hidden-line options
+!*ABBR,INFO-ON ,/PLOPTS,INFO,ON   ! Turn the legend information on
+!*ABBR,INFO-OFF,/PLOPTS,INFO,OFF  ! Turn the legend information off
+!*abbr,RESU_ABR,Fnc_ABBRESU       ! Brings up a dialog box to read an
+                                  !  abbreviation file
+!
+!
+! The next abbreviations are system-dependent:
+!
+! To invoke a system editor: 
+!*ABBR,SYS_EDIT,/SYS,xterm -title 'ANSYS  vi_Editor' -e vi &    ! UNIX
+!*ABBR,SYS_EDIT,/SYS,start notepad                              ! Windows-NT
+!
+! To bring up a system calculator:
+!*ABBR,CALCULAT,/SYS,xcalc -stipple -geom -0+0 &                ! UNIX
+!*ABBR,CALCULAT,/SYS,start calc                                 ! Windows-NT
+!*ABBR,CALCLTR ,/SYS,xhpcalc -geom -0+0 &                       ! HP
+!
+!
+! It is possible to have multiple toolbars by having different abbreviation
+! files.  (The files must be available in a directory on your system.)  The way
+! to access them is to have the following type of abbreviations defined INSIDE
+! the initial (main) abbreviation file.
+!
+!*ABBR,MAINTBAR,ABBRESUM,NEW,MAINTBAR,ABBR   ! Restores the main Toolbar
+!*ABBR,GRPHTBAR,ABBRESUM,NEW,GRPHTBAR,ABBR   ! Restores a Toolbar customized
+                                             !  for graphics manipulations
+!*ABBR,POSTTBAR,ABBRESUM,NEW,POSTTBAR,ABBR   ! Restores a Toolbar customized
+                                             !  for postprocessing
+!
+!
+! There are five predefined ANSYS abbreviations in the Toolbar.  The following
+! commands can be used to remove them.
+!
+!*ABBR, SAVE_DB
+!*ABBR, RESUM_DB
+!*ABBR, QUIT
+!*ABBR, POWRGRPH
+!*ABBR, ANSYSWEB
+!
+! The following commands can be used to change the order by turning off above.
+!
+!*ABBR, SAVE_DB , SAVE
+!*ABBR, QUIT    , Fnc_/EXIT
+!*ABBR, RESUM_DB, RESUME
+!*ABBR, POWRGRPH, Fnc_/GRAPHICS
+!*ABBR, ANSYSWEB, Fnc_HomePage
+!
+! Initial ANSYS parameters:
+!PI=ACOS(-1)
+!
+!
+! The /MSTART command controls which GUI components initially appear
+! at program start-up.
+!
+!/MSTART,MAIN,OFF    ! Suppresses Main Menu       (ON by default)
+!/MSTART,INPUT,OFF   ! Suppresses Input Window    (ON by default)
+!/MSTART,GRPH,OFF    ! Suppresses Graphics Window (ON by default)
+!/MSTART,TOOL,OFF    ! Suppresses Toolbar         (ON by default)
+!
+!/MSTART,ZOOM,ON     ! Displays Pan-Zoom-Rotate dialog box
+!/MSTART,WORK,ON     ! Displays Offset Working Plane dialog box
+!/MSTART,WPSET,ON    ! Displays Working Plane Settings dialog box
+!/MSTART,ABBR,ON     ! Displays Edit Abbreviations dialog box
+!/MSTART,PARM,ON     ! Displays Scalar Parameters dialog box
+!/MSTART,SELE,ON     ! Displays Select Entities dialog box
+!/MSTART,ANNO,ON     ! Displays Annotation dialog box
+!/MSTART,HARD,ON     ! Displays Hard Copy dialog box
+!/MSTART,HELP,ON     ! Displays ANSYS Help System
+!
+! The /MPLIB command controls the default path used to find and display 
+! the material library files.
+!
+! UNIX example:
+!/MPLIB,READ,/ansys_inc/ansys60/matlib
+!
+! PC example:
+!/MPLIB,READ,"C:\program files\ansys inc\ansys60\matlib"
+!
+!/GOPR             ! Activates the printout previously suppressed by /NOPR
+!
+!
+
+/MSTART,UTIL,1			! old version interface
+
+*ABBR, SAVE_DB
+*ABBR, RESUM_DB
+*ABBR, QUIT
+*ABBR, POWRGRPH
+*ABBR, POWR_OFF
+*ABBR, POWR_ON
+*ABBR, HELP
+*ABBR, ANSYSWEB
+*ABBR, e-CAE                                               
+*ABB,RASTER                                          
+*ABB,VECTOR                                          
+*ABB,BACK_OFF
+*ABB,BACK_ON                                                                                                                               
+*ABB,REPLOT                                                  
+*ABB,TRIAD_LT
+*ABB,TRIAD_LT
+*ABB,TRI_ORIG
+*ABB,TRI_ORIG                                        
+*ABB,FORMAT                                             
+*ABB,NO_LDIV 
+*ABB,LDIV 
+*ABB,_LDIV
+*ABB,L_DIV
+*ABB,WHITE                                   
+*ABB,BLACK 
+*ABB,CYL_X
+*ABB,CYL_Y
+*ABB,CYL_Z
+*ABB,HID_LINE
+*ABB,GLOBAL
+*ABB,CARTESIAN
+
+!*ABBR, POWR_OFF,/GRAPHICS,FULL
+*ABBR, POWR_OFF,powroff.mac
+!*ABBR, POWR_ON,/GRAPHICS,POWER
+*ABBR, POWR_ON,powron.mac
+!*ABB,HELP    ,SIMUTIL                                                     
+!*ABB,RASTER  ,/DEVICE,VECT,OFF
+*ABB,RASTER  ,RASTER1.mac                                          
+!*ABB,VECTOR  ,/DEVICE,VECT,ON 
+*ABB,VECTOR  ,VECTOR1.mac                                                                                                                                                                   
+!*ABB,REPLOT  ,/REPLOT                                                     
+!*ABB,TRIAD_LT,/TRIAD,LTOP
+*ABB,TRIAD_LT,triadtop.mac
+!*ABB,TRI_ORIG,/TRIAD,ORIG
+*ABB,TRI_ORIG,triadorig.mac                                          
+!*ABB,FORMAT  ,/PLOPTS,INFO,2                                                 
+!*ABB,NO_LDIV ,/PSYMB,LDIV,-1
+*ABB,NO_LDIV ,NOLDIV.mac
+!*ABB,LDIV    ,/PSYMB,LDIV,0
+!*ABB,_LDIV    ,LDIV1.mac
+*ABB,L_DIV    ,L_DIV1.mac
+!*ABB,BACK_OFF,/COLOR, PBAK,OFF 
+*ABB,BACK_OFF,BACKOFF.mac
+!*ABB,BACK_ON ,/COLOR, PBAK,ON,1,BLUE
+*ABB,BACK_ON ,backon.mac
+!*ABB,BLACK   ,/CMAP,BLACK,TXT,E:\2analysis_tools\ANSYS_MACROS
+*ABB,BLACK   ,BAC.mac 
+!*ABB,WHITE   ,/CMAP,WHITE,TXT,E:\2analysis_tools\ANSYS_MACROS                                    
+*ABB,WHITE   ,PPT.mac
+*ABB,CYL_X, CYLX.mac
+*ABB,CYL_Y, CYLY.mac
+*ABB,CYL_Z, CYLZ.mac
+*ABB,GLOBAL, GLOBAL_CARTESIAN.mac
+
+
+/PLOPTS,INFO,AUTO
+
+! /UIS,PBAK,0
+
+! Initial ANSYS parameters:
+
+PI=ACOS(-1)
+
+! The /MSTART command controls which GUI components initially appear
+! at program start-up.
+
+/MSTART,ZOOM,ON     ! Brings up the Pan-Zoom-Rotate dialog box
+
+! /CMAP,WHITE.TXT
+
+! /MENU,ON
+! ***********************  End of sample START.ANS file  ***********************

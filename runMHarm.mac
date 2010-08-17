@@ -1,0 +1,109 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runMHarm.mac
+!benguest@gmail.com
+!DESCRIPTION: This macro preforms a Mode Superposition
+!  Harmonic analysis on the slected model
+!PRECONDITIONS:
+!  Components of of nodes to be constrained for base
+!    moemenent specified as "BaseNodes"
+!  ARG1 = Imput Direction (1=X,2=Y,3=Z)
+!    ELSE user is prompted to enter a direction
+!  ARG2 = Number of Modes ELSE:
+     NModes=30
+!  ARG3 = Start Frequence: ELSE:
+     FMin=0
+!  ARG4 = End Frequency ELSE:
+     FMax=2000
+!  ARG5 = Number of Frequency Points per Mode, ELSE:
+     NumPts=250
+!  ARG6 = Structural Damping Ration (DMPRAT)
+    DampRatio=0.024
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_Node,Node
+!-----------------------------------------GED DIRECTION
+*IF,ARG1,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG1
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='UX'
+   Cdirect1='UY' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='UY'
+   Cdirect1='UX' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='UZ'
+   Cdirect1='UX' $ Cdirect2='UY'
+*ENDIF
+!--------------------------------SETUP
+*IF,ARG2,NE,0,THEN !Set Number of Modes
+   NModes=ARG2
+*ENDIF
+
+*IF,ARG3,NE,0,THEN !Set Minimum Frequency
+   FMin=ARG3
+*ENDIF
+
+*IF,ARG4,NE,0,THEN !Set Maximum Frequency
+   FMin=ARG4
+*ENDIF
+
+*IF,ARG5,NE,0,THEN !NumPts=(defined above)
+   NumPts=ARG5
+*ENDIF
+
+*IF,ARG6,NE,0,THEN !DampRatio Defined Above
+  DampRatio=ARG6
+*ENDIF
+!------------------------------------------------------
+/TITLE,Superpostion Harmonic Analysis (%direction%)
+!=================MODAL ANALYSIS=======================
+/solu
+/nerr,,2**30
+ANTYPE,MODAL                      ! Modal analysis
+MODOPT,LANB,NModes,FMin,FMax      ! Reduced method
+MXPAND,NModes,FMin,FMax,YES       !EXPAND MODES
+!---------------Boundary Conditions--------------------
+CMSEL,S,BaseNodes          !Get Base Nodes
+M,ALL,ALL                ! Masters
+TOTAL,
+D,ALL,ALL                      ! Constraints
+CMSEL,A,temp_Node
+!------------------------------PREFORM ANALYSIS
+/OUTPUT,OUT_Modes,out,,
+SAVE
+SOLVE                       ! Initiate modal solution
+/OUTPUT
+FINISH
+!=========Superposition Harmonic Solution==============
+!  Obtain the Mode Superposition Harmonic Solution
+/SOLU                      ! Enter SOLUTION
+ANTYPE,HARMIC              ! Harmonic analysis
+HROPT,MSUP,                ! Mode superposition method; number of modes to use
+HROUT,OFF,ON               ! Harmonic analysis output options; cluster option
+DMPRAT,DampRatio           ! Damping Ratio
+!LVSCALE,                   ! Scale factor for loads from modal analysis
+!======================================================
+!Boundary Conditions
+!------------------------------------------------------
+CMSEL,S,BaseNodes
+DDELE,ALL,ALL
+D,ALL,Cdirect1,0,,,,Cdirect2,ROTX,ROTY,ROTZ
+D,ALL,direction,1
+ALLSEL
+!------------------------------------------------------
+HARFRQ,FMin,FMax           ! Forcing frequency range
+DMPRAT,DampRatio           ! Damping Ratio
+!MDAMP,...                 ! Modal damping ratios
+NSUBST,NumPts              ! Number of harmonic solutions
+!KBC,...                    ! Ramped or stepped loads
+/OUTPUT,OUT_MHarm,out,
+SAVE
+SOLVE                      ! Initiate solution
+/OUTPUT
+:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

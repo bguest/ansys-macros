@@ -1,0 +1,18 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_KMESH.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: Meshes A Keypoint with an element
+!PRECONDITIONS:
+!	ARG1 = Keypoint to be Meshed
+!	ARG2 = Material number of keypoint to be meshed
+!NOTES: 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_KP,KP
+
+KSEL,S,,,ARG1        !Bracket Mass.
+KATT,ARG2,ARG2,ARG2,0
+KMESH,ALL
+
+CMSEL,S,temp_KP,KP
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

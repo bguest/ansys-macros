@@ -1,0 +1,82 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!P26PSDAccl.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro plots and acceleration PSD
+!   curve given a node
+!PRECONDITIONS:
+!   ARG1 = SMICS NUMBER
+!      ELSE user is prompted to pick SMCIS number
+!   ARG2 = Element for data
+!		ELSE user is prompted to pick element
+!   ARG3 = Reference number of resulting variable
+!      ELSE reference number of resulting variable = 5
+!   ARG4 = Points per frequency
+!      ELSE Pts per frequency = 5
+!POSTCONDITIONS:
+!   PLOT OF PSD is displayed on screen
+!   PSD curve is output to file "OUT_psd_accl.out"
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!------------------------------------SAVE CURRENT SETUP
+CM,tempElem,ELEM
+!----------------------------------------------GET NODE
+*IF,ARG1,EQ,0,THEN
+   *ASK,smiscNum,SMISC NUMBER,1
+*ELSE
+   smiscNum=ARG1
+*ENDIF
+!-----------------------------------------GED DIRECTION
+*IF,ARG2,EQ,0,THEN
+   *MSG,UI
+   SELECT Element
+   
+   ESEL,R,p
+   *GET,elemNum,ELEM,,NUM,MAX
+   CMSEL,S,tempElem
+*ELSE
+   elemNum=ARG2
+*ENDIF
+!--------------------------Resulting Reference Variable
+IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
+*IF,ARG3,EQ,0,THEN
+   IRsmisc = 5
+*ELSE
+   IRsmisc = ARG3
+*ENDIF
+!-------------------------------------PTS Per Frequency
+*IF,ARG4,EQ,0,THEN
+   FrqPts = 5
+*ELSE
+   FrqPts = ARG4
+*ENDIF
+
+!===================PSD POST-PROCESSING================
+/GROPT,LOGX,ON  
+/GROPT,LOGY,ON
+! Calculate Response PSD
+/POST26          ! Enter POST26
+STORE,PSD,FrqPts ! Store frequency vector (variable 1)
+
+ESOL, IAsmisc,elemNum,NELEM(elemNum,1),SMISC,smiscNum, 'psdSMISC'
+RPSD, IRsmisc, IAsmisc, ,0, 1, 'psdSMISC'
+
+PLVAR,IRsmisc !Plot
+
+!------------------------PRINT
+*GET,NUM_PTS,VARI,,NSETS 
+HZ=    $ *DIM,HZ,ARRAY,NUM_PTS
+FResp= $ *DIM,FResp,ARRAY,NUM_PTS
+
+VGET,HZ,1,0.0
+VGET,FResp,IRsmisc,0.0
+
+*CFOPEN,OUT_P26Smisc,out
+*VWRITE,HZ(1),FResp(1),
+(E15.5,E15.5)
+*CFCLOS
+
+_FRONT
+_FIT
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,19 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LATT.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: Basicly LATT,ARG1,ARG1,ARG1
+!PRECONDITIONS: 
+!   -Lines Selected
+!   ARG1 = Atribute Number to be assinged
+!POSTCONDITIONS:
+!   -Selected Lines Have Type, Mat and Real Atributes of
+!    ARG1
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/NOPR		   !PREVENT ERROR MESSAGES
+LATT,ARG1,ARG1,ARG1
+/REPLOT
+/GOPR			!TURN ERROR MESSAGES ON
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

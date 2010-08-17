@@ -1,0 +1,105 @@
+/PMACRO
+!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runRandom.mac
+!Ben Guest: benguest@gmail.com
+!DESCRIPTION: This macro preforms a random vibration 
+!  anlysis
+!PRECONDITIONS:
+!  Component of nodes to be constrained for base
+!    movement specified as "BaseNodes" 
+!  ARG1 = Imput Direction (1=X,2=Y,3=Z)
+!    ELSE user is prompted to enter a direction
+!  ARG2 = Number of Modes ELSE:
+     NModes=200
+!  ARG3 = Start Frequence: ELSE:
+     FMin=0
+!  ARG4 = End Frequency ELSE:
+     FMax=0
+!  ARG5 = Structural Damping Ration (DMPRAT)
+     DampRatio=0.10
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_Nodes,Node
+!-----------------------------------------GED DIRECTION
+*IF,ARG1,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG1
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='UX'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='UY'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='UZ'
+*ENDIF
+!--------------------------------SETUP
+*IF,ARG2,NE,0,THEN !Set Number of Modes
+   NModes=ARG2
+*ENDIF
+
+*IF,ARG3,NE,0,THEN !Set Minimum Frequency
+   FMin=ARG3
+*ENDIF
+
+*IF,ARG4,NE,0,THEN !Set Maximum Frequency
+   FMin=ARG4
+*ENDIF
+!------------------------------------------------------
+/TITLE,RANDOM VIBRATION (%direction%)
+!=================MODAL ANALYSIS=======================
+/solu
+/nerr,,99999999
+!---------------Boundary Conditions--------------------
+CMSEL,S,BaseNodes          !Get Base Nodes
+D,All,direction
+CMSEL,A,temp_Nodes
+!------------------------------PREFORM ANALYSIS
+ANTYPE,MODAL      !SET ANALYSIS TYPE TO MODAL
+MODOPT,LANB,NModes,FMin,FMax   !Modal Options
+MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
+!-------------------------------------------------
+/OUTPUT,OUT_Modes,out,,
+SAVE
+SOLVE
+SAVE
+/OUTPUT
+!=================Random Analysis=================
+FINISH
+/solution
+ANTYPE,SPECTR       
+SPOPT,PSD,NModes,YES 
+DMPRAT, DampRatio              !DAMPENING RATIO
+
+!-----------------DEFINE INPUT DIRECTION----------
+TabNum=1       !SET PSD TABLE NUMBER
+PSDFRQ                ! Erase tables
+PSDUNIT,TabNum,ACCG,386.089    !IPS UNIT SYSTEM
+
+CMSEL,S,BaseNodes	!Get Base Nodes
+D,ALL,Direction,1 !SET DIRECTION OF INPUT
+CMSEL,S,temp_Nodes
+
+/input,ANSYS_RPSD.inp
+PFACT,TabNum,BASE  !Calculate Participation Factors
+
+CMSEL,S,BaseNodes	!Get Base Nodes
+D,ALL,Direction,0
+CMSEL,s,temp_Nodes
+
+!-------------------------------------------------
+PSDRES, DISP, REL	 !Calculate Displacements at run
+!PSDRES, VELO, ABS !Calculate Velocites at run
+PSDRES, ACEL, ABS  !Calculate Acclerations at run
+PSDCOM,0.0001,Nmodes    !Combine Modes using PSD method
+!-------------------SOLVE-------------------------
+/OUTPUT,OUT_Random,out,,
+SAVE
+SOLVE
+/OUTPUT
+SAVE
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

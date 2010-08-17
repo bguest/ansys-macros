@@ -1,0 +1,83 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!cut_circ.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro cuts a circle into an area and puts a line cross hair in it.
+!	Use working planes to direct the cut and cross hair directions.
+!PRECONDITIONS:
+!	only select the one area I want to cut
+!	CSYS,4 coordinate system is working plane
+!	ARG1=radius of circle to cut, default = 0.125*in/2
+!	ARG2=length of volume to cut with, default = 10
+!	ARG3=name of center KP number, _K_cut_%ARG3%, default = _K_cut_0
+!	ARG4=0 give material properties to lines (default), else dont
+!POSTCONDITIONS:
+!	
+!WARNINGS:
+!	
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+fini
+/prep7
+
+! Gets active csys
+*get,ActiveCSYSCut,active,0,csys
+csys,4
+
+! Current areas to work with
+cm,a_cuts_temp,area
+
+! Defaults
+*if,ARG1,eq,0,then
+	ARG1=0.125*in/2
+*endif
+*if,ARG2,eq,0,then
+	ARG2=10*in
+*endif
+
+! I can add a do-loop, use anext type or masked array to go through area by area
+
+! Gets material property of selected area
+*get,ArNum,area,0,num,max
+*get,ArMat,area,ArNum,attr,mat
+
+! Creates volumes to cut with (grows in +Z direction)
+vsel,none
+cyl4,0,0,ARG1,,,,ARG2
+wprota,,,-90
+vsbw,all
+wprota,,90,
+vsbw,all
+aslv
+cm,A_CutWith,area
+cmsel,a,a_cuts_temp
+vdele,all
+
+! Cuts areas
+ksel,none
+asba,a_cuts_temp,A_CutWith,,delete,delete
+cmdele,A_CutWith
+
+! Reassigns material properties
+aatt,ArMat,ArMat,ArMat
+
+! Assigns line properties
+wprota,,-90,
+wprota,,,90
+ksel,r,loc,x,-1e-4,1e-4
+ksel,r,loc,y,-1e-4,1e-4
+_K_cut_%ARG3%=kp(0,0,0)
+lslk
+asll
+lsla
+*if,ARG4,eq,0,then
+	latt,ArMat+100,ArMat+100,ArMat+100
+*endif
+
+! Back to active csys
+csys,ActiveCSYSCut
+cmdele,a_cuts_temp
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			cut_circ.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

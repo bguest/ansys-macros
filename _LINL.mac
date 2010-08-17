@@ -1,0 +1,152 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LINL.mac
+!B.GUEST: benguest@gmail.com
+!DESCRIPTION: This finds the intersection line between
+!   two lines. It improves on the functionality of 
+!   the LINL function.
+!   (COULD IMPROVE BY USING *VOPER)
+!PRECONDITIONS:
+!   ARG1=FIRST LINE
+!     ELSE: user it prompted to select a line
+!   ARG2=SECOND LINE
+!     ELSE: user it prompted to select a line
+!   ARG3=Keypoint Number of Point Created
+!POSTCONDITIONS: 
+!   See disctiption
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+!==========================================GET STUFF
+*IF,ARG1,EQ,0,THEN !-------------------Select Lines
+   *MSG,UI
+   SELECT Two (2) LINES
+   
+   LSEL,R,P
+   *GET,line1,LINE,,NUM,MAX !GET SELECTED LINE NUMBER
+*ELSE
+   line1=ARG1
+*ENDIF
+
+*IF,ARG2,EQ,0,THEN !-----------------SECOND LINE
+
+   *GET,line2,LINE,,NUM,MIN !GET SELECTED LINE NUMBER
+*ELSE
+   line2=ARG2
+*ENDIF
+CMSEL,S,TEMP_LINE
+
+*IF,ARG3,EQ,0,THEN !----------------------OUT KP
+	kpOut = ' '
+*ELSE
+  kpOut = ARG3
+*ENDIF
+
+!==========================================PROGRAM
+
+*GET,KP1,LINE,Line1,KP,1   !GET KP AT ONE END
+*DIM,P1,ARRAY,3
+*GET,P1(1),KP,KP1,LOC,X    !GET LOCATION OF KP1
+*GET,P1(2),KP,KP1,LOC,Y
+*GET,P1(3),KP,KP1,LOC,Z
+
+*GET,KP2,LINE,Line1,KP,2   !GET KP AT OTHER END
+*DIM,P2,ARRAY,3
+*GET,P2(1),KP,KP2,LOC,X    !GET LOCATION OF KP2
+*GET,P2(2),KP,KP2,LOC,Y
+*GET,P2(3),KP,KP2,LOC,Z
+
+*GET,KP3,LINE,Line2,KP,1   !GET KP AT ONE END
+*DIM,P3,ARRAY,3
+!*GET,Par,KP,N,Item1,IT1NUM,
+*GET,P3(1),KP,KP3,LOC,X    !GET LOCATION OF KP3
+*GET,P3(2),KP,KP3,LOC,Y
+*GET,P3(3),KP,KP3,LOC,Z
+
+*GET,KP4,LINE,Line2,KP,2   !GET KP AT OTHER END
+*DIM,P4,ARRAY,3
+*GET,P4(1),KP,KP4,LOC,X    !GET LOCATION OF KP4
+*GET,P4(2),KP,KP4,LOC,Y
+*GET,P4(3),KP,KP4,LOC,Z
+!=================================================MATH
+!p13=p1-p3 
+*DIM,P13,ARRAY,3
+p13(1)=p1(1)-p3(1)
+p13(2)=p1(2)-p3(2)
+p13(3)=p1(3)-p3(3)
+!p43=p4-p3
+*DIM,P43,ARRAY,3
+p43(1)=p4(1)-p3(1)
+p43(2)=p4(2)-p3(2)
+p43(3)=p4(3)-p3(3)
+*IF,p43(1),EQ,0,AND,p43(2),EQ,0,THEN
+   *IF,p43(3),EQ,0,THEN
+      *MSG,WRN
+      error Could not compute LineLineIntersect
+   *ENDIF
+*ENDIF
+
+!p21=p2-p1;
+*DIM,P21,ARRAY,3
+p21(1)=p2(1)-p1(1)
+p21(2)=p2(2)-p1(2)
+p21(3)=p2(3)-p1(3)
+
+*IF,P21(1),EQ,0,AND,(2),EQ,0,THEN
+   *IF,P21(3),EQ,0,THEN
+      *MSG,WRN
+      error Could not compute LineLineIntersect
+   *ENDIF
+*ENDIF
+
+d1343=(p13(1)*p43(1))+(p13(2)*p43(2))+(p13(3)*p43(3))
+d4321=(p43(1)*p21(1))+(p43(2)*p21(2))+(p43(3)*p21(3))
+d1321=(p13(1)*p21(1))+(p13(2)*p21(2))+(p13(3)*p21(3))
+d4343=(p43(1)*p43(1))+(p43(2)*p43(2))+(p43(3)*p43(3))
+d2121=(p21(1)*p21(1))+(p21(2)*p21(2))+(p21(3)*p21(3))
+
+denom=(d2121*d4343)-(d4321*d4321)
+
+*IF,denom,EQ,0,THEN
+   *MSG,WRN
+   error Could not compute LineLineIntersect
+*ENDIF
+
+numer=(d1343*d4321)-(d1321*d4343)
+
+mua=numer/denom
+mub=(d1343+d4321*mua)/d4343
+
+!pa=p1 + mua * p21;
+PA_= $ *DIM,PA_,ARRAY,3
+pa_(1)=p1(1)+(mua*p21(1))
+pa_(2)=p1(2)+(mua*p21(2))
+pa_(3)=p1(3)+(mua*p21(3))
+!pb=p3 + mub * p43;
+PB= $ *DIM,PB,ARRAY,3
+pb(1)=p3(1)+(mub*p43(1))
+pb(2)=p3(2)+(mub*p43(2))
+pb(3)=p3(3)+(mub*p43(3))
+
+K,kpOut,PA_(1),PA_(2),PA_(3)  !CREATE KP ON LINE1
+*IF,PA_(1),NE,PB(1),AND,PA_(2),NE,PB(2),THEN
+   K,kpOut,PB(1),PB(2),PB(3)  !CREATE KP ON LINE2
+*ELSEIF,PA_(3),NE,PB(3),THEN
+   K,kpOut,PB(1),PB(2),PB(3)  !CREATE KP ON LINE2
+*ENDIF
+
+!=======================CLEAN UP=======================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+!--DELETE PARAMETERS
+*SET,KP1   $ *SET,KP2   $ *SET,KP3   $ *SET,KP4
+*SET,P1    $ *SET,P2    $ *SET,P3    $ *SET,P4
+*SET,P13   $ *SET,P43   $ *SET,P21
+*SET,numer $ *SET,denom
+*SET,d1343 $ *SET,d4321 $ *SET,d1321 $ *SET,d4343
+*SET,d2121 $ *SET,line1 $ *SET,line2
+*SET,PB    $ *SET,mua   $ *SET,mub
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

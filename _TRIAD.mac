@@ -1,0 +1,41 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_TRIAD.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: Positions the Triad On Screen in much the
+!	same way as /TRI,<positions> but adds a replot after
+!	issuing the comand.
+!PRECONDITIONS:
+!	ARG1 = Location of The Traiad
+!		- --> Original Position
+!		0 --> OFF
+!		1 --> Top Left
+!		2 --> Top Right
+!		3 --> Botom Left
+!		4 --> Botom Right
+!	Required Macros:
+!		NONE
+!	Required Inputs:
+!		NONE
+!POSTCONDITIONS'S
+!		See Description
+!NOTES: 
+!		NONE
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*IF,ARG1,LT,0,THEN
+	/TRIAD,ORIG
+*ELSEIF,ARG1,EQ,0,THEN
+	/TRIAD,OFF
+*ELSEIF,ARG1,EQ,1,THEN
+	/TRIAD,LTOP
+*ELSEIF,ARG1,EQ,2,THEN
+	/TRIAD,RTOP
+*ELSEIF,ARG1,EQ,3,THEN
+	/TRIAD,LBOT
+*ELSEIF,ARG1,EQ,4,THEN
+	/TRIAD,RBOT
+*ENDIF
+
+/REPLOT 
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

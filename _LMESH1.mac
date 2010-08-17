@@ -1,0 +1,56 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LMESH1.mac
+!DESCRIPTION: This macro meshes lines such that the
+!  nodes are correctly numbered.
+!PRECONDITIONS:
+!  ARG1 = Material Number of Line to be meshed
+!     ELSE, User is prompted for mat number
+!  NdBase = Previously Defined number
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/NOPR
+/PREP7
+!-------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+
+*IF,ARG1,EQ,0,THEN !---------------GET MatNum
+   *ASK,ans,ENTER MAT NUMBER,0
+   MNum=ans
+*ELSE
+   MNum=ARG1
+*ENDIF 
+
+*IF,MNum,EQ,0,THEN      !-----IF NO MatNum Provided
+   *MSG,WRN             !Warn User
+   NO MATNUM PROVIDED
+                        !Do Nothing
+*ELSE                   !----ELSE
+   *MSG,UI
+   SELECT LINE TO BE MESHED
+   
+   LSEL,r,p
+   NdBase=NdBase+10
+   NUMSTR,NODE,NdBase
+   LESIZE,ALL,,,1
+   /input,mat,inp
+   LATT,MNum,MNum,MNum   
+   LMESH,ALL
+*ENDIF
+
+!=======================CLEAN UP=======================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,A,temp_LINE
+/REPLOT
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_LINE
+
+!--DELETE PARAMETERS
+*SET,MNum
+*SET,ans
+/GOPR
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

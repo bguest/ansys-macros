@@ -1,0 +1,29 @@
+
+fini
+/solu
+/output,outfile.txt
+
+
+nmodes=3
+
+antype,modal
+! outpr,basic,all		! To Get Participation Factors
+mxpand,nmodes,,,no
+
+
+! modopt,lanb,16,,,,off,0	! Lanczos - Direct Method
+! modopt,lanb,16,,,,off,1	! Lanczos - Lagrange Method Quick
+modopt,lanb,nmodes,,,,off,2	! Lanczos - Lagrange Method Accurate
+
+! lumpm,on	! Lumped Mass On
+lumpm,off	! Default
+
+save
+solve
+fini
+
+/post1
+/output
+/output,modes.txt
+set,list
+/output

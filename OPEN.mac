@@ -1,0 +1,25 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!OPEN.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro opens a database without 
+!   Closing Ansys
+!PRECONDITIONS:
+!   ARG1=Database to be opened (must be in ' ')
+!		ARG2= Supress Resume Flag
+!POSTCONDITIONS:
+!   See Description
+!   DBname= Name of opened database
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SAVE,saved,db,,ALL
+FINISH
+/CLEAR          ! Clear the database
+DBname=ARG1
+/FILNAME,DBname ! Change jobname
+*IF,ARG2,EQ,0,THEN
+	RESUME          ! Restore jobname
+	/AUTO,1		! Fit to display
+	/REPLOT
+*ENDIF
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,91 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runFHarm.mac
+!benguest@gmail.com
+!DESCRIPTION: This macro preforms a full method
+!  harmonic analysis
+!PRECONDITIONS:
+!  Component of nodes to be constrained for base
+!    movement specified as "BaseNodes" has been
+!    specified
+!  ARG1 = Results Direction (1=X,2=Y,3=Z)
+!    ELSE user is prompted to enter a direction
+!  ARG2 = Start Frequency, ELSE:
+     FMin=0
+!  ARG3 = End Frequency, ELSE:
+     FMax=2000
+!  ARG4 = Number of Frequency Points, ELSE:
+     NumPts=1000
+!  ARG5 = Structural Damping Ration (DMPRAT)
+     DampRatio=0.024
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/prep7
+CM,temp_Node,Node
+!-----------------------------------------GED DIRECTION
+*IF,ARG1,EQ,0,THEN
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+*ELSE
+   ANS = ARG1
+*ENDIF
+
+*IF,ANS,EQ,1,THEN
+   direction='UX'
+   Cdirect1='UY' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,2,THEN
+   direction='UY'
+   Cdirect1='UX' $ Cdirect2='UZ'
+*ELSEIF,ANS,EQ,3,THEN
+   direction='UZ'
+   Cdirect1='UX' $ Cdirect2='UY'
+*ENDIF
+!--------------------------------SETUP
+*IF,ARG2,EQ,0,THEN !Set Minimum Frequency
+!   FMin=0
+*ELSE
+   FMin=ARG2
+*ENDIF
+
+*IF,ARG3,EQ,0,THEN !Set Maximum Frequency
+!   FMax=(defined above)
+*ELSE
+   FMin=ARG3
+*ENDIF
+
+*IF,ARG4,NE,0,THEN !NumPts=(defined above)
+   NumPts=ARG4
+*ENDIF
+FINISH $ /CONFIG,NRES,2*NumPts $ /PREP7
+
+*IF,ARG5,NE,0,THEN !DampRatio Defined Above
+  DampRatio=ARG5
+*ENDIF
+!------------------------------------------------------
+/TITLE,Full Harmonic Analysis (%direction%)
+!======================================================
+!Boundary Conditions
+!------------------------------------------------------
+CMSEL,S,BaseNodes
+DDELE,ALL,ALL
+D,ALL,Cdirect1,0,,,,Cdirect2,ROTX,ROTY,ROTZ
+D,ALL,direction,1
+ALLSEL
+!======================================================
+!Solution
+!------------------------------------------------------
+/SOLU
+ANTYPE,HARMIC             ! Harmonic response analysis
+HROPT,FULL                ! Full harmonic response
+HROUT,OFF                 ! Print results as amplitudes and phase angles
+OUTPR,BASIC,1
+DMPRAT,DampRatio          ! Damping Ratio
+NSUBST,NumPts             ! Intervals within freq. range
+HARFRQ,Fmin,Fmax          ! Frequency range
+KBC,1                     ! Step boundary condition
+/OUTPUT,OUT_Fharm,out,,
+SAVE
+SOLVE
+SAVE
+/OUTPUT
+:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

@@ -1,0 +1,410 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!BUCK.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro calculates the buckling failure
+!   criteria for a honeycomb sandwich structure.
+!ASSUMPTIONS:
+!   Face sheet is the same on both sides of the sandwich
+!   Face sheet is Symmetric Balanced 
+!      (P.181,Daniel & Ishai,2nd ed)
+!PRECONDITIONS:
+!   ANSYS V11.0!
+!   Element types: SHELL181, SOLID185, SOLID186, SOLSH190,
+!     SHELL208, SHELL209, and SHELL281
+!   Layers Defined with SECDATA
+!   ARG1= Cell Size ELSE:
+       dc=3/8  !DEFAULT CELL SIZE
+!   ARG2= RESULTS DISPLAY
+!      0==> Highlight Failed Elements
+!      1==> Show margin
+!   ARG3= Display Results from one type of analysis 
+!      0==> Minimum MS from all analises
+!      1==> InterCellular Buckeling
+!      2==> Face Wrinkling
+!      3==> Shear Crimping (X-direction)
+!      4==> Shear Crimping (Y-direction)
+!      5==> Core Strength (X-direction)
+!      6==> Core Strength (Y-direction)
+!POST-CONDITIONS: 
+!   See description
+!   -Units set to Radians (*AFUN,RAD Issued)
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+/POST1
+*AFUN,RAD    !SET UNITS TO RADIANS
+PI=ACOS(-1)
+!==========USER SETTINGS===============
+SF=1         !SAFTEY FACTOR
+MUF=3        !MODEL UNCERTAINTY FACTOR
+!------------------SAVE CURRENT SETUP
+CM,temp_ELEM,ELEM
+!--------------------------------------
+
+*GET,elmCount,ELEM,0,COUNT  !Get Number of Elements
+elmNum=  $ *VGET,elmNum,ELEM,,ELIST    !Get Element Numbers (V11.0)
+elmFail= $ *DIM,elmFail,ARRAY,elmCount !Create Array For Failure Criteria.
+*VFILL,elmFail,RAMP,0,0 
+*GET,elmMax,ELEM,0,NUM,MAXD !GET High Element
+*GET,elmMin,ELEM,0,NUM,MIND !GET Low Element
+MaxFC=0     !SET Failure Criteria at 0
+
+*DO,i,1,elmCount
+   secnType='NOT VALID'
+   *GET,secnNum,ELEM,elmNum(i),ATTR,SECN  !GET SECTION
+   *GET,secnType,SHEL,secnNum,TYPE        !Get section type
+   *IF,secnType,EQ,'SHEL                            ',THEN
+      !================CALCULATE ABBD MATRIX===========
+      *GET,numLay,SHEL,secnNum,PROP,NLAY !Get Number of Layers
+      !-----------------------FIND CORE LAYER
+      thick= $ *DIM,thick,ARRAY,numLay 
+      *DO,j,1,numLay
+         *GET,thick(j),SHEL,secnNum,LAYD,j,THIC  
+      *ENDDO       
+      Tc=0  !Set thickest layer to 0
+      numCore=0  !SET thickest layer thickness to 0
+      *DO,j,1,numLay
+         *IF,thick(j),GT,Tc,THEN
+            Tc=thick(j)
+            numCore=j
+         *ENDIF
+      *ENDDO
+      numLay=numCore-1 !Set number of layers to only face sheet
+      !-------------------ALLOCATE ARRAYS
+      theata= $ *DIM,theata,ARRAY,numLay
+      E1=     $ *DIM,E1    ,ARRAY,numLay
+      E2=     $ *DIM,E2    ,ARRAY,numLay
+      Nu12=   $ *DIM,Nu12  ,ARRAY,numLay
+      Nu21=   $ *DIM,Nu21  ,ARRAY,numLay
+      G12=    $ *DIM,G12   ,ARRAY,numLay
+      Xt=     $ *DIM,Xt    ,ARRAY,numLay+1
+      Xc=     $ *DIM,Xc    ,ARRAY,numLay+1
+      Yt=     $ *DIM,Yt    ,ARRAY,numLay+1
+      Yc=     $ *DIM,Yc    ,ARRAY,numLay+1
+      Zt=     $ *DIM,Zt    ,ARRAY,numLay+1
+      Zc=     $ *DIM,Zc    ,ARRAY,numLay+1
+      Sxy=    $ *DIM,Sxy   ,ARRAY,numLay+1
+      Syz=    $ *DIM,Syz   ,ARRAY,numLay+1
+      Sxz=    $ *DIM,Sxz   ,ARRAY,numLay+1
+      z=      $ *DIM,z     ,ARRAY,numLay+1
+      qbar=   $ *DIM,qbar  ,ARRAY,6,numLay
+      a=      $ *DIM,a,ARRAY,6 $ *VFILL,a,RAMP,0,0
+      d=      $ *DIM,d,ARRAY,6 $ *VFILL,d,RAMP,0,0
+      MS=     $ *DIM,MS,ARRAY,6 !FOR MARGINS OF SAFTEY
+      S=
+      !-----------------------GET DATA
+      *DO,j,1,numLay
+         *GET,theata(j),SHEL,secnNUM,LAYD,j,ANGL  !Get Ply Angle
+         *GET,layMat,SHEL,secnNum,LAYD,j,MAT      !Material number of Ply
+         *GET,E1(j),EX,layMat                     !EX of Ply
+         *GET,E2(j),EY,layMat                     !EY of Ply
+         *GET,Nu12(j),PRXY,layMat
+         *GET,G12(j),GXY,layMat
+         *IF,E2(j),LT,10e-6,THEN      !Test to see is ply is isotropic
+            E2(j)=E1(j)                 !IF Iso, Asign E2
+         *ENDIF
+         Nu21(j)=E2(j)*Nu12(j)/E1(j)
+         *IF,G12(j),LT,10e-6,THEN       
+            G12(j)=E1(j)/(2*(1+Nu12(j)))
+         *ENDIF
+      *ENDDO
+      !GET FAILURE CRITERIA---------------------------------
+      *DO,j,1,numCore
+         *GET,layMat,SHEL,secnNum,LAYD,j,MAT      !Material number of Ply
+         /out,OUT_FCdata,txt
+         fclist,layMat        !List Failure Criteria of Current Layer
+         /output
+         FCdata= $ *DIM,FCdata,ARRAY,1,9  !Create Array For FC
+         *VREAD,FCdata(1,1),OUT_FCdata,txt,,JIK,9,1,1,5
+         (E11.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3)
+         Xt(j)=FCdata(1,1)
+         Xc(j)=FCdata(1,2)
+         Yt(j)=FCdata(1,3)
+         Yc(j)=FCdata(1,4)
+         Zt(j)=FCdata(1,5)
+         Zc(j)=FCdata(1,6)
+         Sxy(j)=FCdata(1,7)
+         Syz(j)=FCdata(1,8)
+         Sxz(j)=FCdata(1,9)
+      *ENDDO
+      Fcc=-Zc(numLay+1)
+      !Compute Stuff===================================
+      hh = 0  !-------TOTAL THICKNESS
+      *DO,j,1,numLay
+         hh=hh+thick(j)
+      *ENDDO
+      xbar=hh/2
+      z(1)=0-(hh/2)
+ 
+      *DO,j,1,numLay  
+        z(j+1)=z(j)+thick(j)                       
+        q11=E1(j)/(1-(Nu12(j)*Nu21(j)))
+        q22=E2(j)/(1-(Nu12(j)*Nu21(j)))
+        q12=E2(j)*Nu12(j)/(1-(Nu12(j)*Nu21(j)))
+        q66=G12(j)
+     !Compute = Qbar Terms============================
+        s=sin(theata(j)*PI/180)    !to shorten expersions
+        s2=s*s $ s3=s**3 $ s4=s**4
+        c=cos(theata(j)*PI/180)
+        c2=c*c $ c3=c**3 $ c4=c**4
+        !qbar11 Term = Qxx
+      	qbar(1,j)=(c4*Q11)+(s4*Q22)+(2*c2*s2*Q12)+(4*c2*s2*Q66)
+      	!qbar12 Term = Qxy
+      	qbar(2,j)=(c2*s2*Q11)+(c2*s2*Q22)+((c4+s4)*Q12)-(4*c2*s2*Q66)
+      	!qbar16 Term = Qxs
+      	qbar(3,j)=(c3*s*Q11)-(c*s3*Q22)-(c*s*(c2-s2)*Q12)-(2*c*s*(c2-s2)*Q66)
+      	!qbar22 Term = Qyy
+      	qbar(4,j)=(s4*Q11)+(c4*Q22)+(2*c2*s2*Q12)+(4*c2*s2*Q66)
+      	!qbar26 Term = Qys
+      	qbar(5,j)=(c*s3*Q11)-(c3*s*Q22)+(c*s*(c2-s2)*Q12)+(2*c*s*(c2-s2)*Q66)
+      	!qbar66 Term = Qss
+      	qbar(6,j)=(c2*s2*Q11)-(c2*s2*Q22)-(2*c2*s2*Q12)+(((c2-s2)**2)*Q66)
+      *ENDDO 
+      !%Compute ABBD ==================================
+      *DO,x,1,6
+         *DO,j,1,numLay
+            a(x)=a(x)+(qbar(x,j)*(z(j+1)-z(j)))
+            d(x)=d(x)+((1/3)*qbar(x,j)*((z(j+1)**3)-(z(j)**3)))
+         *ENDDO
+      *ENDDO
+      !%Assemble Stiffness Matrix C===============================================
+      A11=a(1) !ABBD(1,1);
+      A12=a(2) !ABBD(1,2);
+      A22=a(4) !ABBD(2,2);
+      A66=a(6) !ABBD(3,3);
+      D66=d(6) !ABBD(6,6);      
+      !-------CALCULATE FACE SHEET PROPERTIES
+      Exf=(1/hh)*(A11-(A12**2/A22)) !Section 7.12.1 Daniel & Ishai, 2nd Ed.
+      Eyf=(1/hh)*(A22-(A12**2/A11))
+      Gf=A66/hh
+      Nuxy=A12/A22
+      Nuyx=A12/A11
+      tf=hh
+      !-------Get Core Properites
+      *GET,layMat,SHEL,secnNum,LAYD,numLay+1,MAT      !Material number of Ply  
+      !*GET,E1(j),EX,layMat        
+      *GET,Ecc,EZ,layMat !Compresive Modulus
+      *IF,ARG1,NE,0,THEN !----Cell Size
+         dc=ARG1
+      *ENDIF   
+      dell=0.0025 !Initial Imprefections
+      *GET,Gcx,GXZ,layMat  !Core Shear Modulus (X-Direction)
+      *GET,Gcy,GYZ,layMat  !Core Shear Modulus (Y-Direction)
+      h=Tc+tf              !Height to face sheet centroides
+      DD=Tc+2*Tf           !Substrate depth
+      !=====================GET FORCES=================
+      *GET,Nx ,ELEM,elmNum(i),SMISC,1 $ Nx =abs(Nx )
+      *GET,Ny ,ELEM,elmNum(i),SMISC,2 $ Ny =abs(Ny )
+      *GET,Nxy,ELEM,elmNum(i),SMISC,3 $ Nxy=abs(Nxy)
+      *GET,Mx ,ELEM,elmNum(i),SMISC,4 $ Mx =abs(Mx )
+      *GET,My ,ELEM,elmNum(i),SMISC,5 $ My =abs(My )
+      *GET,Mxy,ELEM,elmNum(i),SMISC,6 $ Mxy=abs(Mxy)
+      *GET,Vx ,ELEM,elmNum(i),SMISC,7 $ Vx =abs(Vx )
+      *GET,Vy ,ELEM,elmNum(i),SMISC,8 $ Vy =abs(Vy )
+      !-----FACE SHEET LOADS
+      Nxf=Nx/2+Mx/h
+      Nyf=Ny/2+My/h
+      Nxyf=Nxy/2+Mxy/h
+      !----Facesheet Stress Components
+      Fx=Nxf/tf
+      Fy=Nyf/tf
+      Fs=Nxyf/tf
+      !=====================InterCelluar Buckeling=====
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,1,THEN
+         K=(ExF*Nuyx+2*Gf*(1-Nuxy*Nuyx))/(sqrt(Exf*Eyf))
+         Ktx=1+Eyf/Exf+2*K*sqrt(Eyf/Exf)
+         Kty=1+Exf/Eyf+2*K*sqrt(Exf/Eyf)
+         Fci_Xuni=(PI**2*Ktx*Exf)/(12*(1-Nuxy*Nuyx))*(Tf/Dc)**2
+         Fci_Yuni=(PI**2*Kty*Eyf)/(12*(1-Nuxy*Nuyx))*(Tf/Dc)**2
+         *IF,Dc/Tf,GE,15.63,THEN
+            n=3
+         *ELSE
+            n=2+(15.63/(dc/tf))**2
+            *IF,NINT(n-.5),NE,NINT(n),THEN  !TRUNCATION (Conservative)
+               n=NINT(n-.5)
+            *ELSE
+               n=NINT(n)
+            *ENDIF
+         *ENDIF
+         Fci_Xbi=Fci_Xuni/((1+(Fy/Fx)**n)**(1/n)) !Intracell buckling allowable when in biaxial compression, X-direction 
+         Fci_Ybi=Fci_Yuni/((1+(Fx/Fy)**n)**(1/n)) !Intracell buckling allowable when in biaxial compression, Y-direction
+         !----Compression load Ratio
+         *IF,(Fx*SF*MUF/Fci_xbi),GT,(Fy*SF*MUF/Fci_Ybi),THEN 
+            Ra=Fx*SF*MUF/Fci_xbi
+         *ELSE
+            Ra=Fy*SF*MUF/Fci_Ybi
+         *ENDIF
+         !----Shear Load Allowable
+         *IF,Fci_Xuni,LE,Fci_Yuni,THEN
+            Fsi=0.8*Fci_Xuni
+         *ELSE
+            Fsi=0.8*Fci_Yuni
+         *ENDIF
+         Rs=(Fs*SF*MUF)/Fsi   !Shear Load Ratio
+         MS(1)=((Ra+sqrt(Ra**2+4*Rs**2))/2) !Interaction formula for plate instability with biaxial compression and shear.
+      *ENDIF
+      !===================FACE WRINKLING===============
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,2,THEN
+         KK=(dell*Ecc)/(Tc*Fcc)
+         Fcw_Xuni=(0.82*Sqrt((Ecc*Tf)/(Exf*Tc))*Exf)/(1+KK)
+         Fcw_Yuni=(0.82*Sqrt((Ecc*Tf)/(Eyf*Tc))*Eyf)/(1+KK)
+         Fcw_Xbi=Fcw_Xuni/((1+(fy/fx)**3)**(1/3)) !Face wrinkling allowable when in biaxial compression.  X- direction
+         Fcw_Ybi=Fcw_Yuni/((1+(fx/fy)**3)**(1/3)) !Face wrinkling allowable when in biaxial compression.  Y- direction
+         
+         *IF,Fcw_Xuni,LT,Fcw_Yuni,THEN
+            Fsw=Fcw_Xuni
+         *ELSE
+            Fsw=Fcw_Yuni
+         *ENDIF
+         
+         *IF,(Fx*SF*MUF/Fcw_Xbi),GT,(Fy*SF*MUF/Fcw_Ybi),THEN
+            Ra=fx*SF/Fcw_Xbi
+         *ELSE
+            Ra=fy*SF*MUF/Fcw_Ybi
+         *ENDIF
+         
+         Rs=Fs*SF*MUF/Fsw
+         MS(2)=((Ra+Sqrt(Ra**2+4*Rs**2))/2) !Interaction formula for plate instability with biaxial compression and shear. 
+      *ENDIF
+      !==================SHEAR Crimping================
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,3,THEN
+         FcsX=Gcx*(Tc+2*Tf)/(2*Tf) !Shear crimping strength, X-direction
+         MS(3)=(Fx*SF*MUF)/FcsX  !Shear crimping margin of safety for X-direction
+      *ENDIF
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,4,THEN
+         FcsY=Gcy*(Tc+2*Tf)/(2*Tf) !Shear crimping strengty, Y-direction
+         MS(4)=(Fy*SF*MUF)/FcsY  !Shear crimping margin of safety for Y-direction
+      *ENDIF
+      !==================Core Strength=================
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,5,THEN
+         Tau_cx=Vx/h  !Core Shear X-Direction
+         MS(5)=Tau_cx*SF*MUF/Sxz(NumCore)
+      *ENDIF
+      *IF,ARG3,EQ,0,OR,ARG3,EQ,6,THEN
+         Tau_cy=Vy/h  !Core Shear Y-Direction
+         MS(6)=Tau_cy*SF*MUF/Syz(NumCore)
+      *ENDIF
+      !================FAILED DREAMS!==================
+      !---MAXIMUM Failure Criteria---------------------
+      *IF,ARG3,EQ,0,THEN 
+         /TITLE,Maximum Buckling Criteria
+         *IF,ARG2,EQ,0,THEN !DISPLAYED FAILED ELEMENTS
+            *DO,j,1,6
+               *IF,MS(j),GT,1,THEN
+                  elmFail(i)=1
+               *ENDIF
+            *ENDDO
+         *ELSEIF,ARG2,EQ,1,THEN !SHOW Failure Criteria
+            elmFail(i)=MS(1)
+            *DO,j,2,6
+               *IF,MS(j),GT,elmFail(i),THEN
+                  elmFail(i)=MS(j)
+               *ENDIF
+            *ENDDO
+         *ENDIF
+         !---Report Maximum Failure Criteria
+         *DO,j,1,6
+            *IF,MS(j),GT,MaxFC,THEN
+               MaxFC=MS(j)
+            *ENDIF
+         *ENDDO
+      !-----Display IntraCelular Buckeling Criteria----
+      *ELSEIF,ARG3,EQ,1,THEN 
+         /TITLE,IntraCelular Buckeling Criteria
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(1),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(1)
+         *ENDIF
+         *IF,MS(1),GT,MaxFC,THEN
+            MaxFC=MS(1)
+         *ENDIF
+      !-----Display Face Wrinkeling Criteria-----------
+      *ELSEIF,ARG3,EQ,2,THEN
+         /TITLE,Face Wrinkling Criteria
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(2),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(2)
+         *ENDIF
+         *IF,MS(2),GT,MaxFC,THEN
+            MaxFC=MS(2)
+         *ENDIF      
+      !-----Display Shear Crimping (X-Direction)------
+      *ELSEIF,ARG3,EQ,3,THEN 
+         /TITLE,Shear Crimping (X-Direction)
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(3),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(3)
+         *ENDIF
+         *IF,MS(3),GT,MaxFC,THEN
+            MaxFC=MS(3)
+         *ENDIF
+      !-----Display Shear Crimping (Y-Direction)-------
+      *ELSEIF,ARG3,EQ,4,THEN 
+         /TITLE,Shear Crimping (Y-Direction)
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(4),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(4)
+         *ENDIF
+         *IF,MS(4),GT,MaxFC,THEN
+            MaxFC=MS(4)
+         *ENDIF
+      !-----Display Core Strength (X-Direction)--------
+      *ELSEIF,ARG3,EQ,5,THEN 
+         /TITLE,Core Strength Criteria (X-Direction)
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(5),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(5)
+         *ENDIF
+         *IF,MS(5),GT,MaxFC,THEN
+            MaxFC=MS(5)
+         *ENDIF      
+      !-----Display Core Strength (Y-Direction)--------
+      *ELSEIF,ARG3,EQ,6,THEN 
+         /TITLE,Core Strength Criteria (Y-Direction)
+         *IF,ARG2,EQ,0,THEN !Display Failed Elements
+            *IF,MS(6),GT,1,THEN
+               elmFail(i)=1
+            *ENDIF
+         *ELSEIF,ARG2,EQ,1,THEN !Show Failure Criteria
+            elmFail(i)=MS(6)
+         *ENDIF
+         *IF,MS(6),GT,MaxFC,THEN
+            MaxFC=MS(6)
+         *ENDIF
+      *ENDIF
+      !------------------------------------------------
+   *ENDIF
+*ENDDO
+
+!======================DISPLAY RESULTS=================
+ETABLE,plNum,CENT,X            !CREATE STORAGE FOR *VPUT
+*VGET,E_Table,ELEM,,ETAB,plNum
+*VFILL,E_Table,RAMP,0,0
+*DO,i,1,elmCount
+   E_Table(elmNum(i))=elmFail(i)
+*ENDDO
+*VPUT,E_Table,ELEM,,ETAB,plNum
+PLETAB,plNum
+!PLETAB,plNum,AVG
+
+!DISPLAY MINIMUM MARGIN OF SAFTEY
+MinMS=1/MaxFC-1
+*MSG,UI,MinMS
+MINIMUM SANDWICH BUCKLING MARGIN OF SAFTEY = %G
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

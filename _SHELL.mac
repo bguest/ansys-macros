@@ -1,0 +1,31 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_SHELL.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro prints shell forces for random
+!   runs for the selected set of elements
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/post1
+!set,3,1
+set,last
+/output,OUT_ShellForces,txt
+/header,off,off,off,off,off,on	! Format
+/format,7,e,15,7		! Format
+/page,20000,,20000		! Format
+
+etable,erase
+
+etable,p_tx,smisc,1
+etable,p_ty,smisc,2
+etable,p_txy,smisc,3
+etable,p_mx,smisc,4
+etable,p_my,smisc,5
+etable,p_mxy,smisc,6
+etable,p_nx,smisc,7
+etable,p_ny,smisc,8
+
+pretab
+
+/output
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

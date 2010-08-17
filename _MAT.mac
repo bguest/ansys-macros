@@ -1,0 +1,50 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_MAT.mac
+!DESCRIPTION: Creates a standard material from a single
+!  number
+!PRECONDITIONS:
+!  ARG1 = Material Number
+!        802 -> Aluminum 7075-T73
+!        803 -> Titanium Ti-6Al-4V
+!        804 -> Stainless Steel A286
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/PREP7
+G=386.09
+MNum=ARG1
+*IF,MNum,EQ,802,THEN
+	!Material Definition: Aluminum 7075-T73
+	!REF: MIL-HDBK-5E
+	MP,EX,MNum,10.3e6        
+	MP,PRXY,MNum,0.33
+	MP,DENS,MNum,0.1/G
+	MP,ALPX,MNum,12.4E-6
+	!----FAILURE CRITERIA (YEILD STRENGTHS)
+	FC,MatNum,S,XTEN,56e3 !Tensile stress, X-direction
+	FC,MatNum,S,YTEN,56e3 !Tensile stress, y-direction
+	FC,MatNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
+	FC,MatNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
+	FC,MatNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
+	FC,MatNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
+*ELSEIF,MNum,EQ,803,THEN
+	!Material Definition: Ti-6Al-4V
+	!REF: MIL-HDBK-5E
+	MP,EX,MNum,16.0e6        
+	MP,PRXY,MNum,0.34
+	MP,DENS,MNum,0.16/G
+*ELSEIF,MNum,EQ,804,THEN
+	!Material Definition: STAINLESS_STEEL_A286 !REF:PRO_E
+	MP,EX,MatNum,2.91E+07
+	MP,PRXY,MatNum,3.10E-01
+	MP,DENS,MatNum,2.87E-01/G
+	MP,ALPX,MatNum,9.20E-06
+*elseif,MNum,EQ,805,THEN
+	!Material Definition: Aluminum 6061-T651 REF: MIL-HDBK-5E
+	MP,EX,MatNum,10.0e6   
+	MP,PRXY,MatNum,0.33
+	MP,DENS,MatNum,0.098/G
+	MP,ALPX,MatNum,12.65E-6  !AT 70degF
+*ENDIF
+!=======================CLEAN UP=======================

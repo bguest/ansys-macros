@@ -1,0 +1,95 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_LARC.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro creates an arc given two end
+!   Points and a center point. Radius of arc is 
+!   calculated from the average distance between
+!   the center point and the endpoints
+!PRECONDITIONS:
+!   ARG1=First End Point
+!   ARG2=Second End Point
+!   ARG3=Center Point
+!POSTCONDITIONS:
+!   See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!-------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+!==================================GET INFO
+!--------------------------GET BEGINING KEYPOINT
+*IF,ARG1,EQ,0,THEN
+   *MSG,UI
+   Select ARC Endpoints (2)
+
+   ksel,r,p
+   *GET,kpA,KP,,NUM,MAX   !GET SELECTED KP NUMBER
+
+*ELSE
+   kpA=ARG1
+*ENDIF
+!--------------------------GET ENDING KEYPOINT
+*IF,ARG2,EQ,0,THEN
+   *GET,kpB,KP,,NUM,MIN   !GET SELECTED KP NUMBER
+*ELSE
+   kpB=ARG2
+*ENDIF
+CMSEL,S,temp_KP
+!--------------------------GET CENTER KEYPOINT
+*IF,ARG3,EQ,0,THEN
+   *MSG,UI
+   SELECT CENTER POINT
+   
+   ksel,r,p
+   *GET,kpC,KP,,NUM,MAX   !GET SELECTED KP NUMBER
+   CMSEL,S,temp_KP
+*ELSE
+   kpC=ARG3
+*ENDIF
+!================================CALCULATIONS
+PA_= $ *DIM,PA_,ARRAY,3         !LOCATION OF kpA
+*GET,PA_(1),KP,kpA,LOC,X
+*GET,PA_(2),KP,kpA,LOC,Y
+*GET,PA_(3),KP,kpA,LOC,Z
+
+PB= $ *DIM,PB,ARRAY,3         !LOCATION OF kpB
+*GET,PB(1),KP,kpB,LOC,X
+*GET,PB(2),KP,kpB,LOC,Y
+*GET,PB(3),KP,kpB,LOC,Z
+
+PC= $ *DIM,PC,ARRAY,3         !LOCATION OF kpC
+*GET,PC(1),KP,kpC,LOC,X
+*GET,PC(2),KP,kpC,LOC,Y
+*GET,PC(3),KP,kpC,LOC,Z
+!------------------------------MATH
+*DIM,D1,ARRAY,3
+D1(1)=PA_(1)-PC(1)
+D1(2)=PA_(2)-PC(2)
+D1(3)=PA_(3)-PC(3)
+*DIM,D2,ARRAY,3
+D2(1)=PB(1)-PC(1)
+D2(2)=PB(2)-PC(2)
+D2(3)=PB(3)-PC(3)
+DD1=SQRT(D1(1)**2+D1(2)**2+D1(3)**2)
+DD2=SQRT(D2(1)**2+D2(2)**2+D2(3)**2)
+D3=(DD1+DD2)/2
+!==============================CREATE ARC
+/PREP7
+LARC,kpA,kpB,kpC,D3
+
+!=======================CLEAN UP=======================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+!--DELETE PARAMETERS
+*SET,kpA
+*SET,kpB
+*SET,kpC
+*SET,D1
+*SET,DD1
+*SET,D2
+*SET,DD2
+*SET,D3
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

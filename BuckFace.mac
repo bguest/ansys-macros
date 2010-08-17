@@ -1,0 +1,25 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!BUCK2.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: This macro calculates the buckling
+!	failure criteria for composite facesheets mounted to
+!	a sandwich structure. Thick Plate Buckling is assumed
+!PRECONDITIONS:
+!	ANSYS 11.0 is required.
+!	ARG1 = <Required Macro Input> (optional if nothing is required)
+!	ARG2 = <Description of Input> 
+!		<...>
+!	Required Macros:
+!		<Macros Required to Run>.mac
+!	Required Inputs:
+!		<Other Required Files>.txt/.dat
+!	<Anything else required before run>
+!POSTCONDITIONS'S
+!	<Assigned Parameters or Files Created> = <Description of Variable> 
+!NOTES: 
+!	<Any other things the user must understand>
+!	<References>
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

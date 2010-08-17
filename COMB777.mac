@@ -1,0 +1,123 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!COMB777.MAC
+!DESCRIPTION: 
+!  Creates a spherical joint using COMBIN7 Elements
+!PRECONDITIONS:
+!  ARG1 = Number of "Node I"
+!    ELSE = user prompted to select node
+!  ARG2 = Number of "Node J"
+!    ELSE = user prompted to select node
+!  ARG3=Number of joints to be created
+!  ARG4=User Interface Flag 
+!    (0-->User Can Opt Out, 1--> No User Check)
+!POSTCONDITIONS:
+!  See Description.
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!10001.COMBIN7: FREE JOINT
+!------------------------------------------------------
+MatNum = 10001
+!-------------------OPTIONS----------------------------
+K1=10e6    !X-Y translational stiffness 
+K2=10e6    !Z direction stiffness 
+K3=10e6    !Rotational-X and Rotational-Y stiffness 
+K4=10e3    !Torsional stiffness 
+!------------------------------------------------------
+ET,MatNum,COMBIN7
+KEYOPT,MatNum,1,0
+R,MatNum,K1, K2, K3, K4
+!------------------Dumbie Material-----------------
+MP,DAMP,MatNum,0.0
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!--------------Set NUMBER OF COMBIN777s
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+
+*DOWHILE,loop
+ !-------------SAVE CURRENT SETUP
+   CM,temp_NODE,NODE
+   CM,temp_ELEM,ELEM
+   !------------------SELECT "NODE I"
+   *IF,ARG1,EQ,0,THEN
+      *MSG,UI
+      SELECT "NODE I"
+
+      NSEL,R,P
+      *GET,NodeI,NODE,0,NUM,MAX !GET SELECTED NODE
+      CMSEL,S,temp_NODE
+      NSEL,u,,,NodeI		!Prevent Selection of Same Node
+   *ELSE
+      NodeI=ARG1
+   *ENDIF
+   !------------------SELECT "NODE J"
+   *IF,ARG2,EQ,0,THEN
+      *MSG,UI
+      SELECT "NODE J"
+
+      NSEL,R,P
+      *GET,NodeJ,NODE,0,NUM,MAX !GET SELECTED NODE
+      CMSEL,S,temp_NODE
+   *ELSE
+      NodeJ=ARG2
+   *ENDIF
+   !======================================CONFIRMATION
+   *IF,ARG4,EQ,0,THEN !CHECK USER OPT OUT FLAG
+      *ASK,ans,ENTER 0 to stop or 1 to try again,2
+   *ELSE
+      ans=2
+   *ENDIF
+   
+   *IF,ans,EQ,0,THEN
+      loop=0
+   *ELSEIF,ans,EQ,2,THEN !------------CREATE NEW NODES
+      !-------------------GET NODE LOCATON
+      XX=NX(NodeI)
+      YY=NY(NodeI)
+      ZZ=NZ(NodeI)
+      N,,XX,YY,ZZ    		!NODE 1
+      *GET,Node1,NODE,0,NUM,MAX
+      N,,XX,YY,ZZ    		!NODE 2
+      *GET,Node2,NODE,0,NUM,MAX 
+      N,,XX+.1,YY,ZZ    		!NODE X
+      *GET,NodeX,NODE,0,NUM,MAX 
+      N,,XX,YY+.1,ZZ    		!NODE Y
+      *GET,NodeY,NODE,0,NUM,MAX 
+      N,,XX,YY,ZZ+.1    		!NODE Z
+      *GET,NodeZ,NODE,0,NUM,MAX 
+      !------------------CREATE COMBIN7 ELEMENTS      
+      TYPE,MatNum   !SET UP ATT
+      MAT,MatNum 
+      REAL,MatNum
+      E,NodeI,Node1,NodeX  !CREATE X-AXIS JOINT
+      E,Node1,Node2,NodeY  !CREATE Y-AXIS JOINT
+      E,Node2,NodeJ,NodeZ  !CREATE Z-AXIS JOINT
+      loop=loop-1
+   *ENDIF !============================================
+
+!=======================CLEAN UP=======================
+   /REPLOT
+*ENDDO
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+!--CLEAR PARAMETERS
+*SET,NodeI
+*SET,NodeJ
+*SET,Node1
+*SET,Node2
+*SET,NodeX
+*SET,NodeY
+*SET,NodeZ
+*SET,LOOP
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

@@ -1,0 +1,48 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!QArea.mac
+!benguest@gmail.com
+!DESCRIPTION: This macro calculates the quadrilateral
+!  area formed by four points (x,y) on a plane.
+!  See GreenPaper (CEV_080131)
+!PRECONDITIONS:
+!  Point 1: (x1,y1)=(ARG1,ARG2)
+!  Point 2: (x2,y2)=(ARG3,ARG4)
+!  Point 3: (x3,y3)=(ARG5,ARG6)
+!  Point 4: (x4,y4)=(ARG7,ARG8)
+!  -Points 1-4 must circumnavigate the quadrilateral
+!  -No interior angle of the quadrilateral can be
+!   greater than 180 degrees.
+!POSTCONDITIONS:
+!  Area4= parameter containing the area of the
+!         quadrilateral
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!Assign Points
+x1=Arg1  !point 1
+y1=Arg2
+
+x2=Arg3  !point 2
+y2=Arg4
+
+x3=Arg5  !point 3
+y3=Arg6
+
+x4=Arg7  !point 4
+y4=Arg8
+
+L1=sqrt((x2-x1)**2+(y2-y1)**2) !Calculate Distances
+L2=sqrt((x3-x2)**2+(y3-y2)**2)
+L3=sqrt((x4-x3)**2+(y4-y3)**2)
+L4=sqrt((x1-x4)**2+(y1-y4)**2)
+b=sqrt((x4-x2)**2+(y4-y2)**2)
+
+!Law of Cosines
+T1=ACOS((L4**2+b**2-L1**2)/(2*L4*b))
+T2=ACOS((L2**2+b**2-L3**2)/(2*L2*b))
+
+h1=L4*sin(T1) !Calculate triangle heights
+h2=L2*sin(T2)
+
+!RETURN AREA
+Area4=(1/2)*b*(h1+h2)
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

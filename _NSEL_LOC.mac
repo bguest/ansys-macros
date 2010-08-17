@@ -1,0 +1,22 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_NSEL_LOC.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: Selects a node based on X,Y and Z 
+!	location in current CSYS
+!PRECONDITIONS:
+!  	ARG1 = X Location in current CSYS
+!		ARG2 = Y Location in current CSYS
+!		ARG3 = Z Location in current CSYS
+!		ARG4 = TOLERANCE
+!POSTCONDITIONS'S
+!    RETURN_= Node Number
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+NSEL,S,LOC,X,ARG1-ARG4 , ARG1+ARG4
+NSEL,R,LOC,Y,ARG2-ARG4 , ARG2+ARG4
+NSEL,R,LOC,Z,ARG3-ARG4 , ARG3+ARG4
+*GET,NodeCount,Node,,COUNT
+
+!RETURNS:
+*GET,RETURN_,NODE,,NUM,MAX
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

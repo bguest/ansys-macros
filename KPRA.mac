@@ -1,0 +1,151 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!KPRA.mac
+!B.GUEST: bagvoo@gmail.com
+!DESCRIPTION: This macro projects a keypoint onto a
+!   flat area.
+!PRECONDITIONS:
+!   MUST USE ANSYS V.11
+!   ARG1 = Keypoint to be projected.
+!   	ELSE Prompted to select keypoint
+!   ARG2 = Area for keypoint to be projected to
+!   	ELSE prompted to select line
+!POSTCONDITIONS: Keypoint is created on area projected
+!   from selected key point
+!   -NewKP = projected keypoint
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+PARSAV,ALL,F:\_ANSYS\TEMP\KPRA.txt !SAVE Parameters
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+!------------------SELECT KEYPOINTS
+*IF,ARG1,EQ,0,THEN
+   *MSG,UI
+   SELECT KEYPOINTS
+   
+   KSEL,R,P              !SELECT KEYPOINTS
+   *GET,NumKP,KP,0,COUNT !Get Number of KPs
+   *VGET,kp0,KP,,KLIST   !V11.0 Get selected Keypoints
+   CMSEL,S,temp_KP
+*ELSE
+   *DIM,kp0,ARRAY,1
+   kp0(1)=ARG1
+*ENDIF
+!------------------SELECT AREA
+*IF,ARG2,EQ,0,THEN
+   *MSG,UI
+   SELECT 1 AREA
+   
+   ASEL,R,P
+   *GET,area1,AREA,0,NUM,MAX  !GET SELECTED LINE
+   CMSEL,S,temp_AREA
+*ELSE
+	line1=ARG2
+*ENDIF
+
+!--------------GET KEYPOINTS ON AREA
+ASEL,S,,,area1,,,1
+*VGET,A1KP,KP,,KLIST !V11.0
+
+!---------------------GET LOCATIONS OF KPs
+*DIM,P,ARRAY,3,3     !FOR locations of Area points
+*DO,ink,1,3
+   *GET,P(ink,1),KP,A1KP(ink),LOC,X
+   *GET,P(ink,2),KP,A1KP(ink),LOC,Y
+   *GET,P(ink,3),KP,A1KP(ink),LOC,Z
+*ENDDO
+
+!---------------------Determine Orthagonal Basis-------
+*DIM,R12,ARRAY,3     !For Vector from P1 to P2
+*DIM,R13,ARRAY,3     !For Vector from P1 to P3
+*DIM,R10,ARRAY,3     !For Vector from P1 to P0
+
+*DO,ink,1,3          !Vectors from P1 to P2,P3
+   R12(ink)=P(2,ink)-P(1,ink)
+   R13(ink)=P(3,ink)-P(1,ink)
+*ENDDO
+
+*DIM,U3,ARRAY,3                   !Unscalled U3
+U3(1)=R12(2)*R13(3)-R12(3)*R13(2) !R12 X R13
+U3(2)=R12(3)*R13(1)-R12(1)*R13(3)
+U3(3)=R12(1)*R13(2)-R12(2)*R13(1)
+
+*DIM,u,ARRAY,3,3     !For orthagonal unit basis
+NR12=sqrt(R12(1)**2+R12(2)**2+R12(3)**2) !Norm of R12
+NU3=sqrt(U3(1)**2+U3(2)**2+U3(3)**2)     !Norm of U3
+*DO,ink,1,3                    !Create Unit Vectors
+   u(1,ink)=R12(ink)/NR12
+   u(3,ink)=U3(ink)/NU3
+*ENDDO
+
+u(2,1)=u(3,2)*u(1,3)-u(3,3)*u(1,2) !u2 unit vector
+u(2,2)=u(3,3)*u(1,1)-u(3,1)*u(1,3)
+u(2,3)=u(3,1)*u(1,2)-u(3,2)*u(1,1)
+
+!-------------------------------------------PROJECT KPs
+*DIM,P0,ARRAY,3	!For location of KPs
+*DIM,Y,ARRAY,3  !For Projection of R10
+*DIM,P1,ARRAY,3  !FOR NEW KP location
+
+*DO,jnk,1,NumKP
+   *GET,P0(1),KP,KP0(jnk),LOC,X  !GET KP Location
+   *GET,P0(2),KP,KP0(jnk),LOC,Y
+   *GET,P0(3),KP,KP0(jnk),LOC,Z
+   
+   *DO,ink,1,3          !Vectors from P1 to P0
+      R10(ink)=P0(ink)-P(1,ink)
+   *ENDDO
+   
+   !Find Projection of Y
+   R10u1=R10(1)*u(1,1)+R10(2)*u(1,2)+R10(3)*u(1,3) !R10.u1
+   R10u2=R10(1)*u(2,1)+R10(2)*u(2,2)+R10(3)*u(2,3) !R10.u1
+   *DO,ink,1,3
+      Y(ink)=R10u1*u(1,ink)+R10u2*u(2,ink)
+   *ENDDO
+   !------------------------------------------------------
+   !FIND NEW KP
+   *DO,ink,1,3
+     P1(ink)=P(1,ink)+Y(ink)
+   *ENDDO
+   
+   KSEL,NONE
+   K,,P1(1),P1(2),P1(3)   !CREATE NEW KP
+   *GET,NewKP,KP,,NUM,MAX   !GET NEW KP NUMBER
+   
+   CMSEL,S,temp_KP	       !RESET DISPLAY
+   KSEL,A,,,NewKP	       !ADD NEW KP TO SELECTED SET
+   CM,temp_KP,KP
+*ENDDO
+!=======================CLEAN UP=======================
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_AREA
+CMSEL,S,temp_LINE
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+!--DELETE PARAMETERS
+*SET,A1KP
+*SET,P
+*SET,P0
+*SET,P1
+*SET,R10
+*SET,R12
+*SET,R13
+*SET,U
+*SET,U3
+*SET,Y
+*SET,area1
+*SET,ink
+*SET,jnk
+*SET,kp0
+*set,R10u1
+*SET,R10u2
+*SET,NR12
+*SET,NU3
+*SET,numKP
+!*SET,NewKP
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

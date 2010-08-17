@@ -1,0 +1,33 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runBuck.inp
+!B.GUEST; benguest@gmail.com
+/title,Linear Buckeling Analysis
+!DESCRIPTION: This file preforms a Linear Buckeling
+!	Analysis
+!PRECONDITIONS:
+! Arguments:
+!  ARG1 = Number of Buckeling Modes ELSE:
+		Nmodes=1
+!POSTCONDITIONS:
+!  See Description
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+*IF,ARG1,NE,0,THEN   !GET Number of Modes
+	NModes=ARG1
+*ENDIF
+
+/solution
+ALLSEL
+ANTYPE,STATIC
+PSTRES,ON
+SOLVE
+FINISH
+
+/solution    
+ANTYPE,BUCKLE             ! BUCKLING ANALYSIS
+BUCOPT,LANB,Nmodes        ! USE BLOCK LANCZOS EIGENVALUE EXTRACTION METHOD, EXTRACT Mmodes MODE
+MXPAND,Nmodes            ! EXPAND Nmodes MODE SHAPE
+SOLVE
+
+:END !=THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

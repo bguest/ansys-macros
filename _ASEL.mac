@@ -1,0 +1,92 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_ASEL.mac
+!DESCRIPTION: This macro selects, unselects or adds areas 
+!   and associated areas, lines and keypoints to the 
+!   selected set.
+!PRECONDITIONS:
+!	ARG1='A' --> areas and associated lines
+!		     and keypoints will be added to the
+!		     selected set.
+!	ARG1='S' --> areas and associated lines 
+!		     and keypoints will be selected
+!	ARG1='U' --> areas and associated lines
+!	             and keypoints will be unselected
+!	ARG2 = Area to be Unselected
+!	     ELSE user prompted to select volume
+!POSTCONDITIONS:
+!   Areas and associated lines and keypoints are
+!   selected, unselected or added to the selected set
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+FINISH
+/PREP7
+!------------------SAVE CURRENT SETUP
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+
+*IF,ARG2,EQ,0,THEN
+	*MSG,UI !--------SELECT VOLUME
+	SELECT AREAS
+
+	asel,s,p
+*ELSE
+	asel,s,,,ARG2
+*ENDIF
+
+	CM,Sel_Area,AREA  !CREATE COMPONENT WITH SELECTED AREA
+
+asel,s,,,Sel_Area,,,1 !SELECT Lines and Keypoints
+
+*IF,ARG1,NE,'S',AND,ARG1,NE,'s',THEN !CREATE COMPONENTS
+	CM,Sel_Line,LINE
+	CM,Sel_KP,KP
+*ENDIF
+!------------------------ADD TO SELECTED SET
+*IF,ARG1,EQ,'A',OR,ARG1,EQ,'a',THEN
+	CMSEL,S,temp_Area
+	CMSEL,A,Sel_Area
+
+	CMSEL,S,temp_Line
+	CMSEL,A,Sel_Line
+
+	CMSEL,S,temp_KP
+	CMSEL,A,Sel_KP
+*ENDIF
+
+!------------------------UNSELECT FROM SELECTED SET
+*IF,ARG1,EQ,'U',OR,ARG1,EQ,'u',THEN 
+	CMSEL,S,temp_Area
+	CMSEL,U,Sel_Area
+
+	CMSEL,S,temp_Line
+	CMSEL,U,Sel_Line
+
+	CMSEL,S,temp_KP
+	CMSEL,U,Sel_KP
+*ENDIF
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_ELEM
+CMSEL,S,temp_NODE
+
+/REPLOT
+!=======================CLEAN UP=========================
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+*IF,ARG1,NE,'S',AND,ARG1,NE,'s',THEN
+	CMDELE,Sel_AREA
+	CMDELE,Sel_LINE
+	CMDELE,Sel_KP
+*ENDIF
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

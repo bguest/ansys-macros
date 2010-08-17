@@ -1,0 +1,234 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!NPRES2.MAC
+!DESCRIPTION: This macro creates a traction 
+!  distribution on A solid meshed either with SOLID92
+!  elements or SOLID186 elements.
+!PRECONDITIONS:
+!  Required Inputs:
+!  -PressureSpaceFunction
+!  ARGUMENTS:
+!  ARG1 = Area to apply force to or <0 for ALL
+!    ELSE, User prompted to select Areas
+!  ARG2 = Number of Node of surface element
+!    IE: 3 -> Tri, 4 -> Quad, 6 -> Quadradic Tri
+!        8 -> Quadradic Quad 
+!  ARG3 = LOADCASE of PressureSpaceFunction.mac
+!  Other:
+!  -Surface mesh is uniform, IE not a mix of quads
+!   and tri elements
+!NOTES: WILL NOT WORK WITH SHELL ELEMENTS (USE NPRES)
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+PARSAV,ALL,F:\_ANSYS\TEMP\NPRES2.txt  !Save Parameters
+
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+
+!GET NUMBER OF NODES per surface element
+*IF,ARG2,EQ,0,THEN  !PROMPT USER
+	*ASK,ans,Enter Number of Nodes Per Surface Element,0
+	*IF,ans,EQ,0,THEN
+		*GO,:END
+	*ELSE
+	  ARG2=ans
+	*ENDIF
+*ENDIF
+
+*IF,ARG2,EQ,6,OR,ARG2,EQ,8,THEN
+	!====================================================
+	!999.SHELL 93: TEMP MATERIAL
+	!----------------------------------------------------
+	!8-Node Structural Shell
+	/PREP7
+	MatNum = 999
+	ET,MatNum,SHELL93
+	R,MatNum,0.01,0.001,0.01,0.01, !0.1 = Thickness
+	!<-- NEEDS DEFINITION FOR ARG2 = 3 and 4...
+*ENDIF
+
+!------------Material Definition: WIMPY----------------
+MP,EX,MatNum,10
+MP,PRXY,MatNum,0.33
+MP,DENS,MatNum,0    !NO DENSITY
+
+!======================================================
+!SELECT AREAS, MESH
+!------------------------------------------------------
+!---------SELECT AREAS
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	SELECT AREA TO APPLY LOAD
+   
+  ASEL,r,p
+*ELSEIF,ARG1,GT,0,THEN
+	ASEL,S,,,ARG1
+*ENDIF  !ELSE MESH ALL SELECTED AREAS
+!---------MESH
+TYPE,999
+MAT,999
+REAL,999
+AMESH,ALL
+!---------SELECT ELEMENTS AND NODES
+ESEL,S,TYPE,,999
+NSLE
+
+!MAKE COMPONENTS    
+CM,NPRES_NODE,NODE
+CM,NPRES_ELEM,ELEM
+
+*GET,HighElem,ELEM,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED ELEMENT
+*GET,LowElem,ELEM,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED ELEMENT
+*GET,NumElem,ELEM,0,COUNT  !GET NUMBER OF ACTIVE Elements
+
+*GET,HighNode,NODE,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED NODE
+*GET,LowNode,NODE,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED NODE
+*GET,NumNode,NODE,0,COUNT  	!GET NUMBER OF ACTIVE Nodes
+
+!-------Get Element Numbers
+*DIM,Select,ARRAY,HighElem
+	!Create Array for the selection status of Elements  
+*VGET,Select,ELEM,,ESEL    	!Get Selection Status of Elements
+
+*DIM,Elems,ARRAY,NumElem   	!Create Array for Element Numbers
+
+Loop=HighElem-LowElem+1	  	!SET Loop to Highest Element-Lowest Element+1
+CurElem=HighElem
+CurResult=NumElem          	!SET CurResult to Number of Elements
+*DOWHILE,Loop 		    		!For active Elements
+	*IF,Select(CurElem),EQ,1,THEN    !If the Element is selected
+		Elems(CurResult)=CurElem !Store Element Number in Elems
+		CurResult=CurResult-1
+	*ENDIF
+	CurElem=CurElem-1
+	Loop=Loop-1
+*ENDDO
+	
+!-------GET AREAS
+*DIM,EAreas,ARRAY,NumElem		!Create Array for Element areas
+Loop=NumElem
+*DOWHILE,Loop !FOR EACH Element
+	CurElem=Elems(Loop)    		!GET Current Element
+	*GET,EArea,ELEM,CurElem,AREA  	!GET AREA OF SELECTED ELEMENT
+	EAreas(Loop)=EArea		!Store Area in EAreas ARRAY
+	Loop=Loop-1
+*ENDDO
+	
+!-------GET ELEMENT LOCATIONS
+*DIM,Loc,ARRAY,NumElem,3	!CREATE Array for Element Locations
+Loop=NumElem
+*DOWHILE,Loop 		!FOR EACH ELEMENT
+	CurElem=Elems(Loop)			!GET Current Element
+	*GET,TempLoc,ELEM,CurElem,CENT,X 	!GET X Coordinate
+	Loc(Loop,1)=TempLoc				!STORE x coordinate
+	*GET,TempLoc,ELEM,CurElem,CENT,Y 	!GET Y Coordinate
+	Loc(Loop,2)=TempLoc				!STORE Y Coordinate
+	*GET,TempLoc,ELEM,CurElem,CENT,Z 	!GET Z Coordinate
+	Loc(Loop,3)=TempLoc
+	Loop=Loop-1
+*ENDDO
+
+!-------DERIVE ELEMENT LOADS
+*DIM,EPres,ARRAY,NumELem,3	!Create Array For Element Loads
+Loop=NumElem
+*DOWHILE,Loop
+	A=EAreas(Loop)
+	X=Loc(Loop,1)
+	Y=Loc(Loop,2)
+	Z=Loc(Loop,3)
+!-------------------------Fx,Fy,Fz=FUNCTION(X,Y,Z)-------------------
+PressureSpaceFunction,ARG3
+!-------------------------------------------------------
+	EPres(Loop,1)=Px*A
+	EPres(Loop,2)=Py*A
+	EPres(Loop,3)=Pz*A
+	Loop=Loop-1
+*ENDDO
+
+
+!--DERIVE LOADS FOR SHELL 93 ELEMENTS-----------------		
+*DIM,NPres,ARRAY,HighNode,3	!For Nodal Pressures
+Loop=NumElem
+*DOWHILE,Loop
+	CurElem=Elems(Loop)	
+	!IF Tri 6 -----------------------------
+	*IF,ARG2,EQ,6,THEN
+		*GET,N,ELEM,CurElem,NODE,5
+		NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
+		NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
+		NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
+		*GET,N,ELEM,CurElem,NODE,6
+		NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
+		NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
+		NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
+		*GET,N,ELEM,CurElem,NODE,8
+		NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
+		NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
+		NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
+	
+	!IF QUAD 8 ----------------------------
+	*ELSEIF,ARG2,EQ,8,THEN         
+	  !FOR Corner nodes (See Fig 3.9-5 p58 of Finite Element Modeling for Stress Analysis by Robert D.Cook
+	  *DO,i,1,4 								 
+	   	*GET,N,ELEM,CurElem,NODE,i
+	  	*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
+				NPres(N,j)=NPres(N,j)-EPres(Loop,j)/12
+			*ENDDO
+		*ENDDO
+		!For Midside Nodes
+		*DO,i,5,8
+			*GET,N,ELEM,CurElem,NODE,i 
+	  	*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
+				NPres(N,j)=NPres(N,j)+EPres(Loop,j)/3
+			*ENDDO
+		*ENDDO
+	*ENDIF !-------------------------------
+	Loop=Loop-1
+*ENDDO
+
+!--GET Selected Node Numbers--
+*DIM,NSelect,ARRAY,HighNode	!Create Array for the selection status of Nodes
+*VGET,NSelect,NODE,,NSEL    	!Get Selection Status of Nodes
+
+*DIM,Nodes,ARRAY,NumNode   	!Create Array for Element Nodes
+
+Loop=HighNode-LowNode+1		!SET Loop to Highest Node-Lowest Node+1
+CurNode=HighNode
+CurResult=NumNode          	!SET CurResult to Number of Nodes
+*DOWHILE,Loop 		    		!For active Nodes
+	*IF,NSelect(CurNode),EQ,1,THEN    !If the Node is selected
+		Nodes(CurResult)=CurNode !Store Node Number in Node
+		CurResult=CurResult-1
+	*ENDIF
+	CurNode=CurNode-1
+	Loop=Loop-1
+*ENDDO
+
+!---APPLY FORCES
+!/SOLU
+Loop=NumNode
+*DOWHILE,Loop
+	CurNode=Nodes(Loop)		!Set Curretn Node
+	F,CurNode,FX,NPres(CurNode,1)	!Apply Nodal Force in X-Direction
+	F,CurNode,FY,NPres(CurNode,2)	!Apply Nodal Force in Y-Direction
+	F,CurNode,FZ,NPres(CurNode,3)	!Apply Nodal Force in Z-Direction
+	Loop=Loop-1
+*ENDDO
+
+!--RESUME TEMPORARY COMPONENTS
+CMSEL,S,temp_VOLU
+CMSEL,S,temp_AREA
+CMSEL,S,temp_LINE
+CMSEL,S,temp_KP
+CMSEL,S,temp_NODE
+CMSEL,S,temp_ELEM
+CMSEL,A,NPRES_ELEM
+CMSEL,S,temp_NODE
+CMSEL,A,NPRES_NODE
+
+PARRES,,F:\_ANSYS\TEMP\NPRES2.txt  !Resume Saved Parameters
+!=========THE--END========THE--END========THE--END=====
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
+

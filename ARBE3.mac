@@ -1,0 +1,47 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!ARBE3.mac
+!DESCRIPTION: This macro creates an RBE3 Between a 
+!	Master Node and an area or areas
+!PRECONDITIONS:
+!	ARG1 = Master Node
+!		ELSE: User is requested to enter Node
+!	ARG2 = First Area OR <0 for ALL Selected Areas
+!POSTCONDITIONS:
+!	Elements Created / Modified:
+! See Description...
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+CM,temp_node,NODE
+CM,temp_area,AREA
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!GET MASTER KEYPOINT
+*IF,ARG1,EQ,0,THEN
+	*MSG,UI
+	Select Master Node
+	
+	NSEL,R,P
+	*GET,masterNode,Node,O,NUM,MAX  !Get Highest Selected KP
+*ELSE,ARG1,GT,0,THEN
+	masterNode = ARG1
+*ENDIF
+
+!GET AREAS
+*IF,ARG2,EQ,0,THEN
+	*MSG,UI
+	Select Areas
+	
+	ASEL,R,P
+*ELSEIF,ARG2,GT,0,THEN
+	ASEL,S,,,ARG2
+*ENDIF    !ELSE ASSUME AREAS ARE SELECTED
+
+nsla,s,1
+nsel,u,,,masterNode
+RBE3,masterNode,all,all
+
+CMSEL,A,temp_Area
+CMSEL,A,temp_Node
+	
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

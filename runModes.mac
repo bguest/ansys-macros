@@ -1,0 +1,88 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!runModes.mac
+/TITLE,MODAL_ANALYSIS
+!DESCRIPTION: This macro preforms a modal analysis
+!PRECONDITIONS:
+!  -Boundary Conditions already specified
+!  -ARG1=Number of Modes   ELSE:
+      NModes=6
+!  -ARG2=Start Frequency ELSE:
+      FMin=''
+!  -ARG3=End Frequency   ELSE:
+      FMax=''
+!  -ARG4=Analysis Type
+!     0 --> Linear (Non-Prestress)
+!     1 --> Linear (Prestressed)
+!     2 --> Non-Linear Prestressed
+!POSTCONDITIONS:
+!  See Description
+!NOTES:
+! For Linear Prestressed:
+!   Use pstres,on in the previous loading run, if
+!   this macro is not run in a diffrent folder
+!		the previous loadstep will be overwritten
+! For Non-Linear Prestressed:
+!  -Use EMATWRITE,YES in static load step prior
+!   to modal analysis. 
+!  -In pre-stressed model, go to last step in general
+!   post processor and save everything Then copy
+!   file.db, file.esav, and file.emat into folder for
+!   running modes.
+!  -Can only run 1 mode shape at a time
+!=================================================
+/SOLUTION
+/NERR,,99999999
+!--------------------------------SETUP
+*IF,ARG1,NE,0,THEN !Set Number of Modes
+   NModes=ARG1
+*ENDIF
+
+*IF,ARG2,NE,0,THEN !Set Minimum Frequency
+   FMin=ARG2
+*ENDIF
+
+*IF,ARG3,NE,0,THEN !Set Maximum Frequency
+   Fmax=ARG3
+*ENDIF
+
+!------------------------------PREFORM ANALYSIS
+/SOLUTION
+ANTYPE,MODAL      !SET ANALYSIS TYPE TO MODAL
+OUTRES,all,all
+*IF,ARG4,EQ,0,THEN
+  /OUTPUT,OUT_LinearModes,out,
+  MODOPT,LANB,NModes,FMin,FMax   !Modal Options
+  !MODOPT,SUBSP,NModes,FMin,FMax  
+  MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
+  SOLVE
+*ELSEIF,ARG4,EQ,1,THEN
+	/OUTPUT,OUT_PreStressModes,out
+	MODOPT,LANB,NModes,FMin,FMax   !Modal Options
+	MXPAND,NModes,FMin,FMax,YES     !Expanded Modes
+  pstres,on
+  SOLVE
+*ELSEIF,ARG4,EQ,2,THEN            !Non-Linear Prestressed
+	/OUTPUT,OUT_NonLinearModes,out
+	!outres,all,all
+	!MODOPT,SUBSP,NModes,Fmin,Fmax   !Modal Options
+	!SUBOPT, SUBSIZ, NPAD, NPERBK, NUMSSI, NSHIFT, Strmck, JCGITR
+	!SUBOPT,,,,9999   !<For MODOPT,SuBSP
+	!PSOLVE,EIGFULL
+	MODOPT,LANB,NModes,Fmin,Fmax
+	psolve,eiglanb
+	!MODOPT,LANPCG,NModes,Fmin,Fmax
+	!PSOLVE,EIGLANPCG
+	!MODOPT,REDUC,NModes,Fmin,Fmax
+	!MXPAND,NMODE, FREQB, FREQE...
+	MXPAND,NModes,FMin,FMax,YES,!0.00000000001   !Expanded Modes
+	UPCOORD,1,ON
+	PSTRES,on
+	FINISH
+	/SOLUTION
+	outres,all,all
+	expass,on
+	psolve,eigexp
+*ENDIF
+/OUTPUT
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

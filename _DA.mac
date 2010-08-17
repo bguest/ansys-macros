@@ -1,0 +1,145 @@
+/PMACRO
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_DA.MAC
+!Benjamin Guest; bagvoo@gmail.com
+!DESCRIPTION: THIS MACRO CREATES A RIGID ELEMENT WITH
+!  A NODE AT THE CENTER OF THE KEYPOINTS OF THE AREA 
+!  AND CONSTRAINS THE CENTER NODE
+!PRECONDITIONS:
+!   ARG3=Number of rigid regions to be created
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+SAVE,saved,db,,ALL
+CM,temp_VOLU,VOLU
+CM,temp_AREA,AREA
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+CM,temp_NODE,NODE
+CM,temp_ELEM,ELEM
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!MATERIALS
+/PREP7
+!======================================================
+!998.MASS21: TEMP MASS
+!======================================================
+MatNum = 998
+!-------------------Mass Properties---------------
+MASS = 0.0
+!-------------------------------------------------
+ET,MatNum,MASS21
+R,MatNum,MASS,MASS,MASS
+!------------------Dumbie Material-----------------
+MP,DENS,MatNum,0.0
+!%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!--------------Set NUMBER OF ARIGs
+*IF,ARG3,EQ,0,THEN
+   loop=1
+*ELSE
+   loop=ARG3
+*ENDIF
+
+*DOWHILE,loop
+   *GET,KP_max,KP,0,NUM,MAXD		!GET MAX KP NUMBER
+   !-----------SELECT AREA-------------
+   *MSG,UI			!FIRST AREA
+   SELECT AREAS
+   
+   ASEL,S,P
+   CM,A1_Area,AREA
+   CMSEL,S,temp_AREA
+   
+   !================FOR FIRST SET  OF AREAS============
+   CMSEL,S,A1_Area		!SELECT AREAS
+   LSLA		
+   KSLL			!GET KP associated with AREAS
+   
+   !-------GET KP CENTROID LOCATION
+   KSUM			   !GET KP INFO
+   *GET,centX1,KP,0,CENT,X	
+   *GET,centY1,KP,0,CENT,Y
+   *GET,centZ1,KP,0,CENT,Z
+   
+   !-------Create New KP at KP Centroid Location
+   KP1=KP_max+1
+   KSEL,NONE
+   
+   K,KP1,centX1,centY1,centZ1
+   KATT,998,998,998
+   KMESH,ALL
+   
+   CM,A1_KP,KP
+   CM,A1_Line,LINE
+   CM,A1_ELEM,ELEM
+   CM,A1_NODE,NODE
+   
+   !-------CREATE "ARIG"
+   *GET,Master,NODE,,NUM,MAX
+   NSEL,S,,,Master
+   NSLA,A,1
+   *ASK,ans,ENTER 0 to stop or 1 to try again,2
+   *IF,ans,EQ,0,THEN
+      loop=0
+   *ELSEIF,ans,EQ,2,THEN
+      CERIG,Master,ALL,ALL,
+      loop=loop-1
+   *ENDIF
+   
+   CM,A1_KP,KP
+   
+   !====================CONSTRAINT=====================
+   /SOLU
+   D,MASTER,ALL,0
+   /PREP7
+   !=======================CLEAN UP====================
+   !--RESUME TEMPORARY COMPONENTS
+   CMSEL,S,temp_VOLU
+   CMSEL,S,temp_AREA
+   CMSEL,S,temp_LINE
+   cMSEL,S,temp_KP
+   CMSEL,S,temp_NODE
+   CMSEL,S,temp_ELEM
+   CMSEL,S,temp_NODE
+   
+   CMSEL,A,A1_LINE
+   CMSEL,A,A1_KP
+   CMSEL,A,A1_ELEM
+   CMSEL,A,A1_NODE
+*ENDDO
+
+!--DELETE TEMPORARY COMPONENTS
+CMDELE,temp_VOLU
+CMDELE,temp_AREA
+CMDELE,temp_LINE
+CMDELE,temp_KP
+CMDELE,temp_ELEM
+CMDELE,temp_NODE
+
+CMDELE,A1_LINE
+CMDELE,A1_KP
+CMDELE,A1_ELEM
+CMDELE,A1_NODE
+
+*SET,AA
+
+*SET,centX1
+*SET,centY1
+*SET,centZ1
+
+*SET,KP_MAX
+*SET,KP_HIGH
+*SET,KP1
+*SET,Master
+*SET,TKZ
+*SET,TKY
+*SET,IXX
+*SET,IYY
+*SET,IZZ
+*SET,TH
+*SET,ISTRN
+*SET,SHEARZ
+*SET,SHEARY
+*SET,SPIN
+*SET,ADDMAS
+
+:END
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE PROGRAM AS WE KNOW IT AND I FEEL FINE
