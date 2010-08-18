@@ -10,6 +10,7 @@
 !     ELSE user is prompted to select second line
 !POST-CONDITIONS: 
 !   See description
+!NOTE: !!!!!!!!!!!!!!!!!!!NOT WORKING !!!!!!!!!!!!!!!!!!!
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 SAVE,saved,db,,ALL
 !------------------SAVE CURRENT SETUP
@@ -130,7 +131,11 @@ LSEL,NONE
 *ENDDO
 !Get New Lines
 *VGET,NewLines,LINE,,LLIST   !V11.0 (See ATA.mac for V10.0)
+<<<<<<< HEAD
 ALLSEL
+=======
+cmsel,a,temp_LINE
+>>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 
 AL,Line1,NewLines(1),Line2,NewLines(2)!Create New Area
 

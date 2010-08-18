@@ -1,12 +1,12 @@
 /PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!_LGEN_KTK.mac
+!_AGEN_KTK.mac
 !B.GUEST: benguest@gmail.com
-!DESCRIPTION: Creates a Line using the offset from one
+!DESCRIPTION: Creates an area using the offset from one
 !	keypoint to another 
 !PRECONDITIONS:
-!	ARG1 = Line to be offset 
-!		ELSE: User is asked to select line
+!	ARG1 = Area to be offset 
+!		ELSE: User is asked to select areas
 !	ARG2 = First Keypoint
 !		ELSE: User is asked to select keypoint 1
 !	ARG3 = Second Line
@@ -19,34 +19,24 @@
 !	PARRES to a temp directory on their computer.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
-<<<<<<< HEAD
-PARSAV,ALL,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Save Parameters
-=======
 !PARSAV,ALL,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Save Parameters
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 CM,temp_KP,KP
-CM,temp_LINE,LINE
+CM,temp_AREA,AREA
 
 !GET INPUT=============================================
-!Get Line --------------------------
+!Get Areas --------------------------
 *IF,ARG1,EQ,0,THEN
 	*MSG, UI
-	Select Line
+	Select Areas
 
-	LSEL,R,P
-<<<<<<< HEAD
-	*GET,origLine,LINE,0,NUM,MAX !Get maximum line number
-	CMSEL,A,temp_LINE
+	ASEL,R,P
+	
+	KTKAreas= $ *vget,KTKAreas,AREA,,alist
+	KTKNumAreas= $ *GET,KTKNumAreas,AREA,0,count !Number of areas
+	CMSEL,A,temp_AREA
 *ELSE
-	origLine = ARG1
-=======
-	KTKLines= $ *vget,KTKLines,line,,llist
-	KTKNumLines= $ *GET,KTKNumLines,LINE,0,count
-	CMSEL,A,temp_LINE
-*ELSE
-	KTKLines= $ *dim,KTKLines,array,1
-	KTKNumLines= $ KTKNumLines = 1
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
+	KTKAreas= $ *dim,KTKAreas,array,1
+	KTKNumAreas= $ KTKNumAreas = 1
 *ENDIF
 
 !GET First KeyPoint------------------
@@ -55,17 +45,10 @@ CM,temp_LINE,LINE
 	Select First Keypoint
 
 	KSEL,R,P
-<<<<<<< HEAD
-	*GET,kp1,KP,0,NUM,MAX !Get first keypoint number
-	CMSEL,A,temp_KP
-*ELSE
-	kp1 = ARG2
-=======
 	kp1= $ *GET,kp1,KP,0,NUM,MAX !Get first keypoint number
 	CMSEL,A,temp_KP
 *ELSE
 	kp1= $ kp1=ARG2
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 *ENDIF
 
 !GET Second KeyPoint------------------
@@ -74,17 +57,10 @@ CM,temp_LINE,LINE
 	Select Second Keypoint
 
 	KSEL,R,P
-<<<<<<< HEAD
-	*GET,kp2,KP,0,NUM,MAX !Get second keypoint number
-	CMSEL,A,temp_KP
-*ELSE
-	kp2 = ARG2
-=======
 	kp2= $ *GET,kp2,KP,0,NUM,MAX !Get second keypoint number
 	CMSEL,A,temp_KP
 *ELSE
 	kp2= $ kp2=ARG2
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 *ENDIF
 
 !CREATE LINE======================================
@@ -98,27 +74,16 @@ P2= $ *DIM,P2,ARRAY,3
 *GET,P2(2),KP,KP2,LOC,Y
 *GET,P2(3),KP,KP2,LOC,Z
 
-<<<<<<< HEAD
-D= $ *DIM,D,ARRAY,3   !GET OFFSET
-*DO,i,1,3
-	D(i)= P2(i)-P1(i)
-*ENDDO
-
-!USE LGEN TO CREATE LINE.
-LGEN,2,origLine,,,D(1),D(2),D(3)
-
-PARRES,,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Resume Saved Parameters
-=======
 KTKOff = $ *DIM,KTKOff,ARRAY,3   !GET OFFSET
 *DO,i,1,3
 	KTKOff(i)= P2(i)-P1(i)
 *ENDDO
 
 !USE LGEN TO CREATE LINE.
-*do,i,1,KTKNumLines
-	LGEN,2,KTKLines(i),,,KTKOff(1),KTKOff(2),KTKOff(3)
+*do,i,1,KTKNumAreas
+	AGEN,2,KTKAreas(i),,,KTKOff(1),KTKOff(2),KTKOff(3)
 *enddo
+
 !PARRES,,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Resume Saved Parameters
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

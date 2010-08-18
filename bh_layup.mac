@@ -1,0 +1,48 @@
+
+!----------------------------------------------
+!Layup Output to Excel
+!B. Herdrich
+!12/3/08
+!Revised: 5/7/10
+!----------------------------------------------
+
+*ask,num,SHELL91 Real Constant Number layup to export to Excel,
+
+type,num$real,num$esel,s,real,,num$eplo$laylist
+
+/output,Layup_R%num%,csv
+!/com,NPOESS layups
+!/com
+*vwrite,num
+('ANSYS Real Constant = ',F8.0)
+/output
+
+*get,ADMSUA,rcon,num,const,6		!Added mass
+
+/output,Layup_R%num%,csv,,append
+*vwrite,ADMSUA
+('Added mass/unit area = ',F16.14)
+/com
+/com,Layer,Angle (deg),Thickness (in),Material (ANSYS MAT)
+/output
+
+
+*get,NL,rcon,num,const,1		!NL
+
+*do,i,0,NL-1,1
+
+*get,THETA,rcon,num,const,14+(6*i)	!THETA
+*get,THK,rcon,num,const,15+(6*i)	!TK(I)
+*get,MAT,rcon,num,const,13+(6*i)	!MAT
+
+/output,Layup_R%num%,csv,,append
+
+*vwrite,i+1,THETA,THK,MAT
+(F3.0,',',F4.0,',',F6.4,',',F8.0)
+
+/output
+
+*enddo
+
+*msg,ui,num
+Open Layup_R%G.csv file

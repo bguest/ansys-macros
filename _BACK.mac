@@ -1,17 +1,13 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!_FRONT.mac
+!_BACK.mac
 !B.GUEST: benguest@gmail.com
-!DESCRIPTION: Plots view from the front.
+!DESCRIPTION: Plots view from the back.
 !PRECONDITIONS:
 !POSTCONDITIONS: 
 !   See Description
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-/VIEW, 1 ,,,1   
-<<<<<<< HEAD
-/ANG, 1 
-=======
+/VIEW, 1 ,,,-1  
 /angle, 1 
->>>>>>> d71de0da4137e82933d62914e7d10a97dffb39c6
 /REP,FAST  
 !=======THE--END========THE--END========THE--END=======
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

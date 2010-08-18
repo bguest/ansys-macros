@@ -1,14 +1,14 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!AKMPC.mac
+!LKMPC.mac
 !DESCRIPTION: This macro creates a "Spider Web" of 
-!	MPCs from a Keypoint to an area or areas
+!	MPCs from a Keypoint to a line or lines
 !PRECONDITIONS:
-!	AKMPC,Keypoint,Area,Beam,Lagrange
+!	AKMPC,Keypoint,Line,Beam,Lagrange
 !	Arguments:
 !		ARG1 = Keypoint for Spiderweb Center
 !			ELSE: User is requested to enter Keypoint
 !		ARG2 = First Area OR <0 for ALL Selected Areas
+!			ELSE: User is requested to select lines
 !		ARG3 = Constraint Type
 !			0 --> Rigid Link (3DOF Constrained per Node)
 !			1 --> Rigid Beam (6DOF Constrained per Node)
@@ -23,7 +23,7 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 CM,temp_node,NODE
 CM,temp_elem,elem
-CM,temp_area,AREA
+CM,temp_line,AREA
 CM,temp_KP,KP
 /prep7
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -56,14 +56,14 @@ MP,DENS,MatNum,0.0
 	MasterKP = ARG1
 *ENDIF
 
-!GET AREAS
+!GET Lines
 *IF,ARG2,EQ,0,THEN
 	*MSG,UI
-	Select Areas
+	Select Lines
 	
-	ASEL,R,P
+	LSEL,R,P
 *ELSEIF,ARG2,GT,0,THEN
-	ASEL,S,,,ARG2
+	LSEL,S,,,ARG2
 *ENDIF    !ELSE ASSUME AREAS ARE SELECTED
 
 !Create Element at Keypoint
@@ -74,7 +74,7 @@ NSLE
 *GET, masterNode, NODE, 0, NUM, MAX, , 
 
 !Get List of Nodes on Surface
-NSLA,S,1 !Select Nodes
+NSLL,S,1 !Select Nodes
 NSEL,U,,,masterNode
 *GET,countNodes,NODE,,Count
 nodeNum= $ *VGET,nodeNum,NODE,,NLIST
@@ -89,7 +89,7 @@ ATT,997
 	*ENDIF
 *ENDDO
 
-CMSEL,A,temp_Area
+CMSEL,A,temp_line
 CMSEL,A,temp_KP
 CMSEL,A,temp_Node
 cmsel,a,temp_elem

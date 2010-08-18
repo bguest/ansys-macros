@@ -12,6 +12,7 @@
 !POSTCONDITIONS:
 !  Area information is printed to the screen
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/prep7
 CM,temp_AREA,AREA
 !---------------------------GET AREA
 *IF,ARG1,EQ,0,THEN
