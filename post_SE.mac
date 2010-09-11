@@ -1,0 +1,89 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!post_SE.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro finds the strain energy in each element type of the model.
+!	It also sums the strain energy so that strain contributions may be measured against eachother.
+!PRECONDITIONS:
+!	post_SE,LoadStep,Substep,Plot,OutFile
+!	ARG1 = 0, loads last loadstep
+!	ARG1 != 0, loads loadstep = ARG1
+!	ARG2 != 0, loads loadstep = ARG1, substep = ARG2
+!	ARG3 = 0, plot strain energy
+!	ARG3 !=0, do not plot
+!	ARG4 = 0 write output file
+!	ARG4 != 0 do not write output file
+!POSTCONDITIONS:
+!	(default) Stores strain energies to SE_(element type number), and plots the strain energy of the
+!	for the last loadstep and substep
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+fini
+/nerr,,99999999	
+
+/post1
+
+! Set Number to Calculate Strain Energy At
+*if,ARG1,le,0,then
+	set,last
+*else
+	*if,ARG2,le,0,then
+		set,ARG1
+	*else
+		set,ARG1,ARG2
+	*endif
+*endif 
+
+! Get Strain Energies of every element type
+allsel
+avprin,0
+SE_sum=0
+*do,ARG25,1,etyiqr(0,14),1			! etyiqr(0,14)=number of highest defined element type
+	esel,none
+	esel,,mat,,ARG25
+	*if,elmiqr(0,13),gt,0,then		! elmiqr(0,13)=number of selected elements
+		etable,SE%ARG25%,sene
+		ssum
+		*get,SE_%ARG25%,ssum,0,item,SE%ARG25%
+		SE_sum=SE_sum+SE_%ARG25%
+	*endif
+*enddo
+allsel
+
+! Plotting
+*if,ARG3,eq,0,then
+	allsel
+	plesol,sene
+ *else
+ 	! Don't plot anyting
+ *endif
+ 
+! Output File
+*if,ARG4,eq,0,then
+	/output,out_SE,txt
+/com
+/com       Strain Energies of All Element Types
+/com
+/com
+	/output
+	*do,ARG25,1,etyiqr(0,14),1
+		esel,none
+		esel,,mat,,ARG25
+		*if,elmiqr(0,13),gt,0,then
+			/output,out_SE,txt,,append
+			*msg,info,ARG25,SE_%ARG25%
+SE of E Type %I = %G (Unit Energy) 
+			/output
+		*endif
+	*enddo
+	/output,out_SE,txt,,append
+	/com
+	*msg,info,SE_sum
+The Sum of the Strain Energies = %G (Unit Energy)    
+	/output
+*endif
+ 
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			post_SE.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

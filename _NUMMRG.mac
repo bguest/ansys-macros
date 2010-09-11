@@ -24,7 +24,7 @@
 	CMSEL,u,noMrgKP
 *endif
 
-*DO,loop,1,5
+*DO,loop,1,5 
 	*IF,ARG3,EQ,1,THEN
 		NUMMRG,NODE,ARG2,,,HIGH
 		NUMMRG,KP,ARG2,,,HIGH

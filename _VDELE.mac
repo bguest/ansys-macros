@@ -12,6 +12,8 @@
 !POSTCONDITIONS:
 !	Volumes and associated areas, lines and keypoints
 !       are deleted
+!NOTE:
+!  For delete all selected volumes, use vdele,all,,,1
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 SAVE,saved,db,,ALL
 /NOPR		   !PREVENT ERROR MESSAGES

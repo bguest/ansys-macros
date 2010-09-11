@@ -1,6 +1,5 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !runModes.mac
-/TITLE,MODAL_ANALYSIS
 !DESCRIPTION: This macro preforms a modal analysis
 !PRECONDITIONS:
 !  -Boundary Conditions already specified
