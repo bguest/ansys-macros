@@ -33,12 +33,23 @@ ioptn,small,yes
 ioptn,gtoler, defa  
 igesin,model,'igs',' '
 
+!Check to make sure any volumes exist
+*get,IMP_numVolumes,volu,0,count
+*if,IMP_numVolumes,EQ,0,then
+   *msg,warn,
+   	IMPORT.mac: NO VOLUMES IMPORTED
+*endif
+
 ! Divide All Lines in Half, for meshing of semicircles
 /prep7
 nummrg,kp
 ! Deletes Areas, Lines and KPs not attached to volume
-vsel,all
-aslv
+*if,IMP_numVolumes,GT,0,then	!If no volumes detected, select areas
+	vsel,all
+	aslv
+*else
+	asel,all
+*endif
 lsla
 ksll
 asel,inve
