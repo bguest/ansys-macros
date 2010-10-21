@@ -10,6 +10,8 @@
 !		ARG4 = TOLERANCE
 !POSTCONDITIONS'S
 !    RETURN_= Node Number
+!NOTES: Function NODE(X,Y,Z) returns the nerest node
+!	to X,Y,Z 
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 NSEL,S,LOC,X,ARG1-ARG4 , ARG1+ARG4
 NSEL,R,LOC,Y,ARG2-ARG4 , ARG2+ARG4
