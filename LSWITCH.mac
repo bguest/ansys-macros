@@ -1,0 +1,16 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!LSWITCH.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: Switches the keypoints of a line
+!ARGUMENTS:
+!	ARG1 = Line Number
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+*get,kp1,line,arg1,kp,1,
+*get,kp2,line,arg1,kp,2
+
+ldele,arg1
+lstr,kp2,kp1
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

@@ -21,7 +21,9 @@
 !   REAL Numbers= REAL Numbers + ARG1
 !   SECN Numbers= SECN Numbers + ARG1
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
+*if,flagNoReadWrite,EQ,0,then
+	SAVE,saved,db,,ALL
+*endif
 /PREP7
 NUMOFF,KP,ARG1
 NUMOFF,LINE,ARG1
