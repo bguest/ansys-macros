@@ -1,0 +1,34 @@
+/pmacro			! Write contents to *.log
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!prev_model.mac
+!Will Allen: willallen83@gmail.com
+!DESCRIPTION: 
+!	This macro creates components of the model up to this point,
+!	it also stores the active coordinate system
+!PRECONDITIONS:
+!	
+!POSTCONDITIONS:
+!	Everything is selected
+!WARNINGS:
+!	
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+fini
+
+/prep7
+
+! Creates components from previous model
+allsel
+cm,N_Prev,node
+cm,E_Prev,elem
+cm,K_Prev,kp
+cm,L_Prev,line
+cm,A_Prev,area
+cm,V_Prev,volu
+! Assembly of Components 
+cmgrp,PrevModel,N_Prev,E_Prev,K_Prev,L_Prev,A_Prev,V_Prev
+
+*get,ActiveCSYS,active,0,csys
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!  	End of Macro:			prev_model.mac
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
