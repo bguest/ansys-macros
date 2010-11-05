@@ -4,6 +4,7 @@
 !DESCRIPTION: Switches the keypoints of a line
 !ARGUMENTS:
 !	ARG1 = Line Number
+!NOTE: Line number may not be preserved
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 *get,kp1,line,arg1,kp,1,
