@@ -1,2 +1,21 @@
-set,prev
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_next.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: Macro moves baclward one or more results
+!	sets using the set,prev command
+!ARGUMENTS:
+!	ARG1: Number of sets to move forward (default = 1)
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+*if,ARG1,EQ,0,then
+   _prev_steps = 1
+*else
+	_prev_steps = ARG1
+*endif
+
+*do,_prev_idx,1,_prev_steps,1
+   set,prev
+*enddo
 /rep
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
