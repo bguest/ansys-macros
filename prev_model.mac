@@ -6,11 +6,11 @@
 !	This macro creates components of the model up to this point,
 !	it also stores the active coordinate system
 !PRECONDITIONS:
-!	
+!	Model to be packaged is selected
 !POSTCONDITIONS:
 !	Everything is selected
-!WARNINGS:
-!	
+!	PrevModel : packaged model
+!	ActiveCSYS : currently active coordinate system
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 fini
 
