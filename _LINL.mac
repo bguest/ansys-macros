@@ -82,7 +82,7 @@ p43(2)=p4(2)-p3(2)
 p43(3)=p4(3)-p3(3)
 *IF,p43(1),EQ,0,AND,p43(2),EQ,0,THEN
    *IF,p43(3),EQ,0,THEN
-      *MSG,WRN
+      *MSG,WARN
       error Could not compute LineLineIntersect
    *ENDIF
 *ENDIF
@@ -95,7 +95,7 @@ p21(3)=p2(3)-p1(3)
 
 *IF,P21(1),EQ,0,AND,(2),EQ,0,THEN
    *IF,P21(3),EQ,0,THEN
-      *MSG,WRN
+      *MSG,WARN
       error Could not compute LineLineIntersect
    *ENDIF
 *ENDIF
@@ -109,7 +109,7 @@ d2121=(p21(1)*p21(1))+(p21(2)*p21(2))+(p21(3)*p21(3))
 denom=(d2121*d4343)-(d4321*d4321)
 
 *IF,denom,EQ,0,THEN
-   *MSG,WRN
+   *MSG,WARN
    error Could not compute LineLineIntersect
 *ENDIF
 
