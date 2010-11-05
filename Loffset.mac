@@ -1,0 +1,68 @@
+/pmacro
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!Loffset.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro offsets a line a specified 
+!	distance towards a specified keypoint
+!ARGUMENTS:
+!	ARG1: Line to be offset
+!		ELSE: User is asked to pick line
+!	ARG2: Distance to offset line
+!		ELSE: User is asked to enter offset
+!	ARG3: Keypoint 
+
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+!-------------SAVE CURRENT SETUP
+CM,temp_LINE,LINE
+CM,temp_KP,KP
+*GET,currentCS,ACTIVE,,CSYS       ! COORD = active coordinate system number
+*get,tempCS,cdsy,,num,max
+tempCS = tempCS+1
+
+!Get Arguments
+
+!Get Original Line
+*if,ARG1,EQ,0,then
+   *MSG,UI
+   Select line
+   
+   lsel,r,p
+   *get,start_line,line,,num,max
+*else
+	start_line = ARG1
+*endif
+
+!Get Offset Distance
+*if,arg2,eq,0,then
+   *ask,distance,Enter Offset Distance,1
+*else
+	distance = arg2
+*endif
+
+!Get Orientation Keypoint
+*if,arg3,eq,0,then
+   *msg,ui
+   Select orientation keypoint
+   
+   ksel,r,p
+   *get,kp_orient,kp,,num,max
+   cmsel,s,temp_KP,KP
+*else
+   kp_orient = arg3
+*endif
+
+*get,kp1,line,start_line,kp,1
+*get,kp2,line,start_line,kp,2
+
+cskp,tempCS,,kp1,kp2,kp_orient,,
+lgen,2,start_line,,,0,distance,0,,1,
+
+!Cleanup
+csys,currentCS
+csdele,tempCS
+
+cmsel,a,temp_LINE,LINE
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
