@@ -8,7 +8,7 @@
 !POST-CONDITIONS:
 !  PSD data is plotted to the ANSYS Screen
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-*IF,ARG1,EQ,'',THEN
+*IF,ARG1,EQ,0,THEN
 	inputName = 'ANSYS_RPSD.inp'
 *ELSE
 	inputName = ARG1
