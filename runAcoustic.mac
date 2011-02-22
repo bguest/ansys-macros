@@ -47,7 +47,7 @@ MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
 CMSEL,S,acousticAreas
 SFA,ALL,1,PRES,1
 
-/OUTPUT,AcousticModes_Out,out
+/OUTPUT,OUT_AcousticModes,out
 solve
 /OUTPUT
 
@@ -72,7 +72,7 @@ PSDRES, DISP, REL	!Calculate Displacements at run
 !PSDRES, VELO, ABS !Calculate Velocites at run
 PSDRES, ACEL, ABS !Calculate Acclerations at run
 !-------------------SOLVE-------------------------
-/OUTPUT,Acoustic_Out,out
+/OUTPUT,OUT_Acoustic,out
 sptopt $ stat
 SOLVE
 /OUTPUT
@@ -81,7 +81,7 @@ FINISH
 /solution
 ANTYPE,SPECTR !SET ANALSYIS TYPE TO SPECTRUM
 PSDCOM,,Nmodes
-/OUTPUT,Acoustic_Out,out, ,APPEND
+/OUTPUT,OUT_Acoustic,out, ,APPEND
 SOLVE
 /OUTPUT
 FINISH

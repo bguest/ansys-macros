@@ -11,10 +11,10 @@
 !   ARG3 = Reference number of resulting variable
 !      ELSE reference number of resulting variable = 5
 !   ARG4 = Points per frequency
-!      ELSE Pts per frequency = 5
+!      ELSE Pts per frequency = 10
 !POSTCONDITIONS:
 !   PLOT OF PSD is displayed on screen
-!   PSD curve is output to file "OUT_psd_accl.out"
+!   PSD curve is output to file "OUT_P26Smisc.out"
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 !------------------------------------SAVE CURRENT SETUP
@@ -45,7 +45,7 @@ IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 *ENDIF
 !-------------------------------------PTS Per Frequency
 *IF,ARG4,EQ,0,THEN
-   FrqPts = 5
+   FrqPts = 10
 *ELSE
    FrqPts = ARG4
 *ENDIF
@@ -58,7 +58,7 @@ IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 STORE,PSD,FrqPts ! Store frequency vector (variable 1)
 
 ESOL, IAsmisc,elemNum,NELEM(elemNum,1),SMISC,smiscNum, 'psdSMISC'
-RPSD, IRsmisc, IAsmisc, ,0, 1, 'psdSMISC'
+RPSD, IRsmisc, IAsmisc, ,1, 1, 'psdSMISC'
 
 PLVAR,IRsmisc !Plot
 

@@ -4,11 +4,11 @@
 !PRECONDITIONS:
 !  -Boundary Conditions already specified
 !  -ARG1=Number of Modes   ELSE:
-      NModes=6
+			NModes=6
 !  -ARG2=Start Frequency ELSE:
-      FMin=''
+			FMin=''
 !  -ARG3=End Frequency   ELSE:
-      FMax=''
+			FMax=''
 !  -ARG4=Analysis Type
 !     0 --> Linear (Non-Prestress)
 !     1 --> Linear (Prestressed)
@@ -17,9 +17,9 @@
 !  See Description
 !NOTES:
 ! For Linear Prestressed:
-!   Use pstres,on in the previous loading run, if
-!   this macro is not run in a diffrent folder
-!		the previous loadstep will be overwritten
+!	Use pstres,on in the previous loading run, if
+!	this macro is not run in a diffrent folder
+!	the previous loadstep will be overwritten
 ! For Non-Linear Prestressed:
 !  -Use EMATWRITE,YES in static load step prior
 !   to modal analysis. 
@@ -33,15 +33,15 @@
 /NERR,,99999999
 !--------------------------------SETUP
 *IF,ARG1,NE,0,THEN !Set Number of Modes
-   NModes=ARG1
+	NModes=ARG1
 *ENDIF
 
 *IF,ARG2,NE,0,THEN !Set Minimum Frequency
-   FMin=ARG2
+	FMin=ARG2
 *ENDIF
 
 *IF,ARG3,NE,0,THEN !Set Maximum Frequency
-   Fmax=ARG3
+	Fmax=ARG3
 *ENDIF
 
 !------------------------------PREFORM ANALYSIS
@@ -49,17 +49,19 @@
 ANTYPE,MODAL      !SET ANALYSIS TYPE TO MODAL
 OUTRES,all,all
 *IF,ARG4,EQ,0,THEN
-  /OUTPUT,OUT_LinearModes,out,
-  MODOPT,LANB,NModes,FMin,FMax   !Modal Options
-  !MODOPT,SUBSP,NModes,FMin,FMax  
-  MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
-  SOLVE
+	/OUTPUT,OUT_LinearModes,out,
+	MODOPT,LANB,NModes,FMin,FMax   !Modal Options
+	!MODOPT,SUBSP,NModes,FMin,FMax
+	!EQSLV,PCG,1E-6		   						! PCG solver
+	!modopt,lanpcg,NModes,FMin,FMax,off,	! PCG solver
+	MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
+	SOLVE
 *ELSEIF,ARG4,EQ,1,THEN
 	/OUTPUT,OUT_PreStressModes,out
 	MODOPT,LANB,NModes,FMin,FMax   !Modal Options
 	MXPAND,NModes,FMin,FMax,YES     !Expanded Modes
-  pstres,on
-  SOLVE
+	pstres,on
+	SOLVE
 *ELSEIF,ARG4,EQ,2,THEN            !Non-Linear Prestressed
 	/OUTPUT,OUT_NonLinearModes,out
 	!outres,all,all

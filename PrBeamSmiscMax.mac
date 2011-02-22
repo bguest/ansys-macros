@@ -1,0 +1,102 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PrBeamSmiscMax.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro prints out the smisc values
+! for each of the currently selected beam real types
+!POSTCONDITONS:
+!	OUT_MaxSmisc.out contains maximum smisc values 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+cm,temp_elem,elem
+
+! Get a list of all element types
+*get,elemCount,elem,,count	
+allElem = $ *vget,allElem,elem,,elist
+elemReals= $ *vget,elemReals,elem,,attr,real !Get list of elements real numbers
+
+*get,maxReal,rcon,,num,max
+realMask= $ *dim,realMask,array,maxReal
+*vfill,realMask,data,0.0
+
+!Create Mask Of Real Numbers and number of real of real numbers
+! realCount = 0
+! *do,i,1,elemCount,
+!   	*if,realMask(elemReals(i)),eq,0,then
+! 	   realMask(elemReals(i)) = 1
+! 	   realCount = realCount + 1
+! 	*endif
+! *enddo
+
+realCount = 0
+*do,i,1,elemCount
+	*get,elemRealNum,elem,allElem(i),ATTR,REAL,
+	*if,realMask(elemRealNum),eq,0,then
+		realMask(elemRealNum) = 1
+		realCount = realCount + 1
+	*endif
+*enddo
+
+!Fill out real number array
+realNumbers = $ *dim,realNumbers,array,realCount
+realIndex = 1
+*do,i,1,maxReal,
+	*if,realMask(i),eq,1,then
+	   realNumbers(realIndex) = i
+	   realIndex = realIndex + 1
+	*endif
+*enddo
+
+!Open File to write to
+*cfopen,OUT_MaxSmisc,out
+*vwrite
+Element Type,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,
+
+!For the selected elements, for each element type
+! get the selected element types and print their smisc
+*do,realIdx,1,realCount
+   
+	!Select elements
+	cmsel,s,temp_elem
+	esel,r,real,,realNumbers(realIdx)
+	
+	!Get elemens and number of elements
+	currentElem = $ *vget,currentElem,elem,,elist
+	*get,curElemCount,elem,0,count
+	
+	!Alocate arrays
+	*do,i,1,12
+	   smisc%i% = $ *dim,smisc%i%,array,curElemCount
+	*enddo
+	
+	!For each element for each smisc number, get
+	! value and put it into an array
+	*do,elemIdx,1,curElemCount,
+	   *do,i,1,12,  
+	   	*get,tempSmisc,elem,currentElem(elemIdx),smisc,i,
+	   	smisc%i%(elemIdx) = tempSmisc
+	   *enddo
+	*enddo
+	
+	!Get Maximum values
+	*do,i,1,12,
+	   *vscfun,smiscMax%i%,max,smisc%i%
+	   *vscfun,smiscMin%i%,min,smisc%i%
+	   smiscMax%i% = max(abs(smiscMin%i%),abs(smiscMax%i%))
+	*enddo
+	
+	*do,i,1,6,
+		smiscMax%i% = max(smiscMax%i%,smiscMax%i+6%)
+	*enddo
+	
+	realNum = realNumbers(realIdx)
+	*vwrite,realNum,smiscMax1,smiscMax2,smiscMax3,smiscMax4,smiscMax5,smiscMax6,
+%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+		
+*enddo
+
+*cfclos
+cmsel,s,temp_elem
+
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

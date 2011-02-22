@@ -1,5 +1,5 @@
 /PMACRO
-!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !runRandom.mac
 !Ben Guest: benguest@gmail.com
 !DESCRIPTION: This macro preforms a random vibration 
@@ -11,11 +11,11 @@
 !  ARG1 = Imput Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
 !  ARG2 = Number of Modes ELSE:
-     NModes=200
+     NModes=300
 !  ARG3 = Start Frequence: ELSE:
      FMin=0
 !  ARG4 = End Frequency ELSE:
-     FMax=0
+     FMax=2000
 !  ARG5 = Structural Damping Ration (DMPRAT)
      DampRatio=0.05
 !POSTCONDITIONS:
@@ -92,7 +92,7 @@ CMSEL,s,temp_Nodes
 
 !-------------------------------------------------
 PSDRES, DISP, REL	 !Calculate Displacements at run
-!PSDRES, VELO, ABS !Calculate Velocites at run
+PSDRES, VELO, ABS !Calculate Velocites at run
 PSDRES, ACEL, ABS  !Calculate Acclerations at run
 PSDCOM,0.0001,Nmodes    !Combine Modes using PSD method
 !-------------------SOLVE-------------------------

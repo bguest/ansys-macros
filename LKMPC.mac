@@ -7,7 +7,7 @@
 !	Arguments:
 !		ARG1 = Keypoint for Spiderweb Center
 !			ELSE: User is requested to enter Keypoint
-!		ARG2 = First Area OR <0 for ALL Selected Areas
+!		ARG2 = First Line OR <0 for ALL Selected Areas
 !			ELSE: User is requested to select lines
 !		ARG3 = Constraint Type
 !			0 --> Rigid Link (3DOF Constrained per Node)

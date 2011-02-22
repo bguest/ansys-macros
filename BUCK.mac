@@ -34,9 +34,10 @@ SAVE,saved,db,,ALL
 /POST1
 *AFUN,RAD    !SET UNITS TO RADIANS
 PI=ACOS(-1)
+N=
 !==========USER SETTINGS===============
-SF=2.0         !SAFTEY FACTOR
-MUF=1        !MODEL UNCERTAINTY FACTOR
+SF=3.0       !SAFTEY FACTOR
+MUF=1.4        !MODEL UNCERTAINTY FACTOR
 !------------------SAVE CURRENT SETUP
 CM,temp_ELEM,ELEM
 !--------------------------------------

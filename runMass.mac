@@ -8,6 +8,9 @@
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+/prep7			!Clear Out Analysis
+antype,static
+
 finish
 /solu
 

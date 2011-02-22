@@ -1,0 +1,49 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PrSmiscMax.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro prints to an output file a table
+!	of maximum smisc values for each element type.
+!POSTCONDITONS:
+!	OUT_MaxSmisc.out contains maximum smisc values 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+! Get a list of all element types
+*get,elemCount,elem,,count						
+elemReals= $ *vget,elemReals,elem,,attr,real !Get list of elements real numbers
+
+*get,maxReal,rcon,,num,max
+realMask= $ *dim,realMask,array,maxReal
+*vfill,realMask,data,0.0
+
+!Create Mask Of Real Numbers and number of real of real numbers
+realCount = 0
+*do,i,1,elemCount,
+  	*if,realMask(elemReals(i)),eq,0,then
+	   realMask(elemReals(i)) = 1
+	   realCount = realCount + 1
+	*endif
+*enddo
+
+!Fill out real number array
+realNumbers = $ *dim,realNumbers,array,realCount
+realIndex = 1
+*do,i,1,maxReal,
+	*if,realMask(i),eq,1,then
+	   realNumbers(realIndex) = i
+	   realIndex = realIndex + 1
+	*endif
+*enddo
+
+
+
+
+
+
+! For each element type 
+	!Find out what type of element is its
+	!Select all elements of that type
+	!Get the maximum smisc value
+	!Print SMISC values
+
+!======THE--END========THE--END========THE--END=========
+!ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

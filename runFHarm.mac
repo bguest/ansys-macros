@@ -10,13 +10,13 @@
 !  ARG1 = Results Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
 !  ARG2 = Start Frequency, ELSE:
-     FMin=0
+     FMin=25
 !  ARG3 = End Frequency, ELSE:
-     FMax=2000
+     FMax=25
 !  ARG4 = Number of Frequency Points, ELSE:
-     NumPts=1000
+     NumPts=1
 !  ARG5 = Structural Damping Ration (DMPRAT)
-     DampRatio=0.024
+     DampRatio=0.05
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

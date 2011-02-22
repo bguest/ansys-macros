@@ -7,7 +7,7 @@
 !	It also sums the strain energy so that strain contributions may be measured against eachother.
 !PRECONDITIONS:
 !	post_SE,LoadStep,Substep,Plot,OutFile
-!	ARG1 = 0, loads last loadstep
+!	ARG1: Load Step (Default = Not Set)
 !	ARG1 != 0, loads loadstep = ARG1
 !	ARG2 != 0, loads loadstep = ARG1, substep = ARG2
 !	ARG3 = 0, plot strain energy
@@ -24,9 +24,7 @@ fini
 /post1
 
 ! Set Number to Calculate Strain Energy At
-*if,ARG1,le,0,then
-	set,last
-*else
+*if,ARG1,ne,0,then
 	*if,ARG2,le,0,then
 		set,ARG1
 	*else
@@ -60,27 +58,21 @@ allsel
  
 ! Output File
 *if,ARG4,eq,0,then
-	/output,out_SE,txt
-/com
-/com       Strain Energies of All Element Types
-/com
-/com
-	/output
+	*cfopen,out_SE,out
+	*vwrite
+Element Type, Strain Energy (Unit Energy)
 	*do,ARG25,1,etyiqr(0,14),1
 		esel,none
 		esel,,mat,,ARG25
 		*if,elmiqr(0,13),gt,0,then
-			/output,out_SE,txt,,append
-			*msg,info,ARG25,SE_%ARG25%
-SE of E Type %I = %G (Unit Energy) 
-			/output
+			*vwrite,ARG25,SE_%ARG25%
+%I,%16.5G
 		*endif
 	*enddo
-	/output,out_SE,txt,,append
-	/com
-	*msg,info,SE_sum
-The Sum of the Strain Energies = %G (Unit Energy)    
-	/output
+	!Output Sum
+	*vwrite,SE_sum
+Total Energy,%16.5G
+	*CFCLOS
 *endif
  
 

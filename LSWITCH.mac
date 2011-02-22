@@ -7,6 +7,8 @@
 !NOTE: Line number may not be preserved
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
+kp1= $ kp2=
+
 *get,kp1,line,arg1,kp,1,
 *get,kp2,line,arg1,kp,2
 

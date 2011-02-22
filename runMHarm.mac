@@ -5,19 +5,19 @@
 !  Harmonic analysis on the slected model
 !PRECONDITIONS:
 !  Components of of nodes to be constrained for base
-!    moemenent specified as "BaseNodes"
+!    movement specified as "BaseNodes"
 !  ARG1 = Imput Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
 !  ARG2 = Number of Modes ELSE:
-     NModes=30
+     NModes=10
 !  ARG3 = Start Frequence: ELSE:
      FMin=0
 !  ARG4 = End Frequency ELSE:
      FMax=2000
 !  ARG5 = Number of Frequency Points per Mode, ELSE:
-     NumPts=250
+     NumPts=20
 !  ARG6 = Structural Damping Ration (DMPRAT)
-    DampRatio=0.024
+    DampRatio=0.05
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -49,7 +49,7 @@ CM,temp_Node,Node
 *ENDIF
 
 *IF,ARG4,NE,0,THEN !Set Maximum Frequency
-   FMin=ARG4
+   FMax=ARG4
 *ENDIF
 
 *IF,ARG5,NE,0,THEN !NumPts=(defined above)
@@ -105,5 +105,5 @@ NSUBST,NumPts              ! Number of harmonic solutions
 SAVE
 SOLVE                      ! Initiate solution
 /OUTPUT
-:END !=THE--END========THE--END========THE--END=========
+!======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
