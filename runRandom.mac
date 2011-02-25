@@ -48,6 +48,10 @@ CM,temp_Nodes,Node
 *IF,ARG4,NE,0,THEN !Set Maximum Frequency
    FMax=ARG4
 *ENDIF
+
+*if,ARG5,NE,0,then !Damping Ratio
+   DampRatio = ARG5
+*endif
 !------------------------------------------------------
 /TITLE,RANDOM VIBRATION (%direction%)
 !=================MODAL ANALYSIS=======================
