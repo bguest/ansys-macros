@@ -52,12 +52,12 @@ CM,temp_Nodes,Node
 *if,ARG5,NE,0,then !Damping Ratio
    DampRatio = ARG5
 *endif
-!------------------------------------------------------
+!-----------------------------------------------------
 /TITLE,RANDOM VIBRATION (%direction%)
-!=================MODAL ANALYSIS=======================
+!=================MODAL ANALYSIS======================
 /solu
 /nerr,,99999999
-!---------------Boundary Conditions--------------------
+!---------------Boundary Conditions-------------------
 CMSEL,S,BaseNodes          !Get Base Nodes
 D,All,direction
 CMSEL,A,temp_Nodes
