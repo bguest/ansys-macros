@@ -17,7 +17,7 @@
 !  ARG4 = End Frequency ELSE:
      FMax=2000
 !  ARG5 = Structural Damping Ration (DMPRAT)
-     DampRatio=0.05
+     DampRatio=0.015
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

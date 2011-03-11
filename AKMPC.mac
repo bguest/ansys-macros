@@ -10,17 +10,18 @@
 !			ELSE: User is requested to enter Keypoint
 !		ARG2 = First Area OR <0 for ALL Selected Areas
 !		ARG3 = Constraint Type
-!			0 --> Rigid Link (3DOF Constrained per Node)
-!			1 --> Rigid Beam (6DOF Constrained per Node)
+!			0 --> Rigid Beam (6DOF Constrained per Node)
+!			1 --> Rigid Link (3DOF Constrained per Node)
 !		ARG4 = Constraint Type
 !			0 --> Direct Elimination Method
 !			1 --> Lagrange Multiplier Method
 !POSTCONDITIONS:
 !	Elements Created / Modified:
-! 	Element type 997 = MPC184
+! 	Element type 997-994 = MPC184
 !		Element type 998 = "Zero" MASS21
 ! See Description...
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+save,saved,db
 CM,temp_node,NODE
 CM,temp_elem,elem
 CM,temp_area,AREA
@@ -29,13 +30,14 @@ CM,temp_KP,KP
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !MATERIALS
 !======================================================
-MatNum = 997 !MPC184: Rigid Link
+MatNum = 997-1*ARG3-2*ARG4 !MPC184: Rigid Link
 !------------------------------------------------------
 ET,MatNum,MPC184
-KEYOPT,MatNum,1,ARG3	!LINK / BEAM
-KEYOPT,MatNum,2,ARG4  !Constraitn TYpe 
-R,MatNum		!No Real Constants
+KEYOPT,MatNum,1,1-ARG3	!LINK / BEAM
+KEYOPT,MatNum,2,ARG4  	!Constraitn TYpe 
+R,MatNum						!No Real Constants
 MP,ALPX,MatNum,0.0	!CTE
+
 !======================================================
 MatNum = 998 !MASS21: TEMP MASS
 !======================================================
@@ -69,6 +71,7 @@ MP,DENS,MatNum,0.0
 !Create Element at Keypoint
 ESEL,none
 ATT,998
+kclear,masterKP
 KMESH,masterKP !Mesh Node
 NSLE
 *GET, masterNode, NODE, 0, NUM, MAX, , 

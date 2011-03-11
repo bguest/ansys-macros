@@ -45,7 +45,7 @@ IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 *ENDIF
 !-------------------------------------PTS Per Frequency
 *IF,ARG4,EQ,0,THEN
-   FrqPts = 10
+   FrqPts = 5
 *ELSE
    FrqPts = ARG4
 *ENDIF
@@ -56,10 +56,11 @@ IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 ! Calculate Response PSD
 /POST26          ! Enter POST26
 STORE,PSD,FrqPts ! Store frequency vector (variable 1)
+NUMVAR,200  
 
 ESOL, IAsmisc,elemNum,NELEM(elemNum,1),SMISC,smiscNum, 'psdSMISC'
+STORE,MERGE
 RPSD, IRsmisc, IAsmisc, ,1, 1, 'psdSMISC'
-
 PLVAR,IRsmisc !Plot
 
 !------------------------PRINT

@@ -14,7 +14,7 @@
 !     SHELL208, SHELL209, and SHELL281
 !   Layers Defined with SECDATA
 !   ARG1= Cell Size ELSE:
-       dc=1/4  !DEFAULT CELL SIZE
+       dc=3/16 !DEFAULT CELL SIZE
 !   ARG2= RESULTS DISPLAY
 !      0==> Highlight Failed Elements
 !      1==> Show margin
@@ -36,7 +36,7 @@ SAVE,saved,db,,ALL
 PI=ACOS(-1)
 N=
 !==========USER SETTINGS===============
-SF=3.0       !SAFTEY FACTOR
+SF=1.0       !SAFTEY FACTOR
 MUF=1.4        !MODEL UNCERTAINTY FACTOR
 !------------------SAVE CURRENT SETUP
 CM,temp_ELEM,ELEM
