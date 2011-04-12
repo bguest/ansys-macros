@@ -37,7 +37,7 @@ CM,temp_VOLU,VOLU
 	*MSG,UI
 	SELECT VOLUMES     
 
-	vsel,s,p
+	vsel,r,p
 *ELSEIF,ARG3,GT,0,THEN
 	vsel,s,,,ARG3
 *ENDIF
@@ -64,7 +64,7 @@ R,MNum          !No Real Constants
 *ELSE
    VCLEAR,ALL
    *IF,ARG2,NE,0,THEN
-   		ESIZE,
+   	ESIZE,
       ESIZE,Esez
    *ENDIF
    VATT,MNum,MNum,MNum

@@ -11,7 +11,7 @@
 !   ARG3 = Reference number of resulting variable
 !      ELSE reference number of resulting variable = 5
 !   ARG4 = Points per frequency
-!      ELSE Pts per frequency = 10
+!      ELSE Pts per frequency = 5
 !POSTCONDITIONS:
 !   PLOT OF PSD is displayed on screen
 !   PSD curve is output to file "OUT_P26Smisc.out"
@@ -53,6 +53,7 @@ IAsmisc = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 !===================PSD POST-PROCESSING================
 /GROPT,LOGX,ON  
 /GROPT,LOGY,ON
+set,3,1
 ! Calculate Response PSD
 /POST26          ! Enter POST26
 STORE,PSD,FrqPts ! Store frequency vector (variable 1)
@@ -60,7 +61,7 @@ NUMVAR,200
 
 ESOL, IAsmisc,elemNum,NELEM(elemNum,1),SMISC,smiscNum, 'psdSMISC'
 STORE,MERGE
-RPSD, IRsmisc, IAsmisc, ,1, 1, 'psdSMISC'
+RPSD, IRsmisc, IAsmisc, ,1, 2, 'psdSMISC'
 PLVAR,IRsmisc !Plot
 
 !------------------------PRINT

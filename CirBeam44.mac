@@ -1,0 +1,48 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!CirBeam44.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro creates a circular or tube 
+!	beam quickly with a s little code as possible, 
+!	customization over configuration.
+!PRECONDITIONS:
+!	ARG1: Resulting element property number
+!	ARG2: Outer Diameter [Default = 1]
+!	ARG3: Thickness [Default = 0]
+!	ARG4: Material (See _MAT.mac)[optional]
+!======================================================
+MatNum = ARG1
+
+*if,ARG2,gt,0,then ! Outer diameter
+	OD = ARG2
+*else
+	OD = 1
+*endif
+
+*if,ARG3,gt,0,then  ! Inner diameter
+	TKWALL = ARG3
+*else
+	TKWALL = OD/2
+*endif
+
+!PIPE16--BEAM44 REPLACEMENT
+ID= OD-2*TKWALL 
+AA= Pi/4*(OD**2-ID**2)
+IZZ= Pi/64*(OD**4-ID**4)
+IYY= IZZ
+TKZ= OD
+TKY= OD
+IXX= IZZ+IYY
+!------------------------------------------------------
+ET,MatNum,BEAM44
+R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE, , , , , , , 
+RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2, 
+
+!Set material
+*if,arg4,gt,0,then
+	_MAT,arg4,MatNum
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

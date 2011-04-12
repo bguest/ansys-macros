@@ -1,0 +1,46 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!SqBeam44.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPITON: This macro creates a square beam quickly
+!  with as little code as possible, customizaiton over
+!	configuration.
+!PRECONDITIONS:
+!	ARG1: Resulting element property number
+!	ARG2: Width (TKY, Y dimension)
+!	ARG3: Height (TKZ, Z dimension)
+!	ARG4: Thickness of tube [optional] NOT IMPLIMENTD YET
+!	ARG5: Material (See _MAT.mac)
+!======================================================
+
+MatNum = ARG1
+*if,ARG2,gt,0,then	!Set TKY
+   TKY = ARG2
+*else
+	TKY = 1
+*endif
+
+*if,ARG3,gt,0,then	!Set TKZ
+   TKZ = ARG3
+*else
+   TKY = 1
+*endif
+
+AA  = TKZ*TKY 			 !AREA
+IYY = (TKY*TKZ**3)/12
+IZZ = (TKZ*TKY**3)/12
+IXX = IYY+IZZ
+
+!------------------------------------------------------
+ET,MatNum,BEAM44
+R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE, , , , , , , 
+RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2, 
+
+!Set material
+*if,arg5,gt,0,then
+	_MAT,arg5,MatNum
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

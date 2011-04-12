@@ -14,7 +14,7 @@
 !     SHELL208, SHELL209, and SHELL281
 !   Layers Defined with SECDATA
 !   ARG1= Cell Size ELSE:
-       dc=3/16 !DEFAULT CELL SIZE
+       dc=3/8 !DEFAULT CELL SIZE (Largest)
 !   ARG2= RESULTS DISPLAY
 !      0==> Highlight Failed Elements
 !      1==> Show margin

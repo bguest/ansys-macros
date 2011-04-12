@@ -8,18 +8,32 @@
 !        802 -> Aluminum 7075-T73
 !        803 -> Titanium Ti-6Al-4V
 !        804 -> Stainless Steel A286
+!			805 -> Aluminum 6061-T651
+!			806 -> Stainless Steel 15-5 PH
+!	ARG3 = Resulting material number
+!		[Default] = ARG1
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
-G=386.09
-MNum=ARG1
-*IF,MNum,EQ,802,THEN
+*if,mFactor,gt,0,then	!Account for mass factors
+	GG=386.09/mFactor
+*else
+	GG=386.09
+*endif
+
+*if,arg2,gt,0,then	!Set material number
+	MNum = ARG2
+*else
+	MNum = ARG1
+*endif
+
+*IF,ARG1,EQ,802,THEN
 	!Material Definition: Aluminum 7075-T73
 	!REF: MIL-HDBK-5E
 	MP,EX,MNum,10.3e6        
 	MP,PRXY,MNum,0.33
-	MP,DENS,MNum,0.1/G
+	MP,DENS,MNum,0.1/GG
 	MP,ALPX,MNum,12.4E-6
 	!----FAILURE CRITERIA (YEILD STRENGTHS)
 	FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
@@ -28,23 +42,30 @@ MNum=ARG1
 	FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
 	FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
 	FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
-*ELSEIF,MNum,EQ,803,THEN
+*ELSEIF,ARG1,EQ,803,THEN
 	!Material Definition: Ti-6Al-4V
 	!REF: MIL-HDBK-5E
 	MP,EX,MNum,16.0e6        
 	MP,PRXY,MNum,0.34
-	MP,DENS,MNum,0.16/G
-*ELSEIF,MNum,EQ,804,THEN
+	MP,DENS,MNum,0.16/GG
+*ELSEIF,ARG1,EQ,804,THEN
 	!Material Definition: STAINLESS_STEEL_A286 !REF:PRO_E
 	MP,EX,MNum,2.91E+07
 	MP,PRXY,MNum,3.10E-01
-	MP,DENS,MNum,2.87E-01/G
+	MP,DENS,MNum,2.87E-01/GG
 	MP,ALPX,MNum,9.20E-06
-*elseif,MNum,EQ,805,THEN
+*elseif,ARG1,EQ,805,THEN
 	!Material Definition: Aluminum 6061-T651 REF: MIL-HDBK-5E
 	MP,EX,MNum,10.0e6   
 	MP,PRXY,MNum,0.33
-	MP,DENS,MNum,0.098/G
+	MP,DENS,MNum,0.098/GG
 	MP,ALPX,MNum,12.65E-6  !AT 70degF
+*elseif,ARG1,EQ,806,THEN
+	!--Material Definition: STAINLESS_STEEL_15-5PH(H1025)--
+	!REF:MIL-HDBK-5E,PRO_E
+	MP,EX,MNum,28.5e6
+	MP,PRXY,MNum,0.27
+	MP,DENS,MNum,0.283/GG 
+	MP,ALPX,MNum,6.3e-6
 *ENDIF
 !=======================CLEAN UP=======================

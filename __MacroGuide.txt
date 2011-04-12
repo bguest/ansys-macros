@@ -5,7 +5,7 @@ ATK GOLETA - ANSYS MACRO WRITING BEST PRACTICE GUIDE
 Brackets (<>) imply needs to be filled out by author, parentheses (()) imply a
 note about 
 
-1) All Macros/Input Decks should begin with the following header
+1) All Macros/Input Decks should begin with a header, for example:
 
    !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
    !<Macro Name>.mac
