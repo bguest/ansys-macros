@@ -11,9 +11,16 @@
 !	AREA NUMBERS = AREA NUMBERS + ARG1
 !	VOLU NUMBERS = VOLU NUMBERS + ARG1
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-NUMSTR, KP, ARG1
-NUMSTR,LINE,ARG1
-NUMSTR,AREA,ARG1
-NUMSTR,VOLU,ARG1
+*if,arg1,ne,0,then
+	NUMSTR, KP, ARG1
+	NUMSTR,LINE,ARG1
+	NUMSTR,AREA,ARG1
+	NUMSTR,VOLU,ARG1
+*else
+	numstr,kp,defa
+	numstr,line,defa
+	numstr,area,defa
+	numstr,volu,defa
+*endif
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

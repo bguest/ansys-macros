@@ -45,6 +45,8 @@ vsel,s,,,Sel_Volu,,,1 !SELECT AREAS, VOLUMES
 	CM,Sel_Area,AREA
 	CM,Sel_Line,LINE
 	CM,Sel_KP,KP
+	CM,Sel_elem,elem
+	CM,Sel_node,node
 *ENDIF
 !------------------------ADD TO SELECTED SET
 *IF,ARG1,EQ,'A',OR,ARG1,EQ,'a',THEN
@@ -59,6 +61,12 @@ vsel,s,,,Sel_Volu,,,1 !SELECT AREAS, VOLUMES
 
 	CMSEL,S,temp_KP
 	CMSEL,A,Sel_KP
+	
+	CMSEL,S,temp_elem
+	CMSEL,a,Sel_elem
+	
+	CMSEL,s,temp_node
+	CMSEL,a,Sel_node,
 *ENDIF
 
 !------------------------UNSELECT FROM SELECTED SET
@@ -74,11 +82,13 @@ vsel,s,,,Sel_Volu,,,1 !SELECT AREAS, VOLUMES
 
 	CMSEL,S,temp_KP
 	CMSEL,U,Sel_KP
+	
+	CMSEL,S,temp_elem
+	CMSEL,u,Sel_elem
+	
+	CMSEL,s,temp_node
+	CMSEL,u,Sel_node,
 *ENDIF
-
-!--RESUME TEMPORARY COMPONENTS
-CMSEL,S,temp_ELEM
-CMSEL,S,temp_NODE
 
 /REPLOT
 !=======================CLEAN UP=========================

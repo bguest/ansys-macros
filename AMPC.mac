@@ -23,12 +23,12 @@ CM,temp_area,AREA
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !MATERIALS
 !======================================================
-MatNum = 997 !MPC184: Rigid Link
+MatNum = 997-1*ARG3-2*ARG4 !MPC184: Rigid Link
 !------------------------------------------------------
 ET,MatNum,MPC184
-KEYOPT,MatNum,1,ARG3	!LINK / BEAM
-KEYOPT,MatNum,2,ARG4  !Constraitn TYpe 
-R,MatNum		!No Real Constants
+KEYOPT,MatNum,1,1-ARG3	!LINK / BEAM
+KEYOPT,MatNum,2,ARG4  	!Constraitn TYpe 
+R,MatNum						!No Real Constants
 MP,ALPX,MatNum,0.0	!CTE
 
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
