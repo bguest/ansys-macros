@@ -1,9 +1,9 @@
 /PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!KPRA.mac
+!KPRAL.mac
 !B.GUEST: bagvoo@gmail.com
 !DESCRIPTION: This macro projects a keypoint onto a
-!   flat area.
+!   flat area and connects two keypoints with at line
 !PRECONDITIONS:
 !	ARG1 = Keypoint to be projected.
 !		ELSE Prompted to select keypoint

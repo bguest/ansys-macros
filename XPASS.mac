@@ -5,39 +5,40 @@
 !DESCRIPTION: This macro expands a superelement 
 !PRECONDITIONS:
 !   ARG1=Super element to be expanded
-!   ARG2=Load Step
-!   ARG3=SubStep
-!   Superelement used in model.db !!!!
+!	 ARG2=Super Element Use Name
+!   ARG3=Load Step
+!   ARG4=SubStep
+!   Superelement used in file.db !!!!
 !POSTCONDITIONS:
 !   See Description
-!   LSTEP = Load Step Analized
+!   LSTEP = Load Slized
 !   SBSTEP = Substep Analized
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 SAVE,saved,db,,ALL
 !----------------------------------------GET PARAMETERS
 DBname=ARG1
-*IF,ARG2,EQ,0,THEN !------------GET LOADSTEP
+SEname=ARG2
+*IF,ARG3,EQ,0,THEN !------------GET LOADSTEP
    *GET,LSTEP,ACTIVE,,SET,LSTP
 *ELSE
-   LSTEP=ARG2
+   LSTEP=ARG3
 *ENDIF
-*IF,ARG3,EQ,0,THEN !------------GET SUBSTEP
+*IF,ARG4,EQ,0,THEN !------------GET SUBSTEP
    *GET,SBSTEP,ACTIVE,,SET,SBST
 *ELSE
-   SBSTEP=ARG3
+   SBSTEP=ARG4
 *ENDIF
-PARSAV,ALL,XPASS,   ! SAVE PARAMETERS
+PARSAV,ALL,XPASS,tmp   ! SAVE PARAMETERS
 !-------------------------RESUME SUPERELEMENT DATABASE
 FINISH
 /CLEAR               ! Clear the database
-PARRES,,XPASS        ! RESUME PARAMETERS
+PARRES,,XPASS,tmp    ! RESUME PARAMETERS
 /FILNAME,DBname      ! Change jobname
 RESUME               ! Restore generation pass database
-PARRES,,XPASS        ! RESUME PARAMETERS
+PARRES,,XPASS,tmp    ! RESUME PARAMETERS
 /SOLU                ! Enter SOLUTION
 EXPASS,ON            ! Activate expansion pass
-!SEEXP,DBname,file   ! Superelement name to be expanded (GEN, unless SETRAN used)
-SEEXP,SparEnd2,file  !<--
+SEEXP,SEname,file    ! Superelement name to be expanded (GEN, unless SETRAN used)
 
 EXPSOL,LSTEP,SBSTEP,,YES ! Load step options (mainly output controls)
 OUTRES,ALL,ALL

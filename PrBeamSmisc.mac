@@ -1,0 +1,67 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PrBeamSmisc.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro prints out the smisc values
+! for each of the currently selected beams
+!PRECONDITIONS:
+!	ARG1: 0 -> All 12 SMISC Values
+!			1 -> Max of SMISC1/7,SMISC2/8,ect.
+!POSTCONDITONS:
+!	OUT_BeamSmisc.out contains  smisc values 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+cm,temp_elem,elem
+
+!Get elemens and number of elements
+currentElem = $ *vget,currentElem,elem,,elist
+*get,curElemCount,elem,0,count
+
+!Alocate arrays
+*do,i,1,12
+   smisc%i% = $ *dim,smisc%i%,array,curElemCount
+*enddo
+
+!For each element for each smisc number, get
+! value and put it into an array
+*do,elemIdx,1,curElemCount,
+   *do,i,1,12,  
+   	*get,tempSmisc,elem,currentElem(elemIdx),smisc,i,
+   	smisc%i%(elemIdx) = tempSmisc
+   *enddo
+*enddo
+
+!Open File to write to
+*cfopen,OUT_BeamSmisc,out
+*if,arg1,eq,1,then
+	*vwrite
+Element Number,SMISC1/7,SMISC2/8,SMISC3/9,SMISC4/10,SMISC5/11,SMISC6/12,
+*else
+	*vwrite
+Element Number,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,SMISC7,SMISC8,SMISC9,SMISC10,SMISC11,SMISC12
+*endif
+
+*if,arg1,eq,1,then
+	
+	*do,elemIdx,1,curElemCount,
+	   *do,i,1,6,
+			smisc%i%(elemIdx) = max(abs(smisc%i%(elemIdx)),abs(smisc%i+6%(elemIdx)))
+		*enddo
+	*enddo
+	
+	!Print data	
+	*vwrite,currentElem(1),smisc1(1),smisc2(1),smisc3(1),smisc4(1),smisc5(1),smisc6(1),
+%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+
+*else
+	
+	*vwrite,currentElem(1),smisc1(1),smisc2(1),smisc3(1),smisc4(1),smisc5(1),smisc6(1),smisc7(1),smisc8(1),smisc9(1),smisc10(1),smisc11(1),smisc12(1)
+%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+
+*endif
+
+*cfclos
+cmsel,s,temp_elem
+	
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

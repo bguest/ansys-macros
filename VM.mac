@@ -6,6 +6,10 @@
 !   ARG1=Load Step to be ploted
 !     ELSE Last load spep is ploted
 !   ARG2=SubStep to be be ploted
+!   ARG3=Display Type
+!		0: Do not overlay undeformed structure display
+!		1: Overlay displaced contour plot with undeformed display (appearance is system-dependent)
+!		2: Overlay displaced contour plot with undeformed edge display (appearance is system-dependent)
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -17,6 +21,6 @@
 *ENDIF
 
 /title,Von-Mises Stress
-PLESOL,S,EQV
+PLNSOL,S,EQV,ARG3
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
