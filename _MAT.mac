@@ -5,12 +5,12 @@
 !  number
 !PRECONDITIONS:
 !  ARG1 = Material Number
-!        802 -> Aluminum 7075-T73
-!        803 -> Titanium Ti-6Al-4V
-!        804 -> Stainless Steel A286
-!			805 -> Aluminum 6061-T651
-!			806 -> Stainless Steel 15-5 PH
-!	ARG3 = Resulting material number
+!		802 -> Aluminum 7075-T73
+!		803 -> Titanium Ti-6Al-4V
+!		804 -> Stainless Steel A286
+!		805 -> Aluminum 6061-T651
+!		806 -> Stainless Steel 15-5 PH
+!	ARG2 = Resulting material number
 !		[Default] = ARG1
 !POSTCONDITIONS:
 !  See Description.

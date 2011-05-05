@@ -15,6 +15,8 @@
 !		ARG4 = Constraint Type
 !			0 --> Direct Elimination Method
 !			1 --> Lagrange Multiplier Method
+!		ARG5 = Number of AKMPC's to be created
+!			(use cation with this.)
 !POSTCONDITIONS:
 !	Elements Created / Modified:
 ! 	Element type 997-994 = MPC184
@@ -46,56 +48,62 @@ R,MatNum,0.0,0.0,0.0
 !------------------Dumbie Material-----------------
 MP,DENS,MatNum,0.0
 
-!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!GET MASTER KEYPOINT
-*IF,ARG1,EQ,0,THEN
-	*MSG,UI
-	Select Master Keypoint
-	
-	KSEL,R,P
-	*GET,masterKP,KP,O,NUM,MAX  !Get Highest Selected KP
-*ELSE
-	MasterKP = ARG1
-*ENDIF
+*if,arg5,eq,0,then
+	num_akmpc = 1
+*endif
 
-!GET AREAS
-*IF,ARG2,EQ,0,THEN
-	*MSG,UI
-	Select Areas
-	
-	ASEL,R,P
-*ELSEIF,ARG2,GT,0,THEN
-	ASEL,S,,,ARG2
-*ENDIF    !ELSE ASSUME AREAS ARE SELECTED
-
-!Create Element at Keypoint
-ESEL,none
-ATT,998
-kclear,masterKP
-KMESH,masterKP !Mesh Node
-NSLE
-*GET, masterNode, NODE, 0, NUM, MAX, , 
-
-!Get List of Nodes on Surface
-NSLA,S,1 !Select Nodes
-NSEL,U,,,masterNode
-*GET,countNodes,NODE,,Count
-nodeNum= $ *VGET,nodeNum,NODE,,NLIST
-
-!Create Spider Web
-NSEL,A,,,masterNode  !Reselect MasterNode
-ATT,997
-*do,i,1,countNodes
-	NDIST,masterNode,nodeNum(i)  !MAKE SURE ELEMENT HAS
-	*IF,_return,GT,0,THEN        !^Length
-		E,masterNode,nodeNum(i)
+*do,akmpc_idx,1,num_akmpc
+	!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+	!GET MASTER KEYPOINT
+	*IF,ARG1,EQ,0,THEN
+		*MSG,UI
+		Select Master Keypoint
+		
+		KSEL,R,P
+		*GET,masterKP,KP,O,NUM,MAX  !Get Highest Selected KP
+	*ELSE
+		MasterKP = ARG1
 	*ENDIF
-*ENDDO
-
-CMSEL,A,temp_Area
-CMSEL,A,temp_KP
+	
+	!GET AREAS
+	*IF,ARG2,EQ,0,THEN
+		*MSG,UI
+		Select Areas
+		
+		ASEL,R,P
+	*ELSEIF,ARG2,GT,0,THEN
+		ASEL,S,,,ARG2
+	*ENDIF    !ELSE ASSUME AREAS ARE SELECTED
+	
+	!Create Element at Keypoint
+	ESEL,none
+	ATT,998
+	kclear,masterKP
+	KMESH,masterKP !Mesh Node
+	NSLE
+	*GET, masterNode, NODE, 0, NUM, MAX, , 
+	
+	!Get List of Nodes on Surface
+	NSLA,S,1 !Select Nodes
+	NSEL,U,,,masterNode
+	*GET,countNodes,NODE,,Count
+	nodeNum= $ *VGET,nodeNum,NODE,,NLIST
+	
+	!Create Spider Web
+	NSEL,A,,,masterNode  !Reselect MasterNode
+	ATT,997
+	*do,i,1,countNodes
+		NDIST,masterNode,nodeNum(i)  !MAKE SURE ELEMENT HAS
+		*IF,_return,GT,0,THEN        !^Length
+			E,masterNode,nodeNum(i)
+		*ENDIF
+	*ENDDO
+	
+	CMSEL,A,temp_Area
+	CMSEL,A,temp_KP
+*enddo
 CMSEL,A,temp_Node
 cmsel,a,temp_elem
-	
+
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
