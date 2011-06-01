@@ -1,4 +1,3 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_MAT.mac
 !DESCRIPTION: Creates a standard material from a single
@@ -35,13 +34,13 @@
 	MP,PRXY,MNum,0.33
 	MP,DENS,MNum,0.1/GG
 	MP,ALPX,MNum,12.4E-6
-	!----FAILURE CRITERIA (YEILD STRENGTHS)
-	FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
-	FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
-	FC,MNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
-	FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
-	FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
-	FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
+	! !----FAILURE CRITERIA (YEILD STRENGTHS)
+	! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
+	! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
+	! FC,MNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
+	! FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
+	! FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
+	! FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
 *ELSEIF,ARG1,EQ,803,THEN
 	!Material Definition: Ti-6Al-4V
 	!REF: MIL-HDBK-5E

@@ -1,4 +1,3 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !KPRL.mac
 !B.GUEST: bagvoo@gmail.com
@@ -8,8 +7,8 @@
 !	USING ANSYS V.11
 !	ARG1 = Keypoint to be projected.
 !		ELSE Prompted to select keypoint
-!	ARG2 = Line for keypoint to be projected to
-!		ELSE prompted to select line
+!	ARG2 = Lines for keypoints to be projected to
+!		ELSE prompted to select lines
 !	ARG3 = Keypont number of point created
 !POSTCONDITIONS: Keypoint is created on line projected
 !   from selected key point
@@ -32,19 +31,28 @@ CM,temp_KP,KP
    kp1(1)=ARG1
    NumKP=1
 *ENDIF
-!------------------SELECT LINE
+!------------------SELECT LINEs
 *IF,ARG2,EQ,0,THEN
 	*MSG,UI
-	SELECT 1 LINE
+	SELECT LINES
 
 	LSEL,R,P
-	*GET,line1,LINE,0,NUM,MAX  !GET SELECTED LINE
+	*GET,NumLine,Line,0,COUNT !Get Numbetr of lines
+	line1 = $ *vget,line1,line,,LLIST,
 	CMSEL,S,temp_LINE
 *ELSE
-	line1=ARG2
+	line1 = $ *dim,line1,array,1
+	line1(1)=arg2
+	numLine=1
 *ENDIF
-*GET,KP2,LINE,Line1,KP,1   !GET KP AT ONE END
-*GET,KP3,LINE,Line1,KP,2   !GET KP AT OTHER END
+
+!Get Keypoints at ends of lines
+KP2 = $ *dim,KP2,array,numLine
+KP3 = $ *dim,KP3,array,numLine
+*do,i,1,numLine,
+   *GET,KP2(i),LINE,Line1(i),KP,1   !GET KP AT ONE END
+	*GET,KP3(i),LINE,Line1(i),KP,2   !GET KP AT OTHER END
+*enddo
 
 *IF,ARG3,EQ,0,THEN !----------------------OUT KP
 	kpOut = ' '
@@ -52,42 +60,43 @@ CM,temp_KP,KP
   kpOut = ARG3
 *ENDIF
 
-*DO,ink,1,NumKP
-   !------------------GET LOCATIONS OF KP
-   *GET,aX,KP,KP1(ink),LOC,X	!KP1 location
-   *GET,aY,KP,KP1(ink),LOC,Y
-   *GET,aZ,KP,KP1(ink),LOC,Z
-
-   *GET,bX,KP,KP2,LOC,X	!KP2 location
-   *GET,bY,KP,KP2,LOC,Y
-   *GET,bZ,KP,KP2,LOC,Z
-
-   *GET,cX,KP,KP3,LOC,X	!KP3 location
-   *GET,cY,KP,KP3,LOC,Y
-   *GET,cZ,KP,KP3,LOC,Z
-   
-   !-------------------CALCULATE R
-   ab=ax*bx+ay*by+az*bz    !a.b
-   ac=ax*cx+ay*cy+az*cz    !a.c
-   bb=bx*bx+by*by+bz*bz    !b.b
-   bc=bx*cx+by*cy+bz*cz    !b.c
-   cc_=cx*cx+cy*cy+cz*cz    !c.c
-   
-   r=(-ab+bc+ac-cc_)/(-bb+2*bc-cc_)  
-   
-   !calculate location of new KP
-   
-   xx=cx+r*(bx-cx)
-   xy=cy+r*(by-cy)
-   xz=cz+r*(bz-cz)
-   
-   KSEL,NONE
-   K,kpOut,xx,xy,xz  !CREATE NEW KP
-   *GET,NewKP,KP,,NUM,MAX   !GET NEW KP NUMBER
-   CMSEL,S,temp_KP	    !RESET DISPLAY
-   KSEL,A,,,NewKP	    !ADD NEW KP TO SELECTED SET
-   CM,temp_KP,KP            !REFORM KP                      
-*ENDDO
+*do,lineIdx,1,numLine
+	*DO,ink,1,NumKP
+	   !------------------GET LOCATIONS OF KP
+	   *GET,aX,KP,KP1(ink),LOC,X	!KP1 location
+	   *GET,aY,KP,KP1(ink),LOC,Y
+	   *GET,aZ,KP,KP1(ink),LOC,Z
+	
+	   *GET,bX,KP,KP2(lineIdx),LOC,X	!KP2 location
+	   *GET,bY,KP,KP2(lineIdx),LOC,Y
+	   *GET,bZ,KP,KP2(lineIdx),LOC,Z
+	
+	   *GET,cX,KP,KP3(lineIdx),LOC,X	!KP3 location
+	   *GET,cY,KP,KP3(lineIdx),LOC,Y
+	   *GET,cZ,KP,KP3(lineIdx),LOC,Z
+	   
+	   !-------------------CALCULATE R
+	   ab=ax*bx+ay*by+az*bz    !a.b
+	   ac=ax*cx+ay*cy+az*cz    !a.c
+	   bb=bx*bx+by*by+bz*bz    !b.b
+	   bc=bx*cx+by*cy+bz*cz    !b.c
+	   cc_=cx*cx+cy*cy+cz*cz   !c.c
+	   
+	   r=(-ab+bc+ac-cc_)/(-bb+2*bc-cc_)  
+	   
+	   !calculate location of new KP
+	   xx=cx+r*(bx-cx)
+	   xy=cy+r*(by-cy)
+	   xz=cz+r*(bz-cz)
+	   
+	   KSEL,NONE
+	   K,kpOut,xx,xy,xz  		!CREATE NEW KP
+	   *GET,NewKP,KP,,NUM,MAX  !GET NEW KP NUMBER
+	   CMSEL,S,temp_KP	    	!RESET DISPLAY
+	   KSEL,A,,,NewKP	    		!ADD NEW KP TO SELECTED SET
+	   CM,temp_KP,KP           !REFORM KP                      
+	*ENDDO
+*enddo
 !=======================CLEAN UP=========================
 !--DELETE TEMPORARY COMPONENTS
 CMDELE,temp_LINE

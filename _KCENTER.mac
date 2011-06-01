@@ -1,4 +1,3 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_KCENTER.mac
 !B.GUEST - benguest@gmail.com
@@ -31,18 +30,18 @@ CM,temp_LINE,LINE
 	*VGET,arcLines,LINE,,LLIST 
 	CMSEL,A,temp_line
 *ELSE
-	*DIM,arcLines,ARRAY,1
+	arcLines= $ *DIM,arcLines,ARRAY,1
 	arcLines(1) = ARG1
 	numArcs = 1
 *ENDIF
 
 !Create Keypoints
 *DO,i,1,numArcs
-	*GET,KP1,LINE,arcLines(i),KP,1   !GET KP AT ONE END
-	*GET,KP3,LINE,arcLines(i),KP,2   !GET KP AT OTHER END
+	KP1= $ *GET,KP1,LINE,arcLines(i),KP,1   !GET KP AT ONE END
+	KP3= $ *GET,KP3,LINE,arcLines(i),KP,2   !GET KP AT OTHER END
 	
 	KL,arcLines(i),0.5 !Create Keypoint on line for KCENTER
-	KP2 = _return  !Get Keypoint Number
+	KP2= $ KP2 = _return  !Get Keypoint Number
 	
 	KCENTER,KP,KP1,KP2,KP3
 	

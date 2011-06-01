@@ -1,4 +1,3 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_LDELEmac
 !B.GUEST: bagvoo@gmail.com
@@ -14,7 +13,6 @@
 !   deleted
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 SAVE,SAVED,DB
-/NOPR		   !PREVENT ERROR MESSAGES
 FINISH
 /PREP7
 !------------------SAVE CURRENT SETUP
@@ -41,6 +39,5 @@ cMSEL,S,temp_KP
 !--DELETE TEMPORARY COMPONENTS
 CMDELE,temp_LINE
 CMDELE,temp_KP
-/GOPR			!TURN ERROR MESSAGES ON
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

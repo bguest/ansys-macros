@@ -1,10 +1,10 @@
-/PMACRO
+!/pmacro <-- Causes longer load time.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !AKMPC.mac
 !DESCRIPTION: This macro creates a "Spider Web" of 
 !	MPCs from a Keypoint to an area or areas
 !PRECONDITIONS:
-!	AKMPC,Keypoint,Area,Beam,Lagrange
+!	AKMPC,Keypoint,Area,Link?,Lagrange?
 !	Arguments:
 !		ARG1 = Keypoint for Spiderweb Center
 !			ELSE: User is requested to enter Keypoint
@@ -20,7 +20,7 @@
 !POSTCONDITIONS:
 !	Elements Created / Modified:
 ! 	Element type 997-994 = MPC184
-!		Element type 998 = "Zero" MASS21
+!	Element type 998 = "Zero" MASS21
 ! See Description...
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 save,saved,db
@@ -91,7 +91,7 @@ MP,DENS,MatNum,0.0
 	
 	!Create Spider Web
 	NSEL,A,,,masterNode  !Reselect MasterNode
-	ATT,997
+	ATT,997-1*ARG3-2*ARG4
 	*do,i,1,countNodes
 		NDIST,masterNode,nodeNum(i)  !MAKE SURE ELEMENT HAS
 		*IF,_return,GT,0,THEN        !^Length

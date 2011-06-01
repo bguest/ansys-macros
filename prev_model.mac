@@ -17,7 +17,7 @@ fini
 /prep7
 
 ! Creates components from previous model
-allsel
+!allsel
 cm,N_Prev,node
 cm,E_Prev,elem
 cm,K_Prev,kp

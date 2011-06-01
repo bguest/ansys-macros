@@ -11,7 +11,7 @@
 !======================================================
 
 MatNum = ARG1
-*if,ARG2,gt,then !Set thickness
+*if,ARG2,gt,0,then !Set thickness
 	T_ = ARG2
 *else
 	T_ = 1
@@ -24,6 +24,8 @@ R,MatNum,T_,T_,T_,T_
 *if,arg3,gt,0,then
 	_MAT,arg3,MatNum
 *endif
+
+ATT,matNum
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

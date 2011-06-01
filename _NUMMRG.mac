@@ -24,6 +24,10 @@
 	CMSEL,u,noMrgKP
 *endif
 
+*if,flagNoMrgNode,EQ,1,then
+	CMSEL,u,noMrgNodes
+*endif
+
 *DO,loop,1,5 
 	*IF,ARG3,EQ,1,THEN
 		NUMMRG,NODE,ARG2,,,HIGH
