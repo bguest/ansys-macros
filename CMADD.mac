@@ -1,0 +1,34 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! CMADD.mac
+! B.Guest - BenGuest@gmail.com
+! DESCRIPTION: This macro adds things (volumes, areas,
+!	lines, keypoints, elements or nodes) to a component
+!	group.
+! PRECONDTIONS:
+!	ARG1 = component type
+!		'volu' --> volumes,   'area' --> Areas, 
+!		'line' --> lines,     'kp' --> Keypoints,
+!		'elem' --> elements , 'node' --> nodes
+!	ARG2 = component name (must be a string)
+!	ARG3-ARG5: first, last and incrment of things
+!======================================================
+compType = ARG1
+compLetter = STRSUB(compType,1,1)
+compName = ARG2
+
+cm,tmp%compType%,compType		!Save original state
+%compLetter%sel,s,,,ARG3,ARG4,ARG5	 !Select Things
+
+!Add to component if it exists
+*if,flag_%compName%,ne,1,then
+	flag_%compName% = 1
+*else
+	cmsel,a,compName
+*endif
+cm,compName,compType
+
+cmsel,s,tmp%compType%		!Resume original State
+cmdele,tmp%compType%			!Delete temp component
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

@@ -1,0 +1,42 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! ATTMESH.mac
+! B.Guest - benguest@gmail.com
+! DESCRIPTION: This model meshes an area based on aatt
+! PRECONDITIONS: 
+!	ARG1: Type of Mesh: 'kp','line','area','volu'
+!	ARG2: Element Type Number
+!	ARG3: Material Number
+!	ARG4: First Thing (-1 implies all slected things)
+!	ARG5: Last Thing
+!	ARG6: Thing Increment
+!	ARG7: Keypoint Orientation for lines
+!======================================================
+
+geomType = ARG1
+lett		= strsub(geomType,1,1)
+type  	= ARG2
+mnum 		= ARG3 
+
+!Error Checking
+*if,type,LE,0,or,mnum,LE,0,THEN
+	*msg,note
+ATTMESH command not issued because either material or element type was non-positive
+	*go,:RETURN
+*endif
+
+*if,ARG4,gt,0,then					!Deal with slection of things
+	CM,temp_cm,geomType
+	%lett%sel,s,,,ARG4,ARG5,ARG6,
+*endif
+
+%lett%att,mnum,type,type,,ARG7
+%lett%mesh,all							!Mesh Things
+
+*if,ARG4,gt,0,then
+	cmsel,s,temp_cm
+	cmdele,temp_cm
+*endif
+	
+:RETURN
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

@@ -1,0 +1,11 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!Backup.mac
+!B.Guest - BenGuest@gmail.com
+!DESCRIPTION: backs up current model to .iges and .cdb
+!======================================================
+
+CDOPT,IGES  
+CDWRITE,ALL,'file','cdb',,'file','iges' 
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
