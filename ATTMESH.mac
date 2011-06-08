@@ -27,12 +27,15 @@ ATTMESH command not issued because either material or element type was non-posit
 *if,ARG4,gt,0,then					!Deal with slection of things
 	CM,temp_cm,geomType
 	%lett%sel,s,,,ARG4,ARG5,ARG6,
+*elseif,ARG4,eq,0,then
+	CM,temp_cm,geomType
+	%lett%sel,r,p
 *endif
 
 %lett%att,mnum,type,type,,ARG7
 %lett%mesh,all							!Mesh Things
 
-*if,ARG4,gt,0,then
+*if,ARG4,ge,0,then
 	cmsel,s,temp_cm
 	cmdele,temp_cm
 *endif

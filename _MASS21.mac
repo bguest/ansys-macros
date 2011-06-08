@@ -1,0 +1,28 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! _MASS21.mac
+! B.Guest - BenGuest@gmail.com
+! DESCRIPTION: This macro creates a mass 21 element
+!	with a constant mass and principal inertias
+! PRECONDITIONS:
+!	ARG1: Material Number
+!	ARG2: Mass
+!	ARG3: I1
+!	ARG4: I2
+!	ARG5: I3
+!======================================================
+MatNum = ARG1
+mass = ARG2
+I1 = ARG3
+I2 = ARG4
+I3 = ARG5
+
+*if,I1,eq,0,then  !Assume I2 and I3 are zero too
+	ET,matNum,mass21,,,2
+	R,matNum,mass
+*else
+	ET,MatNum,mass21
+	R,MatNum,mass,mass,mass,I1,I2,I3
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

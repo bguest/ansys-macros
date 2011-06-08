@@ -9,6 +9,7 @@
 !		804 -> Stainless Steel A286
 !		805 -> Aluminum 6061-T651
 !		806 -> Stainless Steel 15-5 PH
+!		807 -> G10 (XY/Z) Orthotropic
 !	ARG2 = Resulting material number
 !		[Default] = ARG1
 !POSTCONDITIONS:
@@ -66,5 +67,11 @@
 	MP,PRXY,MNum,0.27
 	MP,DENS,MNum,0.283/GG 
 	MP,ALPX,MNum,6.3e-6
+*elseif,ARG1,eq,807,then
+	! G10 Orthotropic material (See 110602_G10_Material Review)
+	MP,EX,MNum,2.7e6*psi
+	MP,EY,MNum,2.7e6*psi
+	MP,EZ,MNum,2.3e6*psi
+	MP,DENS,MNum,0.065/GG
 *ENDIF
 !=======================CLEAN UP=======================

@@ -29,6 +29,7 @@ CM,temp_KP,KP
    kp0= $ *VGET,kp0,KP,,KLIST   !V11.0 Get selected Keypoints
    CMSEL,S,temp_KP
 *ELSE
+	numKp = 1
    kp0= $ *DIM,kp0,ARRAY,1
    kp0(1)=ARG1
 *ENDIF
@@ -146,7 +147,6 @@ CMDELE,temp_KP
 *SET,ink
 *SET,kp0
 !*SET,kp1  !RETURNED
-*SET,line1
 *set,R10u1
 *SET,R10u2
 !======THE--END========THE--END========THE--END=========

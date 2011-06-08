@@ -99,6 +99,7 @@ KP3 = $ *dim,KP3,array,numLine
 *enddo
 !=======================CLEAN UP=========================
 !--DELETE TEMPORARY COMPONENTS
+line1 = $
 CMDELE,temp_LINE
 CMDELE,temp_KP
 
