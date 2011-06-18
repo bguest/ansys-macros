@@ -16,7 +16,7 @@
 !  ARG4 = Number of Frequency Points, ELSE:
      NumPts=1
 !  ARG5 = Structural Damping Ration (DMPRAT)
-     DampRatio=0.05
+     DampRatio=0.015
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&

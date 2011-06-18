@@ -1,5 +1,4 @@
-/PMACRO
-!!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !runRandom.mac
 !Ben Guest: benguest@gmail.com
 !DESCRIPTION: This macro preforms a random vibration 
@@ -52,8 +51,7 @@ CM,temp_Nodes,Node
 *if,ARG5,NE,0,then !Damping Ratio
    DampRatio = ARG5
 *endif
-!-----------------------------------------------------
-/TITLE,RANDOM VIBRATION (%direction%)
+
 !=================MODAL ANALYSIS======================
 /solu
 /nerr,,99999999
@@ -105,6 +103,6 @@ SAVE
 SOLVE
 /OUTPUT
 SAVE
-
+kLastAnalysis = 2 !For _DISP,VM, ect.
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

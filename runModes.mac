@@ -85,5 +85,6 @@ OUTRES,all,all
 	psolve,eigexp
 *ENDIF
 /OUTPUT
+kLastAnalysis = 1 !For _DISP, VM, ect.
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

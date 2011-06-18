@@ -14,9 +14,16 @@
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
 /POST1
 *IF,ARG1,EQ,0,THEN
-   SET,LAST
+	*if,kLastAnalysis,EQ,1,then
+	   set,1,1
+   *elseif,kLastAnalysis,eq,2,then
+   	set,3,1
+	*else
+	   SET,LAST
+   *endif
 *ELSE
    SET,ARG1,ARG2
 *ENDIF

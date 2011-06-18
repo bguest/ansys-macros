@@ -2,9 +2,9 @@
 !_AMESH.mac
 !DESCRIPTION: This meshes an AREA
 !PRECONDITIONS:
-!	ARG1 = AREA to be meshed (99 For ALL)
-! 	ELSE, User prompted to select Areas
-! ARG2 = Material Number of Line to be meshed
+!	ARG1 = Area to be meshed (-1 For ALL)
+! 		ELSE, User prompted to select Areas
+!  ARG2 = Material Number of Area to be meshed
 !		ELSE, User is prompted for mat number
 !	ARG3 = Element Size
 !	ARG4 = Mapped Mesh Flag
@@ -13,56 +13,58 @@
 !POSTCONDITIONS:
 !  See Description.
 !NOTES
-! NOT COMPLETE <--
+! THIS MACRO HAS BEEN DEPRECATED!
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!PARSAV,ALL,F:\_ANSYS\TEMP\_AMESH.txt  !Save Parameters
 /NOPR
 /PREP7
 !-------------SAVE CURRENT SETUP
-CM,temp_LINE,LINE
+CM,temp_Area,LINE
+
+*IF,ARG1,EQ,0,THEN !--------SELECT Area
+	*MSG,UI
+	SELECT VOLUMES     
+
+	vsel,r,p
+*ELSEIF,ARG1,GT,0,THEN
+	vsel,s,,,ARG1
+*ENDIF
 
 *IF,ARG2,EQ,0,THEN !---------------GET MatNum
-   *ASK,ans,ENTER MAT NUMBER,0
+   *ASK,ans,Enter element type number,0
    MNum=ans
 *ELSE
    MNum=ARG2
 *ENDIF 
 
-*IF,ARG3,EQ,0,THEN  !---GET NUMBER OF ELEMENTS
-   LNum=1
-*ELSE
-   LNum=ARG3
+*if MNum,EQ,0,then !Error Checking
+	*MSG,WRN
+	No material number provided
+	
+	*GO,:end
+*endif
+
+*IF,ARG3,NE,0,THEN !--------------GET ESize
+   ESez=ARG3
 *ENDIF
 
-*IF,MNum,EQ,0,THEN    !-----IF NO MatNum Provided
-   *MSG,WRN             !Warn User
-   NO MATNUM PROVIDED
-                        !Do Nothing
-*ELSE                   !----ELSE
-   *IF,ARG1,EQ,0,THEN
-      *MSG,UI
-      SELECT LINE TO BE MESHED
-   
-      LSEL,r,p
-   *ELSE
-      LSEL,S,,,ARG1
-   *ENDIF
-   LCLEAR,ALL
-   LESIZE,ALL,,,LNum,,1
-   LATT,MNum,MNum,MNum,,ARG4
-   LMESH,ALL
-*ENDIF
+aclear,all
+*if,ARG3,GT,0,then
+   ESIZE,ESEZ
+*endif
+aatt,MNum,MNum,MNum,,MNum
+amesh,all
 
 !=======================CLEAN UP=======================
 !--RESUME TEMPORARY COMPONENTS
-CMSEL,A,temp_LINE
-/REPLOT
+CMSEL,A,temp_Area
 
 !--DELETE TEMPORARY COMPONENTS
-CMDELE,temp_LINE
+CMDELE,temp_area
 
+*MSG,WARN
+THIS METHOD HAS BEEN DEPRECATED, RECOMEND USING _SHELL63.mac and or ATTMESH.mac
 
 !PARRES,,D:\_ANSYS\TEMP\_LMESH.txt  !Resume Saved Parameters
-/GOPR
+:END
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

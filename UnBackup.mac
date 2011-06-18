@@ -1,0 +1,16 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UnBackup.mac
+! B.Guest - BenGuest@gmail.com
+! DESCRIPTION: The macro resumes from a .cdb and .iges
+!	file, it should be used in conjunction with the 
+!	backup.mac
+!======================================================
+fini
+/cle
+
+/PREP7  
+CDOPT,IGES  
+CDREAD,ALL,,'cdb',,,'iges'  
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

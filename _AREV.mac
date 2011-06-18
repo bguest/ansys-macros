@@ -12,8 +12,6 @@
 !POSTCONDITIONS:
 !  A bunch of reversed areas
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-/NERR,0
-!PARSAV,ALL,D:\_ANSYS\TEMP\_AREV.txt  !Save Parameters
 CM,temp_Area,AREA  !Save Currently Selected Areas
 
 !GET AREA------------------------
@@ -51,7 +49,5 @@ AA= $ *VGET,AA,AREA,,ALIST
 
 :END
 CMSEL,S,temp_area  !resume previously selected areas
-!PARRES,,D:\_ANSYS\TEMP\_AREV.txt  !Resume Saved Parameters
-/NERR,5
-!:END !=THE--END========THE--END========THE--END=========
+!======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

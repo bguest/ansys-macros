@@ -35,6 +35,7 @@
 !                - 1, use CMS procedure
 !          The node component STRESS is the nodes used to determine the element
 !          facets for display (and the nodes for stresses if kStress>0)
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 SAVE,SAVED,DB,,ALL  !FOR UNDO ADDED
 /UNITS,BIN          !SET UNITS

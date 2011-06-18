@@ -1,4 +1,3 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_AGEN_KTK.mac
 !B.GUEST: benguest@gmail.com
@@ -14,12 +13,8 @@
 !POSTCONDITIONS'S
 !	Line created with offset from keypoint 1 to
 !		keypoint 2
-!NOTES: 
-!	User should change the location of the PARSAV and 
-!	PARRES to a temp directory on their computer.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
-!PARSAV,ALL,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Save Parameters
 CM,temp_KP,KP
 CM,temp_AREA,AREA
 
@@ -84,6 +79,5 @@ KTKOff = $ *DIM,KTKOff,ARRAY,3   !GET OFFSET
 	AGEN,2,KTKAreas(i),,,KTKOff(1),KTKOff(2),KTKOff(3)
 *enddo
 
-!PARRES,,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Resume Saved Parameters
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

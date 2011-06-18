@@ -1,7 +1,6 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !BUCK.mac
-!B.GUEST: bagvoo@gmail.com
+! B.GUEST: benguest@gmail.com
 !DESCRIPTION: This macro calculates the buckling failure
 !   criteria for a honeycomb sandwich structure.
 !ASSUMPTIONS:
@@ -288,14 +287,15 @@ MaxFC=0     !SET Failure Criteria at 0
       !================FAILED DREAMS!==================
       !---MAXIMUM Failure Criteria---------------------
       *IF,ARG3,EQ,0,THEN 
-         /TITLE,Maximum Buckling Criteria
          *IF,ARG2,EQ,0,THEN !DISPLAYED FAILED ELEMENTS
+         	/TITLE, Failed Minimum Buckling Criteria
             *DO,j,1,6
                *IF,MS(j),GT,1,THEN
                   elmFail(i)=1
                *ENDIF
             *ENDDO
          *ELSEIF,ARG2,EQ,1,THEN !SHOW Failure Criteria
+         	/title, Maximum "Buckling Stress"
             elmFail(i)=MS(1)
             *DO,j,2,6
                *IF,MS(j),GT,elmFail(i),THEN
