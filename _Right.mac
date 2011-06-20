@@ -1,0 +1,10 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! _Right.mac
+! B.Guest - benguest@gmail.com
+! Description: sets view to right view
+!======================================================
+/VIEW, 1 ,-1
+/ANG, 1 
+/REP,FAST   
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
