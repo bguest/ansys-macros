@@ -14,7 +14,7 @@
 !   LSTEP = Load Slized
 !   SBSTEP = Substep Analized
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
+_save
 !----------------------------------------GET PARAMETERS
 DBname=ARG1
 SEname=ARG2

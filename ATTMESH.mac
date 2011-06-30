@@ -11,6 +11,8 @@
 !	ARG6: Thing Increment
 !	ARG7: Keypoint Orientation for lines
 !======================================================
+_SAVE
+/prep7
 
 geomType = ARG1
 lett		= strsub(geomType,1,1)
@@ -32,6 +34,7 @@ ATTMESH command not issued because either material or element type was non-posit
 	%lett%sel,r,p
 *endif
 
+%lett%clear,all
 %lett%att,mnum,type,type,,ARG7
 %lett%mesh,all							!Mesh Things
 

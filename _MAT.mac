@@ -3,6 +3,7 @@
 !DESCRIPTION: Creates a standard material from a single
 !  number
 !PRECONDITIONS:
+!	mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  ARG1 = Material Number
 !		802 -> Aluminum 7075-T73
 !		803 -> Titanium Ti-6Al-4V

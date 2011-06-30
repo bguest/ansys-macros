@@ -14,9 +14,7 @@
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-*IF,FlagNoReadWrite,NE,1,THEN
-	SAVE,saved,db
-*ENDIF
+_save
 /NOPR
 /PREP7
 !-------------SAVE CURRENT SETUP

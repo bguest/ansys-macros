@@ -1,0 +1,18 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! _SAVE.mac
+! DESCRIPTION: This macro is an intelegent save. It 
+!	checks to see if FlagNoReadWrite is set if it is, 
+!	the save command is not issued.
+! PRECONDITIONS:
+!	Arguments:
+!		ARG1 = 'Name of save file'
+!======================================================
+*if,FlagNoReadWrite,EQ,0,then
+	*if,arg1,EQ,0,then
+	   save,saved,db
+   *else
+   	save,arg1,db
+	*endif
+*endif
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
