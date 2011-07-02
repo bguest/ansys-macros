@@ -13,16 +13,23 @@
 !		2: Overlay displaced contour plot with undeformed edge display (appearance is system-dependent)
 !POSTCONDITIONS:
 !  See Description.
+!NOTE:
+! kLastAnalysis = 1 --> Modal Analysis
+! 						2 --> Random Analysis
+!						3 --> Full Harmonic Analysis
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 
 /POST1
 *IF,ARG1,EQ,0,THEN
-	*if,kLastAnalysis,EQ,1,then
+	*if,kLastAnalysis,EQ,1,then  ! Modal Analysis
 	   set,1,1
+	   /plopts,leg3,0	!Turn off meaningless countour legend
    *elseif,kLastAnalysis,eq,2,then
    	set,3,1
+		/plopts,leg3,1
 	*else
 	   SET,LAST
+	   /plopts,leg3,1
    *endif
 *ELSE
    SET,ARG1,ARG2

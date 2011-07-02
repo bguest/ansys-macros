@@ -13,7 +13,7 @@
 !	areas and associated lines and keypoints
 !       are deleted
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
+_SAVE
 /NOPR		   !PREVENT ERROR MESSAGES
 FINISH
 /PREP7
