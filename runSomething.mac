@@ -13,9 +13,10 @@
 !I Got The Runs. Runs models after build
 *if,arg1,eq,1,then
    runModes,arg2,arg3,arg4,arg5,arg6
-   _disp,1,1
+   _disp
 *elseif,arg1,eq,2,then
 	runQStatic,arg2,arg3,arg4
+	_disp
 *endif
 
 !!======THE--END========THE--END========THE--END========

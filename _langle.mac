@@ -9,7 +9,7 @@
 !	ARG2 = second line, else user is prompted to slect
 !		lines
 !POSTCONDITIONS:
-!	theata = angle between lines
+!	theta = angle between lines
 !	Coordinate systems set to 0.
 !======================================================
 CSYS,0
@@ -80,9 +80,9 @@ bb = 0 !||b||
 	bb = bb+bv(i)**2
 *enddo
 
-theata = acos(ab/sqrt(aa*bb))
+theta = acos(ab/sqrt(aa*bb))
 
-*msg,WARN,theata
+*msg,WARN,theta
 Angle = %f
 
 !======THE--END========THE--END========THE--END========

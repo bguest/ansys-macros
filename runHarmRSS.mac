@@ -1,0 +1,26 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! runRSS.mac
+! DESCRIPTION: This macro rss's the real and imaginary
+!	results from a full harmonic run
+! PRECONDITIONS:
+!
+
+/post1
+*if,arg1,eq,0,then
+   arg1 = 1
+*endif
+
+*do,i,1,1
+	lczero
+	lcdef,2,i,1,0		! Real portion
+	lcdef,3,i,1,1		! Imaginary portion
+	lcase,2			! Open load case 2 (Real)
+	lcoper,srss,3		! SRSS load case 2 and 3
+	lcwrite,2
+	lcase,2
+	rappnd,1000+i,1		! Save the case
+	lczero
+*enddo
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

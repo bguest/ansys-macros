@@ -6,13 +6,8 @@
 !PRECONDITIONS:
 !	ARG1 = Keypoint to move
 !	ARG2 = Keypoint to move too
-
-!POSTCONDITIONS'S
-!NOTES: 
-
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
-PARSAV,ALL,F:\_ANSYS\TEMP\_KMOVEK.txt  !Save Parameters
 
 CM,temp_KP,KP
 !==========================================GET STUFF
@@ -50,6 +45,6 @@ KSEL,A,,,KP2
 NUMMRG,KP
 
 CMSEL,s,temp_KP
-PARRES,,F:\_ANSYS\TEMP\_KMOVEK.txt  !RESUME PREVIOUS PARAMETERS
+
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
