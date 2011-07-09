@@ -17,6 +17,10 @@
 !   PLOT OF PSD is displayed on screen
 !   PSD curve is output to file "OUT_psd_accl.ans"
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+*msg,warn
+This macro has been deprecated, use P26PsdAccl.mac instead
+
 !------------------------------------SAVE CURRENT SETUP
 CM,temp_NODE,NODE
 !----------------------------------------------GET NODE

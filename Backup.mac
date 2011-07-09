@@ -5,7 +5,7 @@
 !======================================================
 
 CDOPT,IGES  
-CDWRITE,ALL,'file','cdb',,'file','iges' 
+CDWRITE,ALL,'backup','cdb',,'backup','iges' 
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
