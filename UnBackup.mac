@@ -10,7 +10,9 @@ fini
 
 /PREP7  
 CDOPT,IGES  
-CDREAD,ALL,,'cdb',,,'iges'  
+CDREAD,ALL,'backup','cdb',,'backup','iges'  
 
+/NUMBER,1
+/PNUM,MAT,1
 !======THE--END========THE--END========THE--END========
-!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINEz

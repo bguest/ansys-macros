@@ -6,7 +6,7 @@
 !PRECONDITIONS:
 !   ARG1 = Node number of PSD point
 !      ELSE user is prompted to pick node
-!   ARG2 = Results Direction (1=X,2=Y,3=Z)
+!   ARG2 = Results Direction (1=X,2=Y,3=Z,4=All Directions)
 !      ELSE user is prompted to enter a direction
 !   ARG3 = Reference number of resulting variable
 !      ELSE reference number of resulting variable = 5
@@ -15,6 +15,10 @@
 !POSTCONDITIONS:
 !   PLOT OF PSD is displayed on screen
 !   PSD curve is output to file "OUT_psd_accl.out"
+!NOTES:
+!	OUT_psd_accl.out data is devided by the following 
+!		factor, GravitySquared
+GravitySquared = 386.089**2
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !------------------------------------SAVE CURRENT SETUP
 CM,temp_NODE,NODE
@@ -30,7 +34,7 @@ CM,temp_NODE,NODE
 *ENDIF
 !-----------------------------------------GED DIRECTION
 *IF,ARG2,EQ,0,THEN
-   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z),3
+   *ASK,ANS,ENTER DIRECTION (1=X,2=Y,3=Z,4=ALL),4
 *ELSE
    ANS = ARG2
 *ENDIF
@@ -41,6 +45,8 @@ CM,temp_NODE,NODE
    direction='Y'
 *ELSEIF,ANS,EQ,3,THEN
    direction='Z'
+*elseif,ANS,eq,4,then
+	direction='all'
 *ENDIF
 !--------------------------Resulting Reference Variable
 IA_ACCLX = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
@@ -62,22 +68,61 @@ IA_ACCLX = 2   !REFERENCE NUMBER OF VARIBLE TO BE OPERATED ON
 /POST26          ! Enter POST26
 STORE,PSD,FrqPts ! Store frequency vector (variable 1)
 
-NSOL,IA_ACCLX,ND, U, direction, 'ACCL'    
-RPSD,IR_ACCLX,IA_ACCLX,,3, 1, 'ACCL' 
-
-PLVAR,IR_ACCLX	!PLOT
+*if,direction,eq,'all',then
+	nsol,IA_ACCLX  , nd, U, X, 'ACCL X'
+	nsol,IA_ACCLX+1, nd, U, Y, 'ACCL Y'
+	nsol,IA_ACCLX+2, nd, U, Z, 'ACCL Z'
+	
+	RPSD,IR_ACCLX  , IA_ACCLX  ,,3, 1, 'ACCL X' 
+	RPSD,IR_ACCLX+1, IA_ACCLX+1,,3, 1, 'ACCL Y'
+	RPSD,IR_ACCLX+2, IA_ACCLX+2,,3, 1, 'ACCL Z'
+	
+	PLVAR, IR_ACCLX, IR_ACCLX+1, IR_ACCLX+2
+*else
+	NSOL,IA_ACCLX,ND, U, direction, 'ACCL'    
+	RPSD,IR_ACCLX,IA_ACCLX,,3, 1, 'ACCL' 
+	PLVAR,IR_ACCLX	!PLOT
+*endif
 
 !------------------------PRINT
 *GET,NUM_PTS,VARI,,NSETS 
 HZ=    $ *DIM,HZ,ARRAY,NUM_PTS
 ACCLX= $ *DIM,ACCLX,ARRAY,NUM_PTS
+*if,direction,eq,'all',then
+	ACCLY = $ *dim,ACCLY,array,NUM_PTS
+	ACCLZ = $ *dim,ACCLZ,array,NUM_PTS
+*endif
 
 VGET,HZ,1,0.0
 VGET,ACCLX,IR_ACCLX,0.0
+*if,direction,eq,'all',then
+   VGET,ACCLY,IR_ACCLX+1,0.0
+   VGET,ACCLZ,IR_ACCLX+2,0.0
+*endif
+
+*do,i,1,NUM_PTS,
+   ACCLX(i) = ACCLX(i)/GravitySquared
+*enddo
+*if,direction,eq,'all',then
+	*do,i,1,NUM_PTS,
+   	ACCLY(i) = ACCLY(i)/GravitySquared
+   	ACCLZ(i) = ACCLZ(i)/GravitySquared
+   *enddo
+*endif
 
 *CFOPEN,OUT_psd_accl,out
-*VWRITE,HZ(1),ACCLX(1),
+*if,direction,eq,'all',then
+!--------------!--------------!--------------!--------------
+	*vwrite
+     Frequency        ACCL X         ACCL Y         ACCL Z
+	*vwrite
+        Hz            g^2/Hz         g^2/Hz         g^2/Hz   
+   *VWRITE,HZ(1),ACCLX(1),ACCLY(1),ACCLZ(1)
+(E15.5,E15.5,E15.5,E15.5)
+*else
+   *VWRITE,HZ(1),ACCLX(1),
 (E15.5,E15.5)
+*endif
 *CFCLOS
 
 _FRONT
@@ -88,13 +133,8 @@ CMSEL,S,temp_NODE
 !--DELETE TEMPORARY COMPONENTS
 CMDELE,temp_NODE
 !--CLEAR PARAMETERS
-*SET,ND
-*SET,ans
-*SET,direction
-*SET,IA_ACCLX
-*SET,IR_ACCLX
-*SET,FrqPts
-*SET,HZ
-*SET,ACCLX
+*SET,ND $ *SET,ans $ *SET,direction $*SET,IA_ACCLX
+*SET,IR_ACCLX $ *SET,FrqPts $ *SET,HZ $ *SET,ACCLX
+ACCLY = $ ACCLZ = 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

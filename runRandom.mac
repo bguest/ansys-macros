@@ -9,14 +9,14 @@
 !  Imput frequency table contained in ANSYS_RPSD.inp
 !  ARG1 = Imput Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
-!  ARG2 = Number of Modes ELSE:
-     NModes=300
-!  ARG3 = Start Frequence: ELSE:
-     FMin=0
-!  ARG4 = End Frequency ELSE:
-     FMax=2000
-!  ARG5 = Structural Damping Ration (DMPRAT)
+!  ARG2 = Structural Damping Ration (DMPRAT)
      DampRatio=0.015
+!  ARG3 = Number of Modes ELSE:
+     NModes=300
+!  ARG4 = Start Frequence: ELSE:
+     FMin=0
+!  ARG5 = End Frequency ELSE:
+     FMax=2000
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -36,21 +36,22 @@ CM,temp_Nodes,Node
    direction='UZ'
 *ENDIF
 !--------------------------------SETUP
-*IF,ARG2,NE,0,THEN !Set Number of Modes
-   NModes=ARG2
-*ENDIF
-
-*IF,ARG3,NE,0,THEN !Set Minimum Frequency
-   FMin=ARG3
-*ENDIF
-
-*IF,ARG4,NE,0,THEN !Set Maximum Frequency
-   FMax=ARG4
-*ENDIF
-
-*if,ARG5,NE,0,then !Damping Ratio
-   DampRatio = ARG5
+*if,ARG2,NE,0,then !Damping Ratio
+   DampRatio = ARG2
 *endif
+
+*IF,ARG3,NE,0,THEN !Set Number of Modes
+   NModes=ARG3
+*ENDIF
+
+*IF,ARG4,NE,0,THEN !Set Minimum Frequency
+   FMin=ARG4
+*ENDIF
+
+*IF,ARG5,NE,0,THEN !Set Maximum Frequency
+   FMax=ARG5
+*ENDIF
+
 
 !=================MODAL ANALYSIS======================
 /solu
