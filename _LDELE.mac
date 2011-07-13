@@ -12,8 +12,7 @@
 !   selected lines and associated keypoints are 
 !   deleted
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,SAVED,DB
-FINISH
+_SAVE
 /PREP7
 !------------------SAVE CURRENT SETUP
 CM,temp_LINE,LINE

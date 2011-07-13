@@ -6,7 +6,7 @@
 !PRECONDITIONS:
 !	ARG1 = <Required Macro Input> (optional if nothing is required)
 !	ARG2 = 0 --> Select line if any of its elements are in the selected element set.
-!				 1 --> Select line only if all of its elemnts are in the selected keypoint set.
+!			 1 --> Select line only if all of its elemnts are in the selected keypoint set.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 CM,tempNodes,node
 CM,tempKP,KP

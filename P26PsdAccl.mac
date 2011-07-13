@@ -100,14 +100,43 @@ VGET,ACCLX,IR_ACCLX,0.0
    VGET,ACCLZ,IR_ACCLX+2,0.0
 *endif
 
+! Factor out GravitySquared and find maximum value
+maxValX = 0
+maxValIdxX = 0
+
 *do,i,1,NUM_PTS,
    ACCLX(i) = ACCLX(i)/GravitySquared
+   *if,ACCLX(i),GT,maxValX,then
+      maxValX = ACCLX(i)
+      maxValIdxX = i
+   *endif
+   maxHzX = HZ(maxValIdxX)
 *enddo
 *if,direction,eq,'all',then
+	
+	!Set Initial MaxValues to Zero
+	maxValY = 0
+	maxValIdxY = 0
+	maxValZ = 0
+	maxValIdxZ = 0
+	
 	*do,i,1,NUM_PTS,
    	ACCLY(i) = ACCLY(i)/GravitySquared
    	ACCLZ(i) = ACCLZ(i)/GravitySquared
+   	
+   	!Find Maximums
+   	*if,ACCLY(i),GT,maxValY,then
+      	maxValY = ACCLY(i)
+      	maxValIdxY = i
+   	*endif
+   	
+		*if,ACCLZ(i),GT,maxValZ,then
+      	maxValZ = ACCLZ(i)
+      	maxValIdxZ = i
+   	*endif
    *enddo
+   maxHzY = HZ(maxValIdxY)
+   maxHzZ = HZ(maxValIdxZ)
 *endif
 
 *CFOPEN,OUT_psd_accl,out
@@ -116,7 +145,11 @@ VGET,ACCLX,IR_ACCLX,0.0
 	*vwrite
      Frequency        ACCL X         ACCL Y         ACCL Z
 	*vwrite
-        Hz            g^2/Hz         g^2/Hz         g^2/Hz   
+        Hz            g^2/Hz         g^2/Hz         g^2/Hz 
+   *vwrite, maxHzX, maxHzY, MaxHzZ   
+('     Max Val Hz'E15.5,E15.5,E15.5)
+   *vwrite, maxValX, maxValY, maxValZ   
+('        Max Val'E15.5,E15.5,E15.5)
    *VWRITE,HZ(1),ACCLX(1),ACCLY(1),ACCLZ(1)
 (E15.5,E15.5,E15.5,E15.5)
 *else
