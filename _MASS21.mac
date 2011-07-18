@@ -19,9 +19,11 @@ I3 = ARG5
 *if,I1,eq,0,then  !Assume I2 and I3 are zero too
 	ET,matNum,mass21,,,2
 	R,matNum,mass
+	MP,EX,matNum,1
 *else
 	ET,MatNum,mass21
 	R,MatNum,mass,mass,mass,I1,I2,I3
+	MP,EX,matNum,1
 *endif
 
 !======THE--END========THE--END========THE--END========
