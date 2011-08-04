@@ -4,6 +4,9 @@
 !  number
 !PRECONDITIONS:
 !	mFactor (optional) mass factor ie 1.10 = 10% extra mass
+!  flagPrintMatProps (optional)
+!     1 -> Material Properties are output to OUT_MaterialProperties.out (Coma delimiated)
+!     0 -> No material properties are output (Default)
 !  ARG1 = Material Number
 !		802 -> Aluminum 7075-T73
 !		803 -> Titanium Ti-6Al-4V
@@ -11,31 +14,56 @@
 !		805 -> Aluminum 6061-T651
 !		806 -> Stainless Steel 15-5 PH
 !		807 -> G10 (XY/Z) Orthotropic
+!     899 -> Call to Material File Footer
 !	ARG2 = Resulting material number
 !		[Default] = ARG1
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
+!Setup Header and output file if flagPrintMatProps Set
+*if,flagPrintMatProps,eq,1, and, flagMatHeader,lt,1,then
+   flagMatHeader = 1
+   *CFOPEN,OUT_MaterialProperties,out
+   *vwrite
+Material #, Name, Mass Factor, Density, Modulus (EX), Poisons Ratio (nuxy), CTE (X), Reference
+*endif
+
+!Run Material Footer, Close Down File
+*if,arg1,eq,899, and, flagPrintMatProps, eq,1, then
+   flagMatHeader = 0
+   flagPrintMatProps = 0
+   *CFCLOS
+   *GO,:_matEnd !RETURN
+*endif
+
+!Mass Factors
 *if,mFactor,gt,0,then	!Account for mass factors
 	GG=386.09/mFactor
 *else
 	GG=386.09
+   mFactor = 1
 *endif
 
 *if,arg2,gt,0,then	!Set material number
 	MNum = ARG2
 *else
-	MNum = ARG1
+   MNum = ARG1
 *endif
 
+!---------- STANDARD MATERIAL PROPERTIES -------------
+
+!DEFAULTS
+CTEX  = 0
+nu_XY = 0.3
+
 *IF,ARG1,EQ,802,THEN
-	!Material Definition: Aluminum 7075-T73
-	!REF: MIL-HDBK-5E
-	MP,EX,MNum,10.3e6        
-	MP,PRXY,MNum,0.33
-	MP,DENS,MNum,0.1/GG
-	MP,ALPX,MNum,12.4E-6
+	MatName = 'Aluminum 7075-T73'
+   ref     = 'MIL-HDBK-5E'
+	E       = 10.3e6
+	rho     = 0.1
+   cteX    = 12.4E-6
+   nu_XY   = 0.33
 	! !----FAILURE CRITERIA (YEILD STRENGTHS)
 	! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
 	! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
@@ -43,36 +71,60 @@
 	! FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
 	! FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
 	! FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
+
 *ELSEIF,ARG1,EQ,803,THEN
-	!Material Definition: Ti-6Al-4V
-	!REF: MIL-HDBK-5E
-	MP,EX,MNum,16.0e6        
-	MP,PRXY,MNum,0.34
-	MP,DENS,MNum,0.16/GG
+   MatName = 'Ti-6Al-4V'
+   ref     = 'MIL-HDBK-5E'
+   E       = 16.0e6
+   rho     = 0.1
+   nu_XY   = 0.34
+   cteX    = 4.8*10-6
+
 *ELSEIF,ARG1,EQ,804,THEN
-	!Material Definition: STAINLESS_STEEL_A286 !REF:PRO_E
-	MP,EX,MNum,2.91E+07
-	MP,PRXY,MNum,3.10E-01
-	MP,DENS,MNum,2.87E-01/GG
-	MP,ALPX,MNum,9.20E-06
+   MatName = 'STAINLESS_STEEL_A286'
+   ref     = 'PRO_E'
+   E       = 2.91E+07
+   rho     = 2.87E-01
+   cteX    = 9.20E-06
+   nu_XY   = 3.10E-01
+
 *elseif,ARG1,EQ,805,THEN
-	!Material Definition: Aluminum 6061-T651 REF: MIL-HDBK-5E
-	MP,EX,MNum,10.0e6   
-	MP,PRXY,MNum,0.33
-	MP,DENS,MNum,0.098/GG
-	MP,ALPX,MNum,12.65E-6  !AT 70degF
+   MatName = 'Aluminum 6061-T651'
+   ref     = 'MIL-HDBK-5E'
+   E       = 10.0e6
+   rho     = 0.098
+   nu_XY   = 0.33
+   cteX    = 12.65E-6  !AT 70degF
+
 *elseif,ARG1,EQ,806,THEN
-	!--Material Definition: STAINLESS_STEEL_15-5PH(H1025)--
-	!REF:MIL-HDBK-5E,PRO_E
-	MP,EX,MNum,28.5e6
-	MP,PRXY,MNum,0.27
-	MP,DENS,MNum,0.283/GG 
-	MP,ALPX,MNum,6.3e-6
+   MatName = 'STAINLESS_STEEL_15-5PH (H1025)'
+   ref     = 'MIL-HDBK-5E and PRO_E'
+   E       = 28.5e6
+   rho     = 0.283
+   nu_XY   = 0.27
+   cteX    = 6.3e-6  !AT 70degF
+
 *elseif,ARG1,eq,807,then
-	! G10 Orthotropic material (See 110602_G10_Material Review)
-	MP,EX,MNum,2.7e6*psi
+	! G10 Orthotropic material (See 110602_G10_Material_Review)
+   MatName = 'G10 Orthotropic'
+   ref     = 'See 110602_G10_Material_Review'
+   E       = 2.7e6*psi
+   rho     = 0.065
 	MP,EY,MNum,2.7e6*psi
 	MP,EZ,MNum,2.3e6*psi
-	MP,DENS,MNum,0.065/GG
 *ENDIF
-!=======================CLEAN UP=======================
+
+!Sub Set Values Above
+MP,EX,MNum,E,
+MP,DENS,MNum,rho/GG
+MP,PRXY,MNum,nu_XY
+MP,ALPX,MNum,cteX
+
+*if,flagPrintMatProps,EQ,1,then
+	*vwrite, MNum, MatName, mFactor, rho, E, nu_XY, cteX, ref
+%I, %C, %G, %G, %G, %G, %G, %C
+*endif
+
+:_matEnd
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
