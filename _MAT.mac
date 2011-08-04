@@ -75,10 +75,10 @@ nu_XY = 0.3
 *ELSEIF,ARG1,EQ,803,THEN
    MatName = 'Ti-6Al-4V'
    ref     = 'MIL-HDBK-5E'
-   E       = 16.0e6
+   E       = 16.0e6*psi
    rho     = 0.1
    nu_XY   = 0.34
-   cteX    = 4.8*10-6
+   cteX    = 4.8e-6
 
 *ELSEIF,ARG1,EQ,804,THEN
    MatName = 'STAINLESS_STEEL_A286'
