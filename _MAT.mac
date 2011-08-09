@@ -26,7 +26,9 @@
    flagMatHeader = 1
    *CFOPEN,OUT_MaterialProperties,out
    *vwrite
-Material #, Name, Mass Factor, Density, Modulus (EX), Poisons Ratio (nuxy), CTE (X), Reference
+Material,Material,Mass,Density,Modulus (EX),Poisons,CTE (X), Reference
+   *vwrite
+#,Name,Factor,lbm/in^3,psi,Ratio (nuxy),in/in/degF,
 *endif
 
 !Run Material Footer, Close Down File
@@ -38,10 +40,7 @@ Material #, Name, Mass Factor, Density, Modulus (EX), Poisons Ratio (nuxy), CTE 
 *endif
 
 !Mass Factors
-*if,mFactor,gt,0,then	!Account for mass factors
-	GG=386.09/mFactor
-*else
-	GG=386.09
+*if,mFactor,le,0,then	!Account for mass factors
    mFactor = 1
 *endif
 
@@ -54,15 +53,19 @@ Material #, Name, Mass Factor, Density, Modulus (EX), Poisons Ratio (nuxy), CTE 
 !---------- STANDARD MATERIAL PROPERTIES -------------
 
 !DEFAULTS
-CTEX  = 0
-nu_XY = 0.3
+MatName  = 'No Material Assigned'
+ref      = 'Default Material'
+E        = 1
+CTEX     = 0
+nu_XY    = 0.3
+rho      = 1
 
 *IF,ARG1,EQ,802,THEN
 	MatName = 'Aluminum 7075-T73'
    ref     = 'MIL-HDBK-5E'
-	E       = 10.3e6
-	rho     = 0.1
-   cteX    = 12.4E-6
+	E       = 10.3e6*psi
+	rho     = 0.1*lbm/in**3
+   cteX    = 12.4E-6/degF
    nu_XY   = 0.33
 	! !----FAILURE CRITERIA (YEILD STRENGTHS)
 	! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
@@ -76,15 +79,15 @@ nu_XY = 0.3
    MatName = 'Ti-6Al-4V'
    ref     = 'MIL-HDBK-5E'
    E       = 16.0e6*psi
-   rho     = 0.1
+   rho     = 0.1*lbm/in**3
    nu_XY   = 0.34
-   cteX    = 4.8e-6
+   cteX    = 4.8e-6/degF !AT 70degF
 
 *ELSEIF,ARG1,EQ,804,THEN
    MatName = 'STAINLESS_STEEL_A286'
    ref     = 'PRO_E'
-   E       = 2.91E+07
-   rho     = 2.87E-01
+   E       = 2.91E+07*psi
+   rho     = 2.87E-01*lbm/in**3
    cteX    = 9.20E-06
    nu_XY   = 3.10E-01
 
@@ -92,15 +95,15 @@ nu_XY = 0.3
    MatName = 'Aluminum 6061-T651'
    ref     = 'MIL-HDBK-5E'
    E       = 10.0e6
-   rho     = 0.098
+   rho     = 0.098*lbm/in**3
    nu_XY   = 0.33
    cteX    = 12.65E-6  !AT 70degF
 
 *elseif,ARG1,EQ,806,THEN
    MatName = 'STAINLESS_STEEL_15-5PH (H1025)'
    ref     = 'MIL-HDBK-5E and PRO_E'
-   E       = 28.5e6
-   rho     = 0.283
+   E       = 28.5e6*psi
+   rho     = 0.283*lbm/in**3
    nu_XY   = 0.27
    cteX    = 6.3e-6  !AT 70degF
 
@@ -109,20 +112,20 @@ nu_XY = 0.3
    MatName = 'G10 Orthotropic'
    ref     = 'See 110602_G10_Material_Review'
    E       = 2.7e6*psi
-   rho     = 0.065
+   rho     = 0.065*lbm/in**3
 	MP,EY,MNum,2.7e6*psi
 	MP,EZ,MNum,2.3e6*psi
 *ENDIF
 
 !Sub Set Values Above
 MP,EX,MNum,E,
-MP,DENS,MNum,rho/GG
+MP,DENS,MNum,rho*mFactor
 MP,PRXY,MNum,nu_XY
 MP,ALPX,MNum,cteX
 
 *if,flagPrintMatProps,EQ,1,then
-	*vwrite, MNum, MatName, mFactor, rho, E, nu_XY, cteX, ref
-%I, %C, %G, %G, %G, %G, %G, %C
+	*vwrite, MNum, MatName, mFactor, rho*in**3/lbm, E/psi, nu_XY, cteX*degF, ref
+%I,%C,%G,%G,%G,%G,%G,%C
 *endif
 
 :_matEnd

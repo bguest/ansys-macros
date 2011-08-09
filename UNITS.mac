@@ -1,0 +1,42 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!UNITS.mac
+!B.GUEST - BenGuest@gmail.com
+!DESCRIPTION: This macro sets up basic units used in 
+!  a model.
+!PRECONDITIONS:
+!  ARGUMENTS:
+!     ARG1 -> 0: in, sec, lbf, degC, rad
+!======================================================
+pi=acos(-1)
+
+*if,ARG1,EQ,0,THEN
+   in=1
+   sec=1
+   lbf=1
+   degC=1
+   rad=1
+
+   gravity=386.089*in/sec**2
+   lbm=lbf/gravity
+   psi=lbf/in**2
+   Msi=1E6*psi
+   ksi=1000*psi
+   deg=pi/180
+   degF=degC/1.8
+   ft=12*in
+   ppm=1e-6
+   pcf=lbm/ft**3
+
+   meter=39.37*in
+   cm=meter/92
+   micron=1E-6*meter
+   angstrom=1E-10*meter
+   kg=2.205*lbm
+   gm=kg/1000
+   Pa=1.45038E-4*psi
+   Newton=kg*meter/sec**2
+
+
+*ENDIF
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

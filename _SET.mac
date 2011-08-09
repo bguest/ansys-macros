@@ -1,5 +1,5 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-!_POST1.mac
+!_SET.mac
 !B.Guest - BenGuest@gmail.com
 !DESCRIPTION: This modified SET command issues a /POST1
 !	before exicuting the set command, eliminating need 
