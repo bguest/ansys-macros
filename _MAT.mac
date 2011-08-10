@@ -88,7 +88,7 @@ rho      = 1
    ref     = 'PRO_E'
    E       = 2.91E+07*psi
    rho     = 2.87E-01*lbm/in**3
-   cteX    = 9.20E-06
+   cteX    = 9.20E-06/degF
    nu_XY   = 3.10E-01
 
 *elseif,ARG1,EQ,805,THEN
@@ -97,7 +97,7 @@ rho      = 1
    E       = 10.0e6
    rho     = 0.098*lbm/in**3
    nu_XY   = 0.33
-   cteX    = 12.65E-6  !AT 70degF
+   cteX    = 12.65E-6/degF  !AT 70degF
 
 *elseif,ARG1,EQ,806,THEN
    MatName = 'STAINLESS_STEEL_15-5PH (H1025)'
@@ -105,7 +105,7 @@ rho      = 1
    E       = 28.5e6*psi
    rho     = 0.283*lbm/in**3
    nu_XY   = 0.27
-   cteX    = 6.3e-6  !AT 70degF
+   cteX    = 6.3e-6/degF  !AT 70degF
 
 *elseif,ARG1,eq,807,then
 	! G10 Orthotropic material (See 110602_G10_Material_Review)
