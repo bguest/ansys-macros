@@ -3,6 +3,9 @@
 !DESCRIPTION: Creates a standard material from a single
 !  number
 !PRECONDITIONS:
+!  - UNITS have been set prior to running tis command as
+!     there is no way to tell what units your model
+!     uses
 !	mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  flagPrintMatProps (optional)
 !     1 -> Material Properties are output to OUT_MaterialProperties.out (Coma delimiated)
@@ -26,9 +29,9 @@
    flagMatHeader = 1
    *CFOPEN,OUT_MaterialProperties,out
    *vwrite
-Material,Material,Mass,Density,Modulus (EX),Poisons,CTE (X), Reference
+Material,Material,Modulus (EX),Poisons,CTE (X),Density,Mass,Reference
    *vwrite
-#,Name,Factor,lbm/in^3,psi,Ratio (nuxy),in/in/degF,
+ID,Name,psi,Ratio (nuxy),in/in/degC,lbm/in^3,Factor,
 *endif
 
 !Run Material Footer, Close Down File
@@ -124,7 +127,7 @@ MP,PRXY,MNum,nu_XY
 MP,ALPX,MNum,cteX
 
 *if,flagPrintMatProps,EQ,1,then
-	*vwrite, MNum, MatName, mFactor, rho*in**3/lbm, E/psi, nu_XY, cteX*degF, ref
+	*vwrite, MNum, MatName, E/psi, nu_XY, cteX*degC, rho*in**3/lbm, mFactor, ref
 %I,%C,%G,%G,%G,%G,%G,%C
 *endif
 

@@ -10,6 +10,9 @@
 pi=acos(-1)
 
 *if,ARG1,EQ,0,THEN
+
+   flagUnitsSet = 1
+
    in=1
    sec=1
    lbf=1
@@ -35,7 +38,6 @@ pi=acos(-1)
    gm=kg/1000
    Pa=1.45038E-4*psi
    Newton=kg*meter/sec**2
-
 
 *ENDIF
 !======THE--END========THE--END========THE--END========
