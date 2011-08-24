@@ -53,6 +53,11 @@ ID,Name,psi,Ratio (nuxy),in/in/degC,lbm/in^3,Factor,
    MNum = ARG1
 *endif
 
+! Units
+*if,psi,eq,0,then
+   UNITS
+*endif
+
 !---------- STANDARD MATERIAL PROPERTIES -------------
 
 !DEFAULTS

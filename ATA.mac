@@ -13,8 +13,7 @@
 !POSTCONDITIONS:
 !	Volume is created between two areas
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
-/NERR,,,,,0
+_SAVE
 /PREP7
 !------------------SAVE CURRENT SETUP
 CM,temp_VOLU,VOLU
@@ -26,23 +25,16 @@ CM,temp_KP,KP
 	*MSG,UI
 	SELECT 1st AREA
 
-	ASEL,S,P
+	ASEL,R,P
 	*GET,Area1,AREA,0,NUM,MAX !GET SELECTED AREA
+	*GET,Area2,AREA,0,NUM,MIN !GET SELECTED AREA
+
 	CMSEL,S,temp_AREA
 *ELSE
 	Area1=ARG1
-*ENDIF
-!------------------SELECT AREA 2
-*IF,ARG2,EQ,0,THEN
-	*MSG,UI
-	SELECT 2st AREA
-
-	ASEL,S,P
-	*GET,Area2,AREA,0,NUM,MAX !GET SELECTED AREA
-	CMSEL,S,temp_AREA
-*ELSE
 	Area2=ARG2
 *ENDIF
+
 !--------------------------------------Get KP locations on Area1
 ASEL,S,,,Area1,,,1
 !*VGET,A1KP,KP,,KLIST !V11.0

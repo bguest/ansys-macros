@@ -1,12 +1,10 @@
-/PMACRO
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_VSWEEP.mac
 !DESCRIPTION: This Macro Meshes a volume with SOLID95
 !  elements
 !PRECONDITIONS:
 !  ARG1 = Material Number of Volume to be meshed
-!   802 -> Aluminum 7075-T73
-!   803 -> Titanium Ti-6Al-4V
+!     SEE _MAT.mac for full materials list
 !     ELSE, User is prompted for mat number
 !  ARG2 = Element Size
 !  ARG3 = Volume to be meshed
@@ -16,8 +14,7 @@
 !POSTCONDITIONS:
 !  See Description.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
-/NOPR
+_SAVE
 /PREP7
 !-------------SAVE CURRENT SETUP
 CM,temp_VOLU,VOLU
@@ -38,7 +35,7 @@ CM,temp_VOLU,VOLU
 	SELECT VOLUMES     
 
 	vsel,s,p
-*ELSE
+*ELSEIF,ARG3,GT,0,THEN
 	vsel,s,,,ARG3
 *ENDIF
 !========================================
