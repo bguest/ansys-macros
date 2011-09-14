@@ -44,6 +44,7 @@ LSDELE,ALL
 	ACEL,Gx*386.09,Gy*386.09,Gz*386.09
 *ENDIF
 
+kLastAnalysis = 0
 /output,OUT_QStatic.ans
 SOLVE
 /OUTPUT

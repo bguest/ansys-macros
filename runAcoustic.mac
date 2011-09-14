@@ -18,15 +18,15 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !--------------------------------SETUP
 *IF,ARG1,NE,0,THEN !Set Number of Modes
-   NModes=ARG2
+   NModes=ARG1
 *ENDIF
 
 *IF,ARG2,NE,0,THEN !Set Minimum Frequency
-   FMin=ARG3
+   FMin=ARG1
 *ENDIF
 
 *IF,ARG3,NE,0,THEN !Set Maximum Frequency
-   FMin=ARG4
+   FMin=ARG3
 *ENDIF
 
 *IF,ARG4,NE,0,THEN !Set Maximum Frequency
@@ -58,17 +58,17 @@ FINISH
 ANTYPE,SPECTR  !SET ANALSYIS TYPE TO SPECTRUM
 SPOPT,PSD,NModes,yes 
 PSDUNIT,tabNum,PRES
-DMPRAT,DampRatio !DAMPENING RATIO
 !-----------------INPUT SPECTRUM------------------
 PSDFRQ					!ERASE TABLES
-/input,ANSYS_APSD.inp
+/input,ANSYS_APSD,inp
 !-----------------DEFINE INPUT DIRECTION----------
+DMPRAT,DampRatio !DAMPENING RATIO
 SFADELE,ALL,2,ALL !DELETE PREVIOUS DATA
 LVSCALE,1			 !LOAD SCALE FACTOR
 ALLSEL         !SELECT EVERYTHING
 !-------------------------------------------------
 PFACT,TabNum,NODE !Calculate Participation Factors
-PSDRES, DISP, REL	!Calculate Displacements at run
+PSDRES, DISP, ABS	!Calculate Displacements at run
 !PSDRES, VELO, ABS !Calculate Velocites at run
 PSDRES, ACEL, ABS !Calculate Acclerations at run
 !-------------------SOLVE-------------------------

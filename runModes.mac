@@ -32,7 +32,9 @@
 /SOLUTION
 /NERR,,99999999
 !--------------------------------SETUP
-*IF,ARG1,NE,0,THEN !Set Number of Modes
+*IF,ARG1,LT,0,THEN !Set Number of Modes
+	NModes = 0
+*elseif,ARG1,GT,0,THEN
 	NModes=ARG1
 *ENDIF
 

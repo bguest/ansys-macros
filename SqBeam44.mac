@@ -8,7 +8,7 @@
 !	ARG1: Resulting element property number
 !	ARG2: Width (TKY, Y dimension)
 !	ARG3: Height (TKZ, Z dimension)
-!	ARG4: Thickness of tube [optional] NOT IMPLIMENTD YET
+!	ARG4: Wall thickness [optional]
 !	ARG5: Material (See _MAT.mac)
 !======================================================
 
@@ -25,9 +25,17 @@ MatNum = ARG1
    TKY = 1
 *endif
 
-AA  = TKZ*TKY 			 !AREA
-IYY = (TKY*TKZ**3)/12
-IZZ = (TKZ*TKY**3)/12
+*if,ARG4,gt,0,then
+	TKY_I = TKY-ARG4
+	TKZ_I = TKZ-ARG4
+*else
+	TKY_I = 0
+	TYZ_I = 0
+*endif
+
+AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA
+IYY = (TKY*TKZ**3-TKY_I*TKZ_I**3)/12
+IZZ = (TKZ*TKY**3-TKZ_I*TKY_I**3)/12
 IXX = IYY+IZZ
 
 !------------------------------------------------------

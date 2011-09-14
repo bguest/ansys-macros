@@ -75,7 +75,6 @@ FINISH
 /solution
 ANTYPE,SPECTR       
 SPOPT,PSD,NModes,YES 
-DMPRAT, DampRatio              !DAMPENING RATIO
 
 !-----------------DEFINE INPUT DIRECTION----------
 TabNum=1       !SET PSD TABLE NUMBER
@@ -87,6 +86,8 @@ D,ALL,Direction,1 !SET DIRECTION OF INPUT
 CMSEL,S,temp_Nodes
 
 /input,ANSYS_RPSD.inp
+DMPRAT, DampRatio              !DAMPENING RATIO
+
 PFACT,TabNum,BASE  !Calculate Participation Factors
 
 CMSEL,S,BaseNodes	!Get Base Nodes
