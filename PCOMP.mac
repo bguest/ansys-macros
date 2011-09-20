@@ -22,7 +22,7 @@
 EType = UPCASE(ARG2)	!Set Material Property Type
 
 *if,ARG3,GT,0,then	!Added Mass
-   ADMSUA = ARG2
+   ADMSUA = ARG3
 *else
    ADMSUA = 0
 *endif
