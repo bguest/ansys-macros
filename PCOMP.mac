@@ -6,6 +6,7 @@
 !	layThick = Array with the layers thicknesses
 !	layAngle = Array with the layer angles IN DEGREESE
 !	layMat   = Array with the layer material numbers
+!	flagPrintPCOMP = 1 ~> Lamina properties printed to file
 ! ARGUMENTS:
 !	ARG1: Resulting material property number
 !	ARG2: Element Type To be used, supported types are
@@ -54,6 +55,27 @@ useSandwich = ARG4	!Sandwich option
 	KEYOPT,MNum,9,useSandwich
 *endif
 !MP,DENS,MNum,0 !Dummy Material
+
+! Write Layer info to file if flagPrintPCOMP
+*if,flagPrintPCOMP,eq,1,then
+	*cfopen,OUT_PCOMP_%MNum%,out
+
+	*vwrite,MNum
+Composite Layup Number %I
+
+	*vwrite
+NO.	Angle	Thickness	MatNum
+	*do,i,1,numLay
+		layAng_ = layAngle(i)
+		layThk_ = layThick(i)
+		layMat_ = layMat(i)
+		*vwrite,i,layMat_,layAng_,layThk_
+%13.5E	%13.5E	%13.5E	%13.5E
+	*enddo
+
+	*cfclos
+*endif
+
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
