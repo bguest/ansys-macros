@@ -9,6 +9,8 @@
 !      (P.181,Daniel & Ishai,2nd ed)
 !PRECONDITIONS:
 !   ANSYS V11.0!
+!   OPTIONAL: run_BuckSettings.mac contains custome 
+!     commands or settings for model
 !   Element types: SHELL181, SOLID185, SOLID186, SOLSH190,
 !     SHELL208, SHELL209, and SHELL281
 !   Layers Defined with SECDATA
@@ -29,25 +31,74 @@
 !   See description
 !   -Units set to Radians (*AFUN,RAD Issued)
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-SAVE,saved,db,,ALL
-/POST1
+_SAVE
+/post1
 *AFUN,RAD    !SET UNITS TO RADIANS
 PI= ACOS(-1)
-N =
-!==========USER SETTINGS===============
-SF=1.0       !SAFTEY FACTOR
-MUF=1.4        !MODEL UNCERTAINTY FACTOR
+N = $ layMat=
+
+*IF,ARG1,NE,0,THEN !----Cell Size
+   dc=ARG1
+*ENDIF  
+
+!==========USER SETTING DEFAULTS===============
+SF =1.0       !SAFTEY FACTOR
+MUF=1.0       !MODEL UNCERTAINTY FACTOR
+flagAddReadLoads = 0
+currentScale = 1.0
+addLoadsScale = 1.0 !Factor by which added loads are scaled
+flagWriteLoads    = 0
+
+run_BuckSettings !Over write any settings with foldre
 !------------------SAVE CURRENT SETUP
 CM,temp_ELEM,ELEM
-!--------------------------------------
 
 *GET,elmCount,ELEM,0,COUNT  !Get Number of Elements
 elmNum=  $ *VGET,elmNum,ELEM,,ELIST    !Get Element Numbers (V11.0)
 elmFail= $ *DIM,elmFail,ARRAY,elmCount !Create Array For Failure Criteria.
 *VFILL,elmFail,RAMP,0,0 
-*GET,elmMax,ELEM,0,NUM,MAXD !GET High Element
-*GET,elmMin,ELEM,0,NUM,MIND !GET Low Element
+*GET,elmMax,ELEM,0,NUM,MAX !GET High Element
+*GET,elmMin,ELEM,0,NUM,MIN !GET Low Element
 MaxFC=0     !SET Failure Criteria at 0
+
+!Add additional loads if necessary
+*if,flagWriteLoads,EQ,1,then
+   *cfopen,OUT_BuckLoads,out
+   *vwrite,elmCount
+%I
+*endif
+
+*if,flagAddReadLoads,eq,1,then
+
+   ! Get Data
+   addedLoads = $ *dim,addedLoads,,elmCount,10
+   *VREAD,addedLoads(1,1),OUT_BuckLoads,out,,JIK,10,elmCount,1,1
+   (E16.5,E16.5,E16.5,E16.5,E16.5,E16.5,E16.5,E16.5,E16.5,E16.5)
+
+   ! Parse Data
+   elmDiff = elmMax
+   NxAdd = $ *dim,NxAdd ,array,elmDiff
+   NyAdd = $ *dim,NyAdd ,array,elmDiff
+   NxyAdd= $ *dim,NxyAdd,array,elmDiff
+   MxAdd = $ *dim,MxAdd ,array,elmDiff
+   MyAdd = $ *dim,MyAdd ,array,elmDiff
+   MxyAdd= $ *dim,MxyAdd,array,elmDiff
+   VxAdd = $ *dim,VxAdd ,array,elmDiff
+   VyAdd = $ *dim,VyAdd ,array,elmDiff
+
+   *do,i,1,elmCount,increment
+      eNumb = addedLoads(i,1)
+      NxAdd(eNumb)=  addedLoads(i,2) 
+      NyAdd(eNumb)=  addedLoads(i,3) 
+      NxyAdd(eNumb)= addedLoads(i,4)
+      MxAdd(eNumb)=  addedLoads(i,5) 
+      MyAdd(eNumb)=  addedLoads(i,6) 
+      MxyAdd(eNumb)= addedLoads(i,7)
+      VxAdd(eNumb)=  addedLoads(i,8) 
+      VyAdd(eNumb)=  addedLoads(i,9) 
+   *enddo
+
+*endif
 
 *DO,i,1,elmCount
    secnType='NOT VALID'
@@ -184,9 +235,6 @@ MaxFC=0     !SET Failure Criteria at 0
       *GET,layMat,SHEL,secnNum,LAYD,numLay+1,MAT      !Material number of Ply  
       !*GET,E1(j),EX,layMat        
       *GET,Ecc,EZ,layMat !Compresive Modulus
-      *IF,ARG1,NE,0,THEN !----Cell Size
-         dc=ARG1
-      *ENDIF   
       dell=0.0025 !Initial Imprefections
       *GET,Gcx,GXZ,layMat  !Core Shear Modulus (X-Direction)
       *GET,Gcy,GYZ,layMat  !Core Shear Modulus (Y-Direction)
@@ -201,6 +249,24 @@ MaxFC=0     !SET Failure Criteria at 0
       *GET,Mxy,ELEM,elmNum(i),SMISC,6 $ Mxy=abs(Mxy)
       *GET,Vx ,ELEM,elmNum(i),SMISC,7 $ Vx =abs(Vx )
       *GET,Vy ,ELEM,elmNum(i),SMISC,8 $ Vy =abs(Vy )
+
+      ! Write or Add Existing loads
+      *if,flagWriteLoads,eq,1,then
+         currentElemNum = elmNum(i)
+         *vwrite,currentElemNum,Nx,Ny,Nxy,Mx,My,Mxy,Vx,Vy
+%16.5E%16.5E%16.5E%16.5E%16.5E%16.5E%16.5E%16.5E%16.5E%16.5E
+      *endif
+
+      *if,flagAddReadLoads,eq,1,then
+         Nx = currentScale*Nx + NxAdd(elmNum(i))*addLoadsScale
+         Ny = currentScale*Ny + NyAdd(elmNum(i))*addLoadsScale
+         Nxy= currentScale*Nxy+ NxyAdd(elmNum(i))*addLoadsScale
+         Mx = currentScale*Mx + MxAdd(elmNum(i))*addLoadsScale
+         Mxy= currentScale*Mxy+ MxyAdd(elmNum(i))*addLoadsScale
+         Vx = currentScale*Vx + VxAdd(elmNum(i))*addLoadsScale
+         Vy = currentScale*Vy + VyAdd(elmNum(i))*addLoadsScale
+      *endif
+
       !-----FACE SHEET LOADS
       Nxf=Nx/2+Mx/h
       Nyf=Ny/2+My/h
@@ -391,6 +457,8 @@ MaxFC=0     !SET Failure Criteria at 0
       !------------------------------------------------
    *ENDIF
 *ENDDO
+
+*cfclos 
 
 !======================DISPLAY RESULTS=================
 ETABLE,plNum,CENT,X            !CREATE STORAGE FOR *VPUT

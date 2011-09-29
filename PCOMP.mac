@@ -1,0 +1,81 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PCOMP.mac
+!DESCRIPTION: This macro creates a composite property
+!PRECONDITIONS:
+!	numLay   = number of layers in the property
+!	layThick = Array with the layers thicknesses
+!	layAngle = Array with the layer angles IN DEGREESE
+!	layMat   = Array with the layer material numbers
+!	flagPrintPCOMP = 1 ~> Lamina properties printed to file
+! ARGUMENTS:
+!	ARG1: Resulting material property number
+!	ARG2: Element Type To be used, supported types are
+!		'SHELL91','SHELL181' (More Added On Request)
+!	ARG3: Added mass (mass/area)
+!	ARG4: use sandwich option? 1 --> YES, 0 --> NO
+!=====================================================
+*if,ARG1,gt,0,then	!Resultant Property Number
+	MNum = Arg1
+*else
+	MNum = 'MatNum'
+*endif
+
+EType = UPCASE(ARG2)	!Set Material Property Type
+
+*if,ARG3,GT,0,then	!Added Mass
+   ADMSUA = ARG3
+*else
+   ADMSUA = 0
+*endif
+
+useSandwich = ARG4	!Sandwich option 
+							!Only applicable for SHELL91
+
+! Create Properties
+*if,EType,EQ,'SHELL181',or,EType,EQ,'SHELL281',then
+	ET,MNum,EType
+	R,MNum
+	SECTYPE,MNum,SHELL
+	SECCONTROLS,,,,ADMSUA
+	!SECDATA,<Thickness>,<MatNum>,<Theata>,<NUMPT>,<LayerName>
+	*do,i,1,numLay,
+	   SECDATA,layThick(i),layMat(i),layAngle(i)
+	*enddo
+
+*elseif,EType,EQ,'SHELL91',then
+	ET,MNum,SHELL91
+	R,MNum,numLay,,,,,ADMSUA, 
+	RMORE,,,,,,,  !NEEDED!
+	!LAYERED DATA:
+	!RMORE,<MatNum>,THEATA,TK(I), TK(J), TK(K), TK(L) 	
+	*do,i,1,numLay
+		RMORE,layMat(i),layAngle(i),layThick(i),layThick(i),layThick(i),layThick(i)
+	*enddo
+	KEYOPT,MNum,1,numLay
+	KEYOPT,MNum,9,useSandwich
+*endif
+!MP,DENS,MNum,0 !Dummy Material
+
+! Write Layer info to file if flagPrintPCOMP
+*if,flagPrintPCOMP,eq,1,then
+	*cfopen,OUT_PCOMP_%MNum%,out
+
+	*vwrite,MNum
+Composite Layup Number %I
+
+	*vwrite
+NO.	Angle	Thickness	MatNum
+	*do,i,1,numLay
+		layAng_ = layAngle(i)
+		layThk_ = layThick(i)
+		layMat_ = layMat(i)
+		*vwrite,i,layMat_,layAng_,layThk_
+%13.5E	%13.5E	%13.5E	%13.5E
+	*enddo
+
+	*cfclos
+*endif
+
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

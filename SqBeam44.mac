@@ -30,7 +30,7 @@ MatNum = ARG1
 	TKZ_I = TKZ-ARG4
 *else
 	TKY_I = 0
-	TYZ_I = 0
+	TKZ_I = 0
 *endif
 
 AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA

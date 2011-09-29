@@ -66,23 +66,13 @@ OUTRES,all,all
 	SOLVE
 *ELSEIF,ARG4,EQ,2,THEN            !Non-Linear Prestressed
 	/OUTPUT,OUT_NonLinearModes,out
-	!outres,all,all
-	!MODOPT,SUBSP,NModes,Fmin,Fmax   !Modal Options
-	!SUBOPT, SUBSIZ, NPAD, NPERBK, NUMSSI, NSHIFT, Strmck, JCGITR
-	!SUBOPT,,,,9999   !<For MODOPT,SuBSP
-	!PSOLVE,EIGFULL
-	MODOPT,LANB,NModes,Fmin,Fmax
-	psolve,eiglanb
-	!MODOPT,LANPCG,NModes,Fmin,Fmax
-	!PSOLVE,EIGLANPCG
-	!MODOPT,REDUC,NModes,Fmin,Fmax
-	!MXPAND,NMODE, FREQB, FREQE...
-	MXPAND,NModes,FMin,FMax,YES,!0.00000000001   !Expanded Modes
-	UPCOORD,1,ON
+	UPCOORD,1.0,ON ! Display mode shapes relative to deformed geometry in the postprocessor.
 	PSTRES,on
+	MODOPT,LANPCG,NModes,Fmin,Fmax
+	MXPAND,NModes,FMin,FMax,YES,!0.00000000001   !Expanded
+   PSOLVE,EIGLANPCG
 	FINISH
 	/SOLUTION
-	outres,all,all
 	expass,on
 	psolve,eigexp
 *ENDIF
