@@ -6,7 +6,7 @@
 !	power spectral density
 !PRECONDITIONS:
 !  ARG1 = Number of Modes ELSE:
-     NModes=200
+     NModes=300
 !  ARG2 = Start Frequence: ELSE:
      FMin=''
 !  ARG3 = End Frequency ELSE:

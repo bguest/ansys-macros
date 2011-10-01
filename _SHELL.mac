@@ -4,10 +4,7 @@
 !DESCRIPTION: This macro prints shell forces for random
 !   runs for the selected set of elements
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-/post1
-!set,3,1
-set,last
-/output,OUT_ShellForces,txt
+/output,OUT_ShellForces,out
 /header,off,off,off,off,off,on	! Format
 /format,7,e,15,7		! Format
 /page,20000,,20000		! Format
