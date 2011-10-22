@@ -7,7 +7,8 @@
 !     there is no way to tell what units your model
 !     uses
 !	mFactor (optional) mass factor ie 1.10 = 10% extra mass
-!  flagPrintMatProps (optional)
+!  PanelThick = PanelThickness if material is Hexcel
+!  flagPrintMatProps (optional) (Currently Only Isotropic)
 !     1 -> Material Properties are output to OUT_MaterialProperties.out (Coma delimiated)
 !     0 -> No material properties are output (Default)
 !  ARG1 = Material Number
@@ -17,13 +18,23 @@
 !		805 -> Aluminum 6061-T651
 !		806 -> Stainless Steel 15-5 PH
 !		807 -> G10 (XY/Z) Orthotropic
+!    830 - 849 : Reserved For HEXCEL
+!     831 -> Hexcel HRP – 3/16 – 5.5 pcf
+!    850 - 870 : Reserved For Composites
+!     855 -> S2 Glass/Epoxy Unidirectional Facesheet
 !     899 -> Call to Material File Footer
 !	ARG2 = Resulting material number
 !		[Default] = ARG1
-!POSTCONDITIONS:
-!  See Description.
+!  ARG3 = Load Failure Criteria
+!     0 -> Don't load Failure Criteria
+!     1 -> Load FC Failure Criteria
+!
+!!!!!!!!!!!!!!!!!!!!!!NOTES!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!  When creating new material properties, all materail 
+!     properties should be input as positive
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
+
 !Setup Header and output file if flagPrintMatProps Set
 *if,flagPrintMatProps,eq,1, and, flagMatHeader,lt,1,then
    flagMatHeader = 1
@@ -31,7 +42,7 @@
    *vwrite
 Material,Material,Modulus (EX),Poisons,CTE (X),Density,Mass,Reference
    *vwrite
-ID,Name,psi,Ratio (nuxy),in/in/degC,lbm/in^3,Factor,
+ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
 *endif
 
 !Run Material Footer, Close Down File
@@ -62,19 +73,23 @@ ID,Name,psi,Ratio (nuxy),in/in/degC,lbm/in^3,Factor,
 
 !DEFAULTS
 MatName  = 'No Material Assigned'
-ref      = 'Default Material'
-E        = 1
-CTEX     = 0
-nu_XY    = 0.3
-rho      = 1
+ref = 'Default Material'
+PR12 = 0.3
+CTEX = 0
+rho = 1 
+E11 = 1 $ E22 = 0 $ E33 = 0 
+G12 = 0 $ G13 = 0 $ G32 = 0 
+S11t = 0 $ S11c = 0 $ S22t = 0 $ S22c = 0 $ S33t = 0 $ S33c = 0
+S12 = 0 $ S23 = 0 $ S13 = 0
+eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 
 *IF,ARG1,EQ,802,THEN
 	MatName = 'Aluminum 7075-T73'
    ref     = 'MIL-HDBK-5E'
-	E       = 10.3e6*psi
+	E11      = 10.3e6*psi
 	rho     = 0.1*lbm/in**3
    cteX    = 12.4E-6/degF
-   nu_XY   = 0.33
+   PR12   = 0.33
 	! !----FAILURE CRITERIA (YEILD STRENGTHS)
 	! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
 	! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
@@ -86,53 +101,194 @@ rho      = 1
 *ELSEIF,ARG1,EQ,803,THEN
    MatName = 'Ti-6Al-4V'
    ref     = 'MIL-HDBK-5E'
-   E       = 16.0e6*psi
+   E11     = 16.0e6*psi
    rho     = 0.1*lbm/in**3
-   nu_XY   = 0.34
+   PR12    = 0.34
    cteX    = 4.8e-6/degF !AT 70degF
 
 *ELSEIF,ARG1,EQ,804,THEN
    MatName = 'STAINLESS_STEEL_A286'
    ref     = 'PRO_E'
-   E       = 2.91E+07*psi
+   E11     = 2.91E+07*psi
    rho     = 2.87E-01*lbm/in**3
    cteX    = 9.20E-06/degF
-   nu_XY   = 3.10E-01
+   PR12    = 3.10E-01
 
 *elseif,ARG1,EQ,805,THEN
    MatName = 'Aluminum 6061-T651'
    ref     = 'MIL-HDBK-5E'
-   E       = 10.0e6
+   E11     = 10.0e6
    rho     = 0.098*lbm/in**3
-   nu_XY   = 0.33
+   PR12    = 0.33
    cteX    = 12.65E-6/degF  !AT 70degF
 
 *elseif,ARG1,EQ,806,THEN
    MatName = 'STAINLESS_STEEL_15-5PH (H1025)'
    ref     = 'MIL-HDBK-5E and PRO_E'
-   E       = 28.5e6*psi
+   E11     = 28.5e6*psi
    rho     = 0.283*lbm/in**3
-   nu_XY   = 0.27
+   PR12    = 0.27
    cteX    = 6.3e-6/degF  !AT 70degF
 
 *elseif,ARG1,eq,807,then
 	! G10 Orthotropic material (See 110602_G10_Material_Review)
    MatName = 'G10 Orthotropic'
    ref     = 'See 110602_G10_Material_Review'
-   E       = 2.7e6*psi
+   E11     = 2.7e6*psi
+   E22     = 2.7e6*psi
+   E33     = 2.3e6*psi
    rho     = 0.065*lbm/in**3
-	MP,EY,MNum,2.7e6*psi
-	MP,EZ,MNum,2.3e6*psi
+
+!------------------------------------------------------
+!Hexcel 
+*if,ARG1,ge,830,and,ARG1,le,849,then
+   K_Factor=0.9093*(PanelThick**(-0.1928)) !!!K_FACTOR
+*endif
+!HRP (HRP Fiberglass Reinforced Phenolic Honeycomb)
+!830 HRP – 3/16 – 4.0 480 400 590 480 57 310 210 13.0 160 130 6.5
+
+*elseif,ARG1,eq,831,then
+   !HRP – 3/16 – 5.5 pcf 800 620 900 750 95 490 390 19.0 265 200 11.0
+   MatName = 'Hexcel HPR-3/16-5.5pcf'
+   rho  = 5.5 *pcf
+   S11c = 750 *psi
+   E33  = 95  *ksi
+   S13  = 390 *psi
+   G13  = 19.0*ksi*K_Factor
+   S23  = 200 *psi
+   G23  = 11.0*ksi*K_Factor
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
+!  HEXCELL --> Input Converter
+! CD   = 3/16
+! rho  = 5.5 *pcf
+!        800
+!        620
+!        900
+! S11c = 750 *psi
+! E33  = 95  *ksi
+!        490
+! S13  = 390 *psi
+! G13  = 19.0*ksi*K_Factor
+!        265
+! S23  = 200 *psi
+! G23  = 11.0*ksi*K_Factor
+
+!832 HRP – 3/16 – 7.0 1150 900 1300 1040 136 650 510 30.0 370 290 14.0
+!833 HRP – 3/16 – 8.0 1350 1100 1530 1280 164 750 TBD TBD 460 370 19.0
+!834 HRP – 3/16 – 12.0 2300 1800 2520 1960 260 985 815 48.0 675 525 28.0
+!HRP – 1/4 – 3.5 390 280 455 400 46 250 180 10.0 125 100 5.0
+!HRP – 1/4 – 4.5 585 480 640 560 70 355 280 15.0 200 155 8.0
+!HRP – 1/4 – 5.0 680 530 820 660 84 400 305 20.0 230 180 10.0
+!HRP – 1/4 – 6.5 1025 850 1180 920 120 580 450 25.0 330 260 13.0
+!HRP – 3/8 – 2.2 165 125 180 145 13 120 90 6.0 60 45 3.0
+!HRP – 3/8 – 3.2 315 260 390 350 38 205 160 12.0 110 85 5.0
+!HRP – 3/8 – 4.5 610 450 690 550 65 325 260 14.0 190 150 8.0
+!HRP – 3/8 – 6.0 900 750 1000 800 100 520 400 25.0 300 210 12.0
+!HRP – 3/8 – 8.0 1400 1000 1540 1180 150 700 540 27.0 450 350 18.0
+
+!------------------------------------------------------
+!Composite Properties
+*elseif,ARG1,eq,855,then
+   ! S2 Glass/epoxy unidirectional facesheet
+   MatName  = "S2 Glass/Epoxy Unidirectional"
+   ref      = 'Sam glass properties review'
+   E11      = 7.7*msi
+   E22      = 2.3*msi
+   E33      = 2.3*msi    ! Guess
+   G12      = 0.9*msi
+   G13      = 0.9*msi    ! Guess     
+   PR12     = 0.27
+   PR13     = 0.27      ! Guess
+   PR23     = 0.27      ! Guess
+   G23      = E22/2/(1+PR12)
+   PR21     = PR12*E22/E11
+   PR31     = PR13*E33/E11
+   PR32     = PR23*E33/E22
+   S11t     = 230*ksi
+   S11c     = 100*ksi
+   S22t     = 6*ksi
+   S22c     = 16*ksi
+   S12      = 9*ksi
+   S13      = 8*ksi
+   S23      = S22t/2
+   eps11t   = 0.027
+   eps11c   = 0.011
+   eps22t   = 0.0025
+   eps22c   = 0.011
+   eps12    = 0.016
 *ENDIF
 
-!Sub Set Values Above
-MP,EX,MNum,E,
+!======================================================
+!Set Material Properties
+
+MP,EX,MNum,E11,      !Modulus
+*if,E22,NE,0,then
+   MP,EY,MNum,E22
+*endif
+*if,E33,NE,0,then
+   MP,EY,MNum,E33
+*endif
+
+MP,prxy,matnum,PR12  !Poison's Ratio
+*if,PR13,gt,0,then
+   MP,prxz,matnum,PR13
+*endif
+*if,PR23,gt,0,then
+   MP,pryz,matnum,PR23
+*endif
+
+*if,G12,gt,0,then    !Shear Modulus
+   MP,gxy,matnum,G12
+*endif
+*if,G13,gt,0,then
+   MP,gxz,matnum,G13
+*endif
+*if,G23,gt,0,then
+   MP,gyz,matnum,G23   
+*endif 
+
 MP,DENS,MNum,rho*mFactor
-MP,PRXY,MNum,nu_XY
 MP,ALPX,MNum,cteX
 
+!Failure Criteria
+*if,ARG3,EQ,1,then
+   *if,S11t,GT,0,then
+      FC,MatNum,S,XTEN, S11t
+   *endif
+   *if,S11c,GT,0,then
+      FC,MatNum,S,XCMP,-S11c
+   *endif
+   *if,S22t,GT,0,then
+      FC,MatNum,S,YTEN, S22t
+   *endif
+   *if,S22c,GT,0,then
+      FC,MatNum,S,YCMP,-S22c
+   *endif
+   *if,S33t,GT,0,then
+      FC,MatNum,S,ZTEN, S33t
+   *endif
+   *if,S33c,GT,0,then
+      FC,MatNum,S,ZCMP,-S33c
+   *endif
+   *if,S12,GT,0,then
+      FC,MatNum,S,XY,   S12
+   *endif
+   *if,S23,GT,0,then
+      FC,MatNum,S,YZ,   S23
+   *endif
+   *if,S13,GT,0,then
+      FC,MatNum,S,ZX,   S13
+   *endif
+*endif
+
 *if,flagPrintMatProps,EQ,1,then
-	*vwrite, MNum, MatName, E/psi, nu_XY, cteX*degC, rho*in**3/lbm, mFactor, ref
+	*vwrite, MNum, MatName, E11/psi, prxy, cteX*degC, rho*in**3/lbm, mFactor, ref
 %I,%C,%G,%G,%G,%G,%G,%C
 *endif
 

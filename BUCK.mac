@@ -49,7 +49,7 @@ currentScale = 1.0
 addLoadsScale = 1.0 !Factor by which added loads are scaled
 flagWriteLoads    = 0
 
-run_BuckSettings !Over write any settings with foldre
+run_BuckSettings !Over write any settings with folder
 !------------------SAVE CURRENT SETUP
 CM,temp_ELEM,ELEM
 

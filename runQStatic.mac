@@ -1,7 +1,7 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !runQStatic.inp
 !B.GUEST; benguest@gmail.com
-/title,Quasi-Static Analysis
+!/title,Quasi-Static Analysis
 !DESCRIPTION: This file preforms a qusi-static
 !  Acceleration Analysis
 !PRECONDITIONS:
