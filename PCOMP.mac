@@ -10,7 +10,7 @@
 ! ARGUMENTS:
 !	ARG1: Resulting material property number
 !	ARG2: Element Type To be used, supported types are
-!		'SHELL91','SHELL181' (More Added On Request)
+!		'SHELL91','SHELL181', 'SOLID' (More Added On Request)
 !	ARG3: Added mass (mass/area)
 !	ARG4: use sandwich option? 1 --> YES, 0 --> NO
 !=====================================================
@@ -54,7 +54,7 @@ useSandwich = ARG4	!Sandwich option
 	KEYOPT,MNum,1,numLay
 	KEYOPT,MNum,9,useSandwich
 *endif
-!MP,DENS,MNum,0 !Dummy Material
+MP,DENS,MNum,0 !Dummy Material
 
 ! Write Layer info to file if flagPrintPCOMP
 *if,flagPrintPCOMP,eq,1,then

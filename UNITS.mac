@@ -30,7 +30,9 @@ pi=acos(-1)
    ppm=1e-6
    pcf=lbm/ft**3
 
-   meter=39.37*in
+   meter=39.37007874*in
+   liter=1e-3*meter**3
+   mL=1e-3*liter
    cm=meter/92
    micron=1E-6*meter
    angstrom=1E-10*meter

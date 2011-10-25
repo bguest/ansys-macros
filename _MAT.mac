@@ -3,9 +3,7 @@
 !DESCRIPTION: Creates a standard material from a single
 !  number
 !PRECONDITIONS:
-!  - UNITS have been set prior to running tis command as
-!     there is no way to tell what units your model
-!     uses
+!  - UNITS: if psi is not set, units will be reset!
 !	mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  PanelThick = PanelThickness if material is Hexcel
 !  flagPrintMatProps (optional) (Currently Only Isotropic)
@@ -18,9 +16,11 @@
 !		805 -> Aluminum 6061-T651
 !		806 -> Stainless Steel 15-5 PH
 !		807 -> G10 (XY/Z) Orthotropic
-!    830 - 849 : Reserved For HEXCEL
+!     808 -> HYSOL EA9394 
+!     + 830 - 849 : Reserved For HEXCEL
 !     831 -> Hexcel HRP – 3/16 – 5.5 pcf
-!    850 - 870 : Reserved For Composites
+!     - 850 - 870 : Reserved For Composites
+!     850 -> M55J Historical Minimum
 !     855 -> S2 Glass/Epoxy Unidirectional Facesheet
 !     899 -> Call to Material File Footer
 !	ARG2 = Resulting material number
@@ -69,6 +69,11 @@ ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
    UNITS
 *endif
 
+!K_FACTOR for hexcel materials
+*if,ARG1,GE,830,and,ARG1,LE,849,then
+   K_Factor=0.9093*(PanelThick**(-0.1928)) 
+*endif
+
 !---------- STANDARD MATERIAL PROPERTIES -------------
 
 !DEFAULTS
@@ -78,7 +83,8 @@ PR12 = 0.3
 CTEX = 0
 rho = 1 
 E11 = 1 $ E22 = 0 $ E33 = 0 
-G12 = 0 $ G13 = 0 $ G32 = 0 
+G12 = 0 $ G13 = 0 $ G23 = 0 
+PR12 = 0 $ PR13 = 0 $ PR23 = 0
 S11t = 0 $ S11c = 0 $ S22t = 0 $ S22c = 0 $ S33t = 0 $ S33c = 0
 S12 = 0 $ S23 = 0 $ S13 = 0
 eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
@@ -139,23 +145,27 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    E33     = 2.3e6*psi
    rho     = 0.065*lbm/in**3
 
+*elseif,ARG1,eq,808,then
+   ! HYSOL EA9394
+   MatName  = 'Hysol EA9394'
+   ref      = 'Hysol Spec'
+   E11      = 0.615e6*psi
+   PR12     = 0.45
+   rho      = 1.36*gm/mL
 !------------------------------------------------------
 !Hexcel 
-*if,ARG1,ge,830,and,ARG1,le,849,then
-   K_Factor=0.9093*(PanelThick**(-0.1928)) !!!K_FACTOR
-*endif
 !HRP (HRP Fiberglass Reinforced Phenolic Honeycomb)
 !830 HRP – 3/16 – 4.0 480 400 590 480 57 310 210 13.0 160 130 6.5
 
 *elseif,ARG1,eq,831,then
    !HRP – 3/16 – 5.5 pcf 800 620 900 750 95 490 390 19.0 265 200 11.0
    MatName = 'Hexcel HPR-3/16-5.5pcf'
-   rho  = 5.5 *pcf
-   S11c = 750 *psi
-   E33  = 95  *ksi
-   S13  = 390 *psi
+   rho  = 5.5*pcf
+   S11c = 750*psi
+   E33  = 95*ksi
+   S13  = 390*psi
    G13  = 19.0*ksi*K_Factor
-   S23  = 200 *psi
+   S23  = 200*psi
    G23  = 11.0*ksi*K_Factor
 
    !Assumed Hexcel Properties
@@ -194,9 +204,34 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 
 !------------------------------------------------------
 !Composite Properties
+
+*elseif,ARG1,eq,850,then
+   !M55J Historical Minimum Unitape
+   MatName  = 'M55J Historical Minimum'
+   ref      = 'Ask Sam'
+   E11      = 36.9*msi
+   E22      = 0.67*msi
+   E33      = 0.5*msi
+   G12      = 0.45*msi
+   G13      = G12
+   PR12     = 0.32
+   PR13     = 0.32
+   PR23     = 0.32
+   G23      = E22/2/(1+PR12)
+   PR21     = PR12*E22/E11
+   PR31     = PR13*E33/E11
+   PR32     = PR23*E33/E22
+   S11t     = 263*ksi      ! tensile strength in 11 direction
+   S11c     = 115*ksi      ! compressive strength in 11 direction
+   S22t     = 3.65*ksi     ! tensile strength in 22 direction
+   S22c     = 4.915*ksi    ! compressive strength in 22 direction
+   S12      = 9.77*ksi     ! 12 shear strength 
+   S13      = 9.77*ksi     ! 13 shear strength
+   S23      = S22t/2     ! 23 shear strength
+
 *elseif,ARG1,eq,855,then
    ! S2 Glass/epoxy unidirectional facesheet
-   MatName  = "S2 Glass/Epoxy Unidirectional"
+   MatName  = 'S2 Glass/Epoxy Unidirectional'
    ref      = 'Sam glass properties review'
    E11      = 7.7*msi
    E22      = 2.3*msi
@@ -228,29 +263,29 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !Set Material Properties
 
 MP,EX,MNum,E11,      !Modulus
-*if,E22,NE,0,then
+*if,E22,GT,0,then
    MP,EY,MNum,E22
 *endif
-*if,E33,NE,0,then
-   MP,EY,MNum,E33
+*if,E33,GT,0,then
+   MP,EZ,MNum,E33
 *endif
 
-MP,prxy,matnum,PR12  !Poison's Ratio
-*if,PR13,gt,0,then
-   MP,prxz,matnum,PR13
+MP,prxy,MNum,PR12  !Poison's Ratio
+*if,PR13,GT,0,then
+   MP,prxz,MNum,PR13
 *endif
-*if,PR23,gt,0,then
-   MP,pryz,matnum,PR23
+*if,PR23,GT,0,then
+   MP,pryz,MNum,PR23
 *endif
 
-*if,G12,gt,0,then    !Shear Modulus
-   MP,gxy,matnum,G12
+*if,G12,GT,0,then    !Shear Modulus
+   MP,gxy,MNum,G12
 *endif
-*if,G13,gt,0,then
-   MP,gxz,matnum,G13
+*if,G13,GT,0,then
+   MP,gxz,MNum,G13
 *endif
-*if,G23,gt,0,then
-   MP,gyz,matnum,G23   
+*if,G23,GT,0,then
+   MP,gyz,MNum,G23   
 *endif 
 
 MP,DENS,MNum,rho*mFactor
@@ -259,31 +294,31 @@ MP,ALPX,MNum,cteX
 !Failure Criteria
 *if,ARG3,EQ,1,then
    *if,S11t,GT,0,then
-      FC,MatNum,S,XTEN, S11t
+      FC,MNum,S,XTEN, S11t
    *endif
    *if,S11c,GT,0,then
-      FC,MatNum,S,XCMP,-S11c
+      FC,MNum,S,XCMP,-S11c
    *endif
    *if,S22t,GT,0,then
-      FC,MatNum,S,YTEN, S22t
+      FC,MNum,S,YTEN, S22t
    *endif
    *if,S22c,GT,0,then
-      FC,MatNum,S,YCMP,-S22c
+      FC,MNum,S,YCMP,-S22c
    *endif
    *if,S33t,GT,0,then
-      FC,MatNum,S,ZTEN, S33t
+      FC,MNum,S,ZTEN, S33t
    *endif
    *if,S33c,GT,0,then
-      FC,MatNum,S,ZCMP,-S33c
+      FC,MNum,S,ZCMP,-S33c
    *endif
    *if,S12,GT,0,then
-      FC,MatNum,S,XY,   S12
+      FC,MNum,S,XY,   S12
    *endif
    *if,S23,GT,0,then
-      FC,MatNum,S,YZ,   S23
+      FC,MNum,S,YZ,   S23
    *endif
    *if,S13,GT,0,then
-      FC,MatNum,S,ZX,   S13
+      FC,MNum,S,ZX,   S13
    *endif
 *endif
 
