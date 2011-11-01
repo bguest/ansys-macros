@@ -225,9 +225,11 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    S11c     = 115*ksi      ! compressive strength in 11 direction
    S22t     = 3.65*ksi     ! tensile strength in 22 direction
    S22c     = 4.915*ksi    ! compressive strength in 22 direction
+   S33t = S22t $ S33c = S22c
    S12      = 9.77*ksi     ! 12 shear strength 
    S13      = 9.77*ksi     ! 13 shear strength
-   S23      = S22t/2     ! 23 shear strength
+   S23      = S22t/2       ! 23 shear strength
+   rho      = 0.059*lbm/in**3
 
 *elseif,ARG1,eq,855,then
    ! S2 Glass/epoxy unidirectional facesheet
@@ -249,6 +251,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    S11c     = 100*ksi
    S22t     = 6*ksi
    S22c     = 16*ksi
+   S33t = S22t $ S33c = S22c
    S12      = 9*ksi
    S13      = 8*ksi
    S23      = S22t/2
@@ -257,6 +260,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    eps22t   = 0.0025
    eps22c   = 0.011
    eps12    = 0.016
+   rho      = 0.071*lbm/in**3
 *ENDIF
 
 !======================================================

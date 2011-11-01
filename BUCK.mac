@@ -45,9 +45,9 @@ N = $ layMat=
 SF =1.0       !SAFTEY FACTOR
 MUF=1.0       !MODEL UNCERTAINTY FACTOR
 flagAddReadLoads = 0
-currentScale = 1.0
-addLoadsScale = 1.0 !Factor by which added loads are scaled
-flagWriteLoads    = 0
+currentScale     = 1.0
+addLoadsScale    = 1.0 !Factor by which added loads are scaled
+flagWriteLoads   = 0
 
 run_BuckSettings !Over write any settings with folder
 !------------------SAVE CURRENT SETUP

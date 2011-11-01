@@ -9,6 +9,7 @@
 !      ELSE = user prompted to select area
 !   ARG2 = Last area to be selected 
 !   ARG3 = Increment of areas
+!   ARG4 = Flag Safe Mode (Won't Delete Meshed Areas)
 !POSTCONDITIONS:
 !	areas and associated lines and keypoints
 !       are deleted
@@ -32,7 +33,9 @@ CM,temp_KP,KP
 	ASEL,s,,,ARG1,ARG2,ARG3,1
 *ENDIF
 
-ACLEAR,all
+*if,ARG4,ne,1,then
+   ACLEAR,all
+*endif
 ADELE,ALL,,,1			!DELETE S*
 
 !--RESUME TEMPORARY COMPONENTS
