@@ -322,8 +322,11 @@ MP,ALPX,MNum,cteX
       FC,MNum,S,YZ,   S23
    *endif
    *if,S13,GT,0,then
-      FC,MNum,S,ZX,   S13
+      FC,MNum,S,XZ,   S13
    *endif
+   FC,Mnum,S,XYCP,-1 !Set Defaults (Becauase for some reason
+   FC,Mnum,S,YZCP,-1 ! they are being set erroniously).
+   FC,Mnum,S,XZCP,-1
 *endif
 
 *if,flagPrintMatProps,EQ,1,then
