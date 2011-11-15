@@ -25,25 +25,39 @@ MatNum = ARG1
    TKY = 1
 *endif
 
+
+
 *if,ARG4,gt,0,then
 	TKY_I = TKY-ARG4
 	TKZ_I = TKZ-ARG4
+        shearz=12/5		! hollow thin-walled square
+	sheary=12/5		! hollow thin-walled square
+	A_torsion=(TKY-ARG4)*(TKZ-ARG4)
+	S_torsion=2*(TKY-ARG4)+2*(TKZ-ARG4)
+	IXX=4*A_torsion**2*ARG4/S_torsion	! hollow rectangle
 *else
 	TKY_I = 0
 	TKZ_I = 0
+	SHEARZ=6/5		! rectangle	
+	SHEARY=6/5		! rectangle
+	a=max(TKY,TKZ)/2
+	b=min(TKY,TKZ)/2
+	IXX = a*b**3*(16/3-3.36*b/a*(1-b**4/a**4/12)
 *endif
 
 AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA
 IYY = (TKY*TKZ**3-TKY_I*TKZ_I**3)/12
 IZZ = (TKZ*TKY**3-TKZ_I*TKY_I**3)/12
-IXX = IYY+IZZ
+
+
+		
 
 !------------------------------------------------------
 ET,MatNum,BEAM44
 R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
 RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
 RMORE, , , , , , , 
-RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2, 
+RMORE, SHEARZ, SHEARY, TKZ/2, TKY/2, TKZ/2, TKY/2, 
 
 !Set material
 *if,arg5,gt,0,then
