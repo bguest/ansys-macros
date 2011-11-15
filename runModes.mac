@@ -76,6 +76,7 @@ OUTRES,all,all
 	expass,on
 	psolve,eigexp
 *ENDIF
+FINISH
 /OUTPUT
 kLastAnalysis = 1 !For _DISP, VM, ect.
 !======THE--END========THE--END========THE--END=========
