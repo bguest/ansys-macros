@@ -1,0 +1,79 @@
+!======================================================
+! This macro creates beam 44 properties for an Ibeam
+! Parameters
+!  ARG1: Resulting element property number
+!  ARG2: Width (b, Y dimension)
+!  ARG3: Web Height (d, Z Dimension)
+!  ARG4: Web Thickness (tw)
+!  ARG5: End Thickness (t)
+!  ARG6: Materails (See _MAT.mac)
+!  ARG7: Radius (between web and flange)
+!------------------------------------------------------
+
+matNum = ARG1
+*if,ARG2,gt,0,then ! Set Width
+   b = ARG2
+*else
+   b = 1
+*endif
+
+*if,ARG3,gt,0,then ! Set Web Height
+   d = ARG3 
+*else
+   d = 1
+*endif
+
+*if,ARG4,gt,0,then ! Set web thickness
+   tw = ARG4
+*else
+   tw = 0.15
+*endif
+
+*if,arg5,gt,0,then ! Set flange thickness
+   t = ARG5
+*else
+   t = 0.15
+*endif
+
+*if,arg7,gt,0,then
+   r = arg7
+*else
+   r = 0
+*endif
+
+!Size
+TKZ = d+2*t
+TKY = b
+
+! Areas and Inertias
+AA  = 2*b*t+tw*d
+IYY = (b*(d+2*t)**2-(b-tw)*d**3)/12
+IZZ = b**3*t/6+tw**3*d/12
+
+!Torsion (From Roark-6th Table 20, p355)
+tt    = min(t,tw)
+t1    = max(t,tw)
+K1    = b*tw**3*(1/3-0.21*tw/b*(1-t**4/(12*b**4)))
+K2    = 1/3*d*tw**3
+DD    = ((t+r)**2+r*tw+t**2/4)/(2*r+t)
+alpha = tt/t1*(0.15+0.1*r/t)
+
+IXX = K1+K2+alpha*DD**4
+
+! Shear TODO: Update
+ShearZ = 0 $ ShearY = 0
+
+!------------------------------------------------------
+ET,MatNum,BEAM44
+R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE, , , , , , , 
+RMORE, SHEARZ, SHEARY, TKZ/2, TKY/2, TKZ/2, TKY/2, 
+
+!Set material
+*if,arg6,gt,0,then
+   _MAT,arg6,MatNum
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

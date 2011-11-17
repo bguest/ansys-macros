@@ -48,6 +48,7 @@ kLastAnalysis = 0
 /output,OUT_QStatic.ans
 SOLVE
 /OUTPUT
+finish
 _save
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE.

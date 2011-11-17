@@ -6,9 +6,14 @@
 !  - UNITS: if psi is not set, units will be reset!
 !	mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  PanelThick = PanelThickness if material is Hexcel
-!  flagPrintMatProps (optional) (Currently Only Isotropic)
+!  shouldPrintMatProps (optional) (Currently Only Isotropic)
 !     1 -> Material Properties are output to OUT_MaterialProperties.out (Coma delimiated)
 !     0 -> No material properties are output (Default)
+!  isForRandom (optional)
+!     1 -> Tensile and Compressived strengths are set 
+!          to the minimum tensile or compressive strength
+!     0 -> Tensile and compressive strengths are not 
+!          messed with.
 !  ARG1 = Material Number
 !		802 -> Aluminum 7075-T73
 !		803 -> Titanium Ti-6Al-4V
@@ -17,11 +22,15 @@
 !		806 -> Stainless Steel 15-5 PH
 !		807 -> G10 (XY/Z) Orthotropic
 !     808 -> HYSOL EA9394 
-!     + 830 - 849 : Reserved For HEXCEL
+!    -- 830 - 849 : Reserved For HEXCEL HPR
 !     831 -> Hexcel HRP – 3/16 – 5.5 pcf
-!     - 850 - 870 : Reserved For Composites
+!    -- 850 - 870 : Reserved For Composites
 !     850 -> M55J Historical Minimum
+!     854 -> YSH70 : Historical SAM
 !     855 -> S2 Glass/Epoxy Unidirectional Facesheet
+!    -- 871 - 892 : Reserved For HEXCEL 5056
+!     876 -> Hexcel 5/32 – 5056 – .0007
+!     877 -> Hexcel 5/32 – 5056 – .001
 !     899 -> Call to Material File Footer
 !	ARG2 = Resulting material number
 !		[Default] = ARG1
@@ -35,8 +44,8 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
 
-!Setup Header and output file if flagPrintMatProps Set
-*if,flagPrintMatProps,eq,1, and, flagMatHeader,lt,1,then
+!Setup Header and output file if shouldPrintMatProps Set
+*if,shouldPrintMatProps,eq,1, and, flagMatHeader,lt,1,then
    flagMatHeader = 1
    *CFOPEN,OUT_MaterialProperties,out
    *vwrite
@@ -46,9 +55,9 @@ ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
 *endif
 
 !Run Material Footer, Close Down File
-*if,arg1,eq,899, and, flagPrintMatProps, eq,1, then
+*if,arg1,eq,899, and, shouldPrintMatProps, eq,1, then
    flagMatHeader = 0
-   flagPrintMatProps = 0
+   shouldPrintMatProps = 0
    *CFCLOS
    *GO,:_matEnd !RETURN
 *endif
@@ -71,6 +80,8 @@ ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
 
 !K_FACTOR for hexcel materials
 *if,ARG1,GE,830,and,ARG1,LE,849,then
+   K_Factor=0.9093*(PanelThick**(-0.1928)) 
+*elseif,ARG1,GE,871,and,ARG1,LE,892,then
    K_Factor=0.9093*(PanelThick**(-0.1928)) 
 *endif
 
@@ -192,15 +203,15 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !832 HRP – 3/16 – 7.0 1150 900 1300 1040 136 650 510 30.0 370 290 14.0
 !833 HRP – 3/16 – 8.0 1350 1100 1530 1280 164 750 TBD TBD 460 370 19.0
 !834 HRP – 3/16 – 12.0 2300 1800 2520 1960 260 985 815 48.0 675 525 28.0
-!HRP – 1/4 – 3.5 390 280 455 400 46 250 180 10.0 125 100 5.0
-!HRP – 1/4 – 4.5 585 480 640 560 70 355 280 15.0 200 155 8.0
-!HRP – 1/4 – 5.0 680 530 820 660 84 400 305 20.0 230 180 10.0
-!HRP – 1/4 – 6.5 1025 850 1180 920 120 580 450 25.0 330 260 13.0
-!HRP – 3/8 – 2.2 165 125 180 145 13 120 90 6.0 60 45 3.0
-!HRP – 3/8 – 3.2 315 260 390 350 38 205 160 12.0 110 85 5.0
-!HRP – 3/8 – 4.5 610 450 690 550 65 325 260 14.0 190 150 8.0
-!HRP – 3/8 – 6.0 900 750 1000 800 100 520 400 25.0 300 210 12.0
-!HRP – 3/8 – 8.0 1400 1000 1540 1180 150 700 540 27.0 450 350 18.0
+!835 HRP – 1/4 – 3.5 390 280 455 400 46 250 180 10.0 125 100 5.0
+!836 HRP – 1/4 – 4.5 585 480 640 560 70 355 280 15.0 200 155 8.0
+!837 HRP – 1/4 – 5.0 680 530 820 660 84 400 305 20.0 230 180 10.0
+!838 HRP – 1/4 – 6.5 1025 850 1180 920 120 580 450 25.0 330 260 13.0
+!839 HRP – 3/8 – 2.2 165 125 180 145 13 120 90 6.0 60 45 3.0
+!840 HRP – 3/8 – 3.2 315 260 390 350 38 205 160 12.0 110 85 5.0
+!841 HRP – 3/8 – 4.5 610 450 690 550 65 325 260 14.0 190 150 8.0
+!842 HRP – 3/8 – 6.0 900 750 1000 800 100 520 400 25.0 300 210 12.0
+!843 HRP – 3/8 – 8.0 1400 1000 1540 1180 150 700 540 27.0 450 350 18.0
 
 !------------------------------------------------------
 !Composite Properties
@@ -230,6 +241,30 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    S13      = 9.77*ksi     ! 13 shear strength
    S23      = S22t/2       ! 23 shear strength
    rho      = 0.059*lbm/in**3
+
+*elseif,ARG1,eq,854
+   ! YSH70 : Historical SAM
+   MatName = 'YSH70 Historical Sam'
+   ref  = 'Ask Sam'
+   E11  = 49000000*psi
+   E22  = 740000*psi
+   E33  = 500000*psi
+   PR12 = 0.31
+   PR13 = 0.31      ! Guess
+   PR23 = 0.31      ! Guess
+   G12  = 700000    
+   G13  = G12
+   G23  = E22/2/(1+PR12)
+   rho  = 0.059*lbm/in**3
+   S11t = 212e*psi    !A-Basis 
+   S11c = 45e*psi     !A-Basis
+   S22t = 3.65e*psi   !A-Basis
+   S22c = 4.915e*psi  !A-Basis
+   S33t = 3.7e3*psi   !A-Basis
+   S33c = 20.1e3*psi  !A-Basis
+   S12  = 6e3         !A-Basis
+   S13  = 7e3         !A-Basis
+   S23  = 7e3         !A-Basis
 
 *elseif,ARG1,eq,855,then
    ! S2 Glass/epoxy unidirectional facesheet
@@ -261,6 +296,86 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    eps22c   = 0.011
    eps12    = 0.016
    rho      = 0.071*lbm/in**3
+
+!HEXCEL 5056
+
+!  HEXCELL --> Input Converter
+! CD   = 3/16
+! rho  = 5.5 *pcf
+!        800  
+!        620  
+!        900  
+! S11c = 750 *psi
+! E33  = 95  *ksi
+!        490  
+!        ###  
+! S13  = 390 *psi
+! G13  = 19.0*ksi*K_Factor
+!        265  
+! S23  = 200 *psi
+! G23  = 11.0*ksi*K_Factor
+
+! !Assumed Hexcel Properties
+! E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+! PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+! S11t = 10e9*psi !Big Numbers
+! S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
+!871 1/16 – 5056 – .001 9.2 1700p 1300p 1800p 1400p 500p 850x 980p 760p 155.0p 600p 460p 50.0p
+!872 1/8 – 5056 – .0007 3.1 320 250 350 260 97 170 250 200 45.0 155 110 20.0
+!873 1/8 – 5056 – .001 4.5 630 475 690 500 185 320 440 350 70.0 255 205 28.0
+!874 1/8 – 5056 – .0015 6.1 1120 760 1200 825 295 535 690 525 102.0 400 305 38.0
+!875 1/8 – 5056 – .002 8.1 1750 1200 1900 1300 435 810 945 740 143.0 560 440 51.0
+
+*elseif,ARG1,eq,876,then
+   MatName = 'Hexcel 5/32–5056–.0007,2.6pcf'
+   ref  = 'HexWeb™ Honeycomb Attributes and Properties'
+   rho  = 2.6*pcf
+   S11c = 185*psi
+   E33  = 70*ksi
+   S13  = 152*psi
+   G13  = 37.0*ksi*K_Factor
+   S23  = 80*psi
+   G23  = 17.0*ksi*K_Factor
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
+*elseif,arg1,eq,877,then
+   MatName = 'Hexcel 5/32–5056–.001,3.8pcf'
+   ref  = 'HexWeb™ Honeycomb Attributes and Properties'
+   rho  = 3.8*pcf
+   S11c = 375*psi
+   E33  = 140*ksi
+   S13  = 272*psi
+   G13  = 57.0*ksi*K_Factor
+   S23  = 155*psi
+   G23  = 24.0*ksi*K_Factor
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
+!878 5/32 – 5056 – .0015 5.3 820 615 865 650 240 420 550 435 85.0 325 250 33.0
+!879 5/32 – 5056 – .002 6.9 1220 920 1340 1000 350 650 760 610 118.0 430 360 43.0
+!880 3/16 – 5056 – .0007 2.0 190 110 200 120 45 75 140 105 27.0 85 50 13.0
+!881 3/16 – 5056 – .001 3.1 380 250 410 260 97 170 265 200 45.0 150 110 20.0
+!882 3/16 – 5056 – .0015 4.4 620 460 670 490 180 310 425 340 68.0 245 198 27.0
+!883 3/16 – 5056 – .002 5.7 920 685 1000 735 270 480 565 480 94.0 330 280 36.0
+!884 1/4 – 5056 – .0007 1.6 100 75 110 80 30 50 90 78 20.0 60 38 10.5
+!885 1/4 – 5056 – .001 2.3 240 145 265 155 58 100 180 130 32.0 100 62 15.0
+!886 1/4 – 5056 – .0015 3.4 400 300 480 315 115 200 290 230 50.0 175 130 22.0
+!887 1/4 – 5056 – .002 4.3 580 440 620 465 172 300 400 325 67.0 230 190 27.0
+!888 1/4 – 5056 – .0025 5.2 790 600 820 645 230 410 490 425 84.0 300 245 32.0
+!889 3/8 – 5056 – .0007 1.0 55 25 60 35 15 35 55 45 15.0 35 25 6.8
+!890 3/8 – 5056 – .001 1.6 100 75 110 80 30 50 90 78 20.0 60 38 10.5
+!891 3/8 – 5056 – .0015 2.3 215 155 225 155 58 100 170 130 32.0 95 62 15.0
+!892 3/8 – 5056 – .002 3.0 320 240 340 260 92 160 245 190 43.0 145 100 19.0
 *ENDIF
 
 !======================================================
@@ -294,6 +409,22 @@ MP,prxy,MNum,PR12  !Poison's Ratio
 
 MP,DENS,MNum,rho*mFactor
 MP,ALPX,MNum,cteX
+
+! Adjust values if is for random
+*if,isForRandom,eq,1,then
+
+   S11  = min(S11t,S11c) ! S11
+   S11t = S11
+   S11c = S11
+   
+   S22  = min(S22t,S22c) ! S22
+   S22t = S22
+   S22c = S22
+   
+   S33  = min(S33t,S33t) ! S33
+   S33t = S33
+   S33c = S33
+*endif
 
 !Failure Criteria
 *if,ARG3,EQ,1,then
@@ -329,7 +460,7 @@ MP,ALPX,MNum,cteX
    FC,Mnum,S,XZCP,-1
 *endif
 
-*if,flagPrintMatProps,EQ,1,then
+*if,shouldPrintMatProps,EQ,1,then
 	*vwrite, MNum, MatName, E11/psi, prxy, cteX*degC, rho*in**3/lbm, mFactor, ref
 %I,%C,%G,%G,%G,%G,%G,%C
 *endif

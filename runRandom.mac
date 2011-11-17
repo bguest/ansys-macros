@@ -17,8 +17,8 @@
      FMin=0
 !  ARG5 = End Frequency ELSE:
      FMax=2000
-!POSTCONDITIONS:
-!  See Description.
+!NOTES: FORCE RESPONSER DOES NOT WORK FOR MPC184'S WITH
+!  KEYOPT,2,0, set KEYOPT,2,1
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 CM,temp_Nodes,Node
 !-----------------------------------------GET DIRECTION
@@ -78,7 +78,7 @@ SPOPT,PSD,NModes,YES
 
 !-----------------DEFINE INPUT DIRECTION----------
 TabNum=1       !SET PSD TABLE NUMBER
-PSDFRQ                ! Erase tables
+PSDFRQ         ! Erase tables
 PSDUNIT,TabNum,ACCG,386.089    !IPS UNIT SYSTEM
 
 CMSEL,S,BaseNodes	!Get Base Nodes
@@ -105,6 +105,7 @@ SAVE
 SOLVE
 /OUTPUT
 SAVE
+finish
 kLastAnalysis = 2 !For _DISP,VM, ect.
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

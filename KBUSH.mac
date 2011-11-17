@@ -1,0 +1,68 @@
+!======================================================
+! KBUSH.mac
+! This macro roughly represents the functionality of a 
+! CBUSH element in nastran. It ties an element together
+! in six degrees of freedom. Any degrees of freedom 
+! that are not specified are asummed 0
+! Preconditions:
+! KX, KY, KZ, KROTX, KROTY, KROTZ = The respecitive 
+! Spring stiffnesss
+! ARG1 -> Starting Mat/Elem/Real number, in all 6 DOF
+!         will be created     
+! ARG2 -> First Keypoint
+! ARG3 -> Second Keypoint
+!------------------------------------------------------
+_save
+CM,temp_node,node
+CM,temp_kp,kp
+
+KK = $ *dim,KK,array,6
+KK(1) = KX $ KK(2) = KY $ KK(3) = KZ
+KK(4) = KROTX $ KK(5) = KROTY $ KK(6) = KROTZ
+*do,i,0,5
+   mNum = ARG1+i
+   ET,mNum,combin14,0,i+1
+   R, mNum,KK(i+1), !Damping
+   MP,dens,mNum
+*enddo
+
+!Create Zero Mass
+ET,998,MASS21
+R,998,0.0,0.0,0.0
+MP,DENS,988,0.0
+
+!Get Nodes
+*do,i,1,2
+   ksel,s,,,arg%i+1%
+   nslk
+   *get,N,node,0,count
+   *if,N,eq,0,then
+      katt,998,998,998
+      kmesh,arg%i+1%
+   *endif
+   *get,node%i%,node,0,num,max
+*enddo
+
+!Create Elements
+*do,i,0,5
+   mNum = ARG1+i
+   REAL,mNum $ MAT,mNum $ TYPE,mNum
+   E,node1,node2
+*enddo
+
+!Create Group So Nodes Don't Get Inadvertantly Merged
+NSEL,S,,,node1
+*IF,FlagBush,NE,1,THEN
+   flagBush=1
+   CM,bushNodes,NODE
+*ELSE
+  CMSEL,A,bushNodes
+  CM,bushNodes,NODE
+*ENDIF
+
+cmsel,s,temp_kp
+cmsel,s,temp_node
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
+

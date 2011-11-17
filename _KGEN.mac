@@ -1,0 +1,17 @@
+!======================================================
+! This macro essentally duplicates the functionality of
+! the KGEN command, with the exception that it sets
+! newKP to the number of the new keypoint
+! Example:
+! _KGEN, ITIME, NP1, NP2, NINC, DX, DY, DZ, KINC, NOELEM, IMOVE
+! Return: 
+!  newKP = array with number of new keypoints number of the keypoint created
+!------------------------------------------------------
+cm,kgenKP,kp
+kgen,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10
+cmsel,u,kgenKP
+newKP = $ *vget,newKP,kp,,klist
+cmsel,a,kgenKp
+cmdele,kgenKP
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

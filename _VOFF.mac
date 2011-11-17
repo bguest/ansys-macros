@@ -10,7 +10,6 @@
 !  See Description
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /NERR,0
-PARSAV,ALL,D:\_ANSYS\TEMP\_VOFF.txt  !Save Parameters
 CM,temp_Area,AREA  !Save Currently Selected Areas
 !GET AREA------------------------
 *IF,ARG1,NE,0,THEN
@@ -59,7 +58,6 @@ CM,temp_Area,AREA  !Save Currently Selected Areas
 *ENDIF
 
 CMSEL,S,temp_area  !resume previously selected areas
-PARRES,,D:\_ANSYS\TEMP\_VOFF.txt  !Resume Saved Parameters
 /NERR,5
 !:END !=THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

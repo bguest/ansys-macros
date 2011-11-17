@@ -22,7 +22,7 @@ FBushStiffness = 1e8
 FBushDamping = 0.0
 !------------------------------------------------------
 *DO,i,1,6 !Create Element Types
-	ET,900+i,COMBIN14,0,i !----------------UX Degree of Freedom
+	ET,900+i,COMBIN14,0,i !---------------- Degree of Freedom
 *ENDDO
 
 R,901,FBushStiffness,FBushDamping
