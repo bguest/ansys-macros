@@ -10,13 +10,13 @@
 !  ARG1 = Imput Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
 !  ARG2 = Number of Modes ELSE:
-     NModes=20
+     NModes=200
 !  ARG3 = Start Frequence: ELSE:
      FMin=0
 !  ARG4 = End Frequency ELSE:
      FMax=200
 !  ARG5 = Number of Frequency Points per Mode, ELSE:
-     NumPts=500
+     NumPts=6
 !  ARG6 = Structural Damping Ration (DMPRAT)
     DampRatio=0.015
 !POSTCONDITIONS:
@@ -75,8 +75,9 @@ CMSEL,S,BaseNodes
 ddele,all,direction
 dkdele,all,direction
 ksln
-att,701,701,701
-E,9124
+katt,701,701,701
+kmesh,all
+F,ALL,fdirect,1.0*MASS
 cmsel,s,temp_kps
 cmsel,s,temp_nodes
 
@@ -84,46 +85,64 @@ cmsel,s,temp_nodes
 /solu
 /nerr,,2**30
 ANTYPE,MODAL                      ! Modal analysis
-MODOPT,REDUC,NModes,FMin,FMax      ! Reduced method
+MODOPT,LANB,NModes,FMin,FMax      ! Block Lancozos
 MXPAND,NModes,FMin,FMax,YES       !EXPAND MODES
-M,ALL,ALL          ! Masters
-!---------------Boundary Conditions--------------------
-! CMSEL,S,BaseNodes          !Get Base Nodes
-! TOTAL,
-! D,ALL,direction          ! Constraints
-! CMSEL,A,temp_Nodes
-!------------------------------PREFORM ANALYSIS
 /OUTPUT,OUT_Modes,out,,
 SOLVE                       ! Initiate modal solution
-/OUTPUT
 FINISH
+/OUTPUT
+
 !=========Superposition Harmonic Solution==============
 !  Obtain the Mode Superposition Harmonic Solution
 /SOLU             ! Enter SOLUTION
 ANTYPE,HARMIC     ! Harmonic analysis
 HROPT,MSUP,       ! Mode superposition method;
-HROUT,ON,OFF       ! Harmonic analysis output options; cluster option
+HROUT,OFF,ON       ! Harmonic analysis output options; cluster option
 !LVSCALE,          ! Scale factor for loads from modal analysis
-!======================================================
-!Boundary Conditions
-!------------------------------------------------------
-CMSEL,S,BaseNodes
-F,ALL,fdirect,1.0*MASS
-CMSEL,A,temp_Nodes
-!------------------------------------------------------
-HARFRQ,FMin,FMax           ! Forcing frequency range
-NSUBST,NumPts              ! Number of harmonic solutions
-DMPRAT,DampRatio           ! Damping Ratio
-!MDAMP,...                 ! Modal damping ratios
-KBC,1                  		! Ramped or stepped loads
-OUTRES,,1
+HARFRQ,FMin,FMax    ! Forcing frequency range
+NSUBST,NumPts       ! Number of harmonic solutions
+DMPRAT,DampRatio    ! Damping Ratio
+!MDAMP,...          ! Modal damping ratios
+KBC,1               ! Ramped or stepped loads
+!OUTRES,,1
 OUTPR,NSOL
 /OUTPUT,OUT_MHarm,out,
 SOLVE                      ! Initiate solution
+FINISH
 /OUTPUT
 CMSEL,s,baseNodes
+!======================================================
+! Cleanup
+/prep7
 D,ALL,direction,0
-fdele,all,all
+fdele,all,fdirect
+ksln
+kclear,all
+cmsel,s,temp_kps
 cmsel,s,temp_nodes
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE
+
+! !  Review the Results of the Mode Superposition Solution
+! /POST26
+! FILE,,RFRQ                 ! Postprocessing file is Jobname.RFRQ
+! NSOL,...                   ! Store nodal result as a variable
+! PLCPLX,...                 ! Define how to plot complex variables
+! PLVAR,...                  ! Plot variables
+! FINISH
+
+! !  Expand the Solution (for Stress Results)
+! /SOLU! Re-enter SOLUTION
+! EXPASS,ON                  ! Expansion pass
+! EXPSOL,...                 ! Expand a single solution
+! HREXP,...                  ! Phase angle for expanded solution
+! SOLVE
+! FINISH
+
+! ! Review the Results of the Expanded Solution
+! /POST1
+! SET,...                   ! Read results for desired frequency
+! PLDISP,...                ! Deformed shape
+! PLNSOL,...                ! Contour plot of nodal results
+! ---
+! FINISH

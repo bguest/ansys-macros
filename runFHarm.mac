@@ -9,14 +9,14 @@
 !  ARG1 = Results Direction (1=X,2=Y,3=Z)
 !    ELSE user is prompted to enter a direction
 !  ARG2 = Start Frequency, ELSE:
-     FMin=25
+      FMin=25
 !  ARG3 = End Frequency, ELSE:
-     FMax=25
+      FMax=25
 !  ARG4 = Number of Frequency Points, ELSE:
-     NumPts=1
+      NumPts=1
 !  ARG5 = Structural Damping Ration (DMPRAT)
-     DampRatio=0.015
-!	ARG6 = G's at Fmin
+      DampRatio=0.015
+!  ARG6 = G's at Fmin
 !POSTCONDITIONS:
 !  See Description.
 !NOTES: 
@@ -26,6 +26,7 @@
 !	 to include both the real and imaginary results.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /prep7
+
 CM,temp_Node,Node
 !-----------------------------------------GED DIRECTION
 *IF,ARG1,EQ,0,THEN
@@ -36,13 +37,10 @@ CM,temp_Node,Node
 
 *IF,ANS,EQ,1,THEN
    direction='UX'
-   Cdirect1='UY' $ Cdirect2='UZ'
 *ELSEIF,ANS,EQ,2,THEN
    direction='UY'
-   Cdirect1='UX' $ Cdirect2='UZ'
 *ELSEIF,ANS,EQ,3,THEN
    direction='UZ'
-   Cdirect1='UX' $ Cdirect2='UY'
 *ENDIF
 !--------------------------------SETUP
 *IF,ARG2,NE,0,THEN !Set Minimum Frequency
@@ -69,8 +67,6 @@ FINISH $ /CONFIG,NRES,2*NumPts $ /PREP7
 *else
    base_movement = 1
 *endif
-!------------------------------------------------------
-/TITLE,Full Harmonic Analysis (%direction%)
 !======================================================
 !Solution
 !------------------------------------------------------
@@ -87,21 +83,18 @@ KBC,1                     ! Step boundary condition
 !Boundary Conditions
 !------------------------------------------------------
 CMSEL,S,BaseNodes
-! DDELE,ALL,ALL
-! D,ALL,Cdirect1,0,,,,Cdirect2,ROTX,ROTY,ROTZ
 D,ALL,direction,base_movement
 ALLSEL
 
 /OUTPUT,OUT_Fharm,out,,
-SAVE
 SOLVE
-SAVE
 /OUTPUT
 
 !Cleanup
-CMSEL,s,baseNodes
-D,ALL,direction,0
-allsel
+/prep7
+CMSEL,s,baseNodes 
+D,ALL,direction,0 !NOTE THIS DOESNT'T SEEM TO BE WORKING
+cmsel,s,temp_node
 
 kLastAnalysis = 3 ! Harmonic Analysis
 :END !=THE--END========THE--END========THE--END=========

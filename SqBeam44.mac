@@ -25,12 +25,10 @@ MatNum = ARG1
    TKY = 1
 *endif
 
-
-
 *if,ARG4,gt,0,then
 	TKY_I = TKY-ARG4
 	TKZ_I = TKZ-ARG4
-        shearz=12/5		! hollow thin-walled square
+   shearz=12/5		! hollow thin-walled square
 	sheary=12/5		! hollow thin-walled square
 	A_torsion=(TKY-ARG4)*(TKZ-ARG4)
 	S_torsion=2*(TKY-ARG4)+2*(TKZ-ARG4)
@@ -48,9 +46,6 @@ MatNum = ARG1
 AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA
 IYY = (TKY*TKZ**3-TKY_I*TKZ_I**3)/12
 IZZ = (TKZ*TKY**3-TKZ_I*TKY_I**3)/12
-
-
-		
 
 !------------------------------------------------------
 ET,MatNum,BEAM44
