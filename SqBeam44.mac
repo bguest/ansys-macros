@@ -42,7 +42,7 @@ MatNum = ARG1
 	SHEARY=6/5		! rectangle
 	a=max(TKY,TKZ)/2
 	b=min(TKY,TKZ)/2
-	IXX = a*b**3*(16/3-3.36*b/a*(1-b**4/a**4/12)
+	IXX = a*b**3*(16/3-3.36*b/a*(1-b**4/a**4/12))
 *endif
 
 AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA
