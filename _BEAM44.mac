@@ -4,10 +4,12 @@
 !DESCRIPTION: This macro quickly defines a beam44 
 !	element type and material property
 !PRECONDITIONS:
+!  B44ShearY: Shear constant y direction (optional)
+!  B44ShearZ:   "      "     Z    "          "
 !	ARGUMENTS:
 !		ARG1: Resulting element property number
 !		ARG2: Area
-!		ARG3: IXX (X = Axis)
+!		ARG3: IXX (X = Axis) (Optional)
 !		ARG4: IYY
 !		ARG5: IZZ
 !		ARG6: Material (See _MAT.mac)
@@ -38,6 +40,14 @@ MatNum = ARG1
    IXX = ARG3
 *endif
 
+*if,B44ShearZ,eq,0,then
+   B44ShearZ = 0
+*endif
+
+*if,B44ShearY,eq,0,then
+   B44ShearY = 0
+*endif
+
 !TKY, TKZ are calculated assuming as square x-section
 TKZ = (144*Iyy**3/Izz)**(1/8)
 TKY = (144*Izz**3/Iyy)**(1/8)
@@ -47,12 +57,15 @@ ET,MatNum,BEAM44
 R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
 RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
 RMORE, , , , , , , 
-RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2, 
+RMORE,B44ShearZ,B44ShearY, TKZ/2, TKY/2, TKZ/2, TKY/2, 
 
 !Set material
 *if,arg6,gt,0,then
 	_MAT,arg6,MatNum
 *endif
+
+!Cleanup
+B44ShearZ = $ B44ShearY =
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
