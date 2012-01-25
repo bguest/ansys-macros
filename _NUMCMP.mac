@@ -10,9 +10,7 @@
 !POSTCONDITIONS:
 !   See description
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-*if,FlagNoReadWrite,NE,1,THEN
-	SAVE,saved,db,,ALL
-*endif
+_save
 
 /PREP7
 NUMCMP,KP

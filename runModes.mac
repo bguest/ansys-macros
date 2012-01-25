@@ -55,7 +55,7 @@ OUTRES,all,all
 	MODOPT,LANB,NModes,FMin,FMax   !Modal Options
 	!MODOPT,SUBSP,NModes,FMin,FMax
 	!EQSLV,PCG,1E-6		   						! PCG solver
-	!modopt,lanpcg,NModes,FMin,FMax,off,	! PCG solver
+	!modopt,lanpcg,NModes,FMin,FMax,off,   	! PCG solver
 	MXPAND,NModes,FMin,FMax,YES    !Expanded Modes
 	SOLVE
 *ELSEIF,ARG4,EQ,1,THEN

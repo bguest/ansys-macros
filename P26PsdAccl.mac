@@ -139,22 +139,31 @@ maxValIdxX = 0
    maxHzZ = HZ(maxValIdxZ)
 *endif
 
+!Tab Delimated for easy copy paste to excel
 *CFOPEN,OUT_psd_accl,out
-*if,direction,eq,'all',then
-!--------------!--------------!--------------!--------------
+
+*if,direction,eq,'all',then  !All directions
 	*vwrite
-     Frequency        ACCL X         ACCL Y         ACCL Z
+Frequency	ACCL X	ACCL Y	ACCL Z
 	*vwrite
-        Hz            g^2/Hz         g^2/Hz         g^2/Hz 
+Hz	g^2/Hz	g^2/Hz	g^2/Hz 
    *vwrite, maxHzX, maxHzY, MaxHzZ   
-('     Max Val Hz'E15.5,E15.5,E15.5)
+Max Val	%G	%G	%G
    *vwrite, maxValX, maxValY, maxValZ   
-('        Max Val'E15.5,E15.5,E15.5)
+Max Val	%G	%G	%G
    *VWRITE,HZ(1),ACCLX(1),ACCLY(1),ACCLZ(1)
-(E15.5,E15.5,E15.5,E15.5)
-*else
+%G	%G	%G	%G
+*else       !Only one direction
+   *vwrite
+Frequency	ACCL
+	*vwrite
+Hz	g^2/Hz
+   *vwrite, maxHzX, 
+Max Val	%G
+   *vwrite, maxValX,
+Max Val	%G
    *VWRITE,HZ(1),ACCLX(1),
-(E15.5,E15.5)
+%G	%G
 *endif
 *CFCLOS
 

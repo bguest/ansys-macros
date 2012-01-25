@@ -17,7 +17,7 @@
 MatNum = ARG1
 
 *if,ARG2,EQ,0,then
-   AA = 0
+   AA = 1
 *else
    AA = ARG2
 *endif

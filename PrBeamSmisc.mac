@@ -34,10 +34,10 @@ currentElem = $ *vget,currentElem,elem,,elist
 *cfopen,OUT_BeamSmisc,out
 *if,arg1,eq,1,then
 	*vwrite
-Element Number,SMISC1/7,SMISC2/8,SMISC3/9,SMISC4/10,SMISC5/11,SMISC6/12,
+Element Number	SMISC1/7	SMISC2/8	SMISC3/9	SMISC4/10	SMISC5/11	SMISC6/12	
 *else
 	*vwrite
-Element Number,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,SMISC7,SMISC8,SMISC9,SMISC10,SMISC11,SMISC12
+Element Number	SMISC1	SMISC2	SMISC3	SMISC4	SMISC5	SMISC6	SMISC7	SMISC8	SMISC9	SMISC10	SMISC11	SMISC12
 *endif
 
 *if,arg1,eq,1,then
@@ -50,12 +50,12 @@ Element Number,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,SMISC7,SMISC8,SMISC9,SM
 	
 	!Print data	
 	*vwrite,currentElem(1),smisc1(1),smisc2(1),smisc3(1),smisc4(1),smisc5(1),smisc6(1),
-%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+%I	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G
 
 *else
 	
 	*vwrite,currentElem(1),smisc1(1),smisc2(1),smisc3(1),smisc4(1),smisc5(1),smisc6(1),smisc7(1),smisc8(1),smisc9(1),smisc10(1),smisc11(1),smisc12(1)
-%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+%I	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G
 
 *endif
 

@@ -1,10 +1,10 @@
-﻿!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !_MAT.mac
 !DESCRIPTION: Creates a standard material from a single
 !  number
 !PRECONDITIONS:
 !  - UNITS: if psi is not set, units will be reset!
-!	mFactor (optional) mass factor ie 1.10 = 10% extra mass
+!  mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  PanelThick = PanelThickness if material is Hexcel
 !  shouldPrintMatProps (optional) (Currently Only Isotropic)
 !     1 -> Material Properties are output to OUT_MaterialProperties.out (Coma delimiated)
@@ -15,12 +15,12 @@
 !     0 -> Tensile and compressive strengths are not 
 !          messed with.
 !  ARG1 = Material Number
-!		802 -> Aluminum 7075-T73
-!		803 -> Titanium Ti-6Al-4V
-!		804 -> Stainless Steel A286
-!		805 -> Aluminum 6061-T651
-!		806 -> Stainless Steel 15-5 PH
-!		807 -> G10 (XY/Z) Orthotropic
+!     802 -> Aluminum 7075-T73
+!     803 -> Titanium Ti-6Al-4V
+!     804 -> Stainless Steel A286
+!     805 -> Aluminum 6061-T651
+!     806 -> Stainless Steel 15-5 PH
+!     807 -> G10 (XY/Z) Orthotropic
 !     808 -> HYSOL EA9394 
 !    -- 830 - 849 : Reserved For HEXCEL HPR
 !     831 -> Hexcel HRP – 3/16 – 5.5 pcf
@@ -32,8 +32,8 @@
 !     876 -> Hexcel 5/32 – 5056 – .0007
 !     877 -> Hexcel 5/32 – 5056 – .001
 !     899 -> Call to Material File Footer
-!	ARG2 = Resulting material number
-!		[Default] = ARG1
+!  ARG2 = Resulting material number
+!     [Default] = ARG1
 !  ARG3 = Load Failure Criteria
 !     0 -> Don't load Failure Criteria
 !     1 -> Load FC Failure Criteria
@@ -63,12 +63,12 @@ ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
 *endif
 
 !Mass Factors
-*if,mFactor,le,0,then	!Account for mass factors
+*if,mFactor,le,0,then   !Account for mass factors
    mFactor = 1
 *endif
 
-*if,arg2,gt,0,then	!Set material number
-	MNum = ARG2
+*if,arg2,gt,0,then   !Set material number
+   MNum = ARG2
 *else
    MNum = ARG1
 *endif
@@ -101,19 +101,19 @@ S12 = 0 $ S23 = 0 $ S13 = 0
 eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 
 *IF,ARG1,EQ,802,THEN
-	MatName = 'Aluminum 7075-T73'
+   MatName = 'Aluminum 7075-T73'
    ref     = 'MIL-HDBK-5E'
-	E11      = 10.3e6*psi
-	rho     = 0.1*lbm/in**3
+   E11      = 10.3e6*psi
+   rho     = 0.1*lbm/in**3
    cteX    = 12.4E-6/degF
    PR12   = 0.33
-	! !----FAILURE CRITERIA (YEILD STRENGTHS)
-	! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
-	! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
-	! FC,MNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
-	! FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
-	! FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
-	! FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
+   ! !----FAILURE CRITERIA (YEILD STRENGTHS)
+   ! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
+   ! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
+   ! FC,MNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
+   ! FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
+   ! FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
+   ! FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
 
 *ELSEIF,ARG1,EQ,803,THEN
    MatName = 'Ti-6Al-4V'
@@ -148,7 +148,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    cteX    = 6.3e-6/degF  !AT 70degF
 
 *elseif,ARG1,eq,807,then
-	! G10 Orthotropic material (See 110602_G10_Material_Review)
+   ! G10 Orthotropic material (See 110602_G10_Material_Review)
    MatName = 'G10 Orthotropic'
    ref     = 'See 110602_G10_Material_Review'
    E11     = 2.7e6*psi
@@ -296,6 +296,32 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    eps22c   = 0.011
    eps12    = 0.016
    rho      = 0.071*lbm/in**3
+
+*elseif,ARG1,eq,856
+   ! YSH70 : Historical SAM
+   MatName = 'YSH70/RS-3C Unidirectional Prepreg 82-12 (Min Values)'
+   !Fiber Volume = 58.8%
+   !Void Volume  = 1.3%
+   ref  = 'TenCate Certificate of Conformace #14489'
+   E11  = 50.34*Msi  !Compresive Modulus
+   E22  = 740000*psi !From Historical Minimum
+   E33  = 500000*psi !From Historical Minimum
+   PR12 = 0.31       !From Historical Minimum
+   PR13 = 0.31       ! Guess
+   PR23 = 0.31       ! Guess
+   G12  = 700000     !From Historical Minimum
+   G13  = G12
+   G23  = E22/2/(1+PR12)
+   rho  = 0.059*lbm/in**3
+   S11t = 234.63*ksi    
+   S11c = 68.70*ksi  
+   S22t = 3.65e*psi   !A-Basis
+   S22c = 4.915e*psi  !A-Basis
+   S33t = 3.7e3*psi   !A-Basis
+   S33c = 20.1e3*psi  !A-Basis
+   S12  = 6e3         !A-Basis
+   S13  = 8.8*ksi       
+   S23  = 8.8*ksi
 
 !HEXCEL 5056
 
@@ -461,7 +487,7 @@ MP,ALPX,MNum,cteX
 *endif
 
 *if,shouldPrintMatProps,EQ,1,then
-	*vwrite, MNum, MatName, E11/psi, prxy, cteX*degC, rho*in**3/lbm, mFactor, ref
+   *vwrite, MNum, MatName, E11/psi, prxy, cteX*degC, rho*in**3/lbm, mFactor, ref
 %I,%C,%G,%G,%G,%G,%G,%C
 *endif
 
