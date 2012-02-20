@@ -6,10 +6,13 @@
 !	configuration.
 !PRECONDITIONS:
 !	ARG1: Resulting element property number
-!	ARG2: Width (TKY, Y dimension)
-!	ARG3: Height (TKZ, Z dimension)
+!	ARG2: Width (TKY, Y dimension) for stiffness calc
+!	ARG3: Height (TKZ, Z dimension) for stiffness calc
 !	ARG4: Wall thickness [optional]
 !	ARG5: Material (See _MAT.mac)
+!	ARG6: Width (TKY, Y dimension) for stress recovery and displayed size
+!	ARG7: Height (TKZ, Z dimension) for stress recovery and displayed size
+
 !======================================================
 
 MatNum = ARG1
@@ -46,6 +49,14 @@ MatNum = ARG1
 AA  = TKZ*TKY-TKZ_I*TKY_I 			 !AREA
 IYY = (TKY*TKZ**3-TKY_I*TKZ_I**3)/12
 IZZ = (TKZ*TKY**3-TKZ_I*TKY_I**3)/12
+
+*if,ARG6,gt,0,then
+	TKY= ARG6
+*endif
+
+*if,ARG7,gt,0,then
+	TKZ= ARG7
+*endif
 
 !------------------------------------------------------
 ET,MatNum,BEAM44

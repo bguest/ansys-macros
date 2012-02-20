@@ -163,6 +163,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    E11      = 0.615e6*psi
    PR12     = 0.45
    rho      = 1.36*gm/mL
+
 !------------------------------------------------------
 !Hexcel 
 !HRP (HRP Fiberglass Reinforced Phenolic Honeycomb)
