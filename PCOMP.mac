@@ -10,7 +10,7 @@
 ! ARGUMENTS:
 !	ARG1: Resulting material property number
 !	ARG2: Element Type To be used, supported types are
-!		'SHELL91','SHELL181', 'SOLID' (More Added On Request)
+!		'SHELL91','SHELL181', 'SHELL281' (More Added On Request)
 !	ARG3: Added mass (mass/area)
 !	ARG4: use sandwich option? 1 --> YES, 0 --> NO
 !=====================================================

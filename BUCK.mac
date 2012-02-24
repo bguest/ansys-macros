@@ -164,7 +164,7 @@ MaxFC=0     !SET Failure Criteria at 0
       !GET FAILURE CRITERIA---------------------------------
       *DO,j,1,numCore
          *GET,layMat,SHEL,secnNum,LAYD,j,MAT      !Material number of Ply
-         /out,OUT_FCdata,txt
+         /output,OUT_FCdata,txt
          fclist,layMat        !List Failure Criteria of Current Layer
          /output
          FCdata= $ *DIM,FCdata,ARRAY,1,9  !Create Array For FC

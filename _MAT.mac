@@ -21,7 +21,8 @@
 !     805 -> Aluminum 6061-T651
 !     806 -> Stainless Steel 15-5 PH
 !     807 -> G10 (XY/Z) Orthotropic
-!     808 -> HYSOL EA9394 
+!     808 -> HYSOL EA9394
+!     809 -> MS1A 
 !    -- 830 - 849 : Reserved For HEXCEL HPR
 !     831 -> Hexcel HRP – 3/16 – 5.5 pcf
 !    -- 850 - 870 : Reserved For Composites
@@ -43,6 +44,22 @@
 !     properties should be input as positive
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /PREP7
+
+! If you want to copy past properties you can use this
+! MP,EX,MNum,E11,      !Modulus
+! MP,EY,MNum,E22
+! MP,EZ,MNum,E33
+
+! MP,prxy,MNum,PR12  !Poison's Ratio
+! MP,prxz,MNum,PR13
+! MP,pryz,MNum,PR23
+
+! MP,gxy,MNum,G12    !Shear 
+! MP,gxz,MNum,G13
+! MP,gyz,MNum,G23   
+
+! MP,DENS,MNum,rho*mFactor
+! MP,ALPX,MNum,cteX
 
 !Setup Header and output file if shouldPrintMatProps Set
 *if,shouldPrintMatProps,eq,1, and, flagMatHeader,lt,1,then
@@ -103,10 +120,11 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 *IF,ARG1,EQ,802,THEN
    MatName = 'Aluminum 7075-T73'
    ref     = 'MIL-HDBK-5E'
-   E11      = 10.3e6*psi
+   E11     = 10.3e6*psi
    rho     = 0.1*lbm/in**3
    cteX    = 12.4E-6/degF
-   PR12   = 0.33
+   PR12    = 0.33
+
    ! !----FAILURE CRITERIA (YEILD STRENGTHS)
    ! FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
    ! FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
@@ -488,9 +506,8 @@ MP,ALPX,MNum,cteX
 
 *if,shouldPrintMatProps,EQ,1,then
    *vwrite, MNum, MatName, E11/psi, prxy, cteX*degC, rho*in**3/lbm, mFactor, ref
-%I,%C,%G,%G,%G,%G,%G,%C
+%I	%C	%G	%G	%G	%G	%G	%C
 *endif
 
-:_matEnd
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

@@ -29,7 +29,7 @@ CM,temp_KP,KP
    KP1= $ *VGET,kp1,KP,,KLIST   !V11.0 Get selected Keypoints
    CMSEL,S,temp_KP
 *ELSE
-	 NumKP=1
+	NumKP=1
    KP1= $ *DIM,kp1,ARRAY,1
    kp1(1)=ARG1
 *ENDIF
@@ -88,7 +88,7 @@ KP3 = $ *dim,KP3,array,numLine
 	   xz=cz+r*(bz-cz)
 	   
 	   KSEL,NONE
-	   K,,xx,xy,xz  $ newKp= _return !CREATE NEW KP
+	   newKP= $ K,,xx,xy,xz  $ newKp= _return !CREATE NEW KP
 	   CMSEL,S,temp_KP        !RESET DISPLAY KPs
 	   KSEL,A,,,NewKP	       !ADD NEW KPs TO SELECTED SET
 	   CM,temp_KP,KP         !REFORM KP
