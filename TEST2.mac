@@ -1,9 +1,0 @@
-!TEST2.mac
-/out,OUT_Constraint,txt
-dlist,all
-/output
-
-AAA= $ *DIM,AAA,ARRAY,5,1
-!*VREAD,ParR    ,Fname       ,Ext, --,Label, n1, n2, n3, NSKIP
-*VREAD ,AAA(1,1), OUT_Constraint,txt,   ,IJK ,  5,1,  1, 6
-(I9.3)
