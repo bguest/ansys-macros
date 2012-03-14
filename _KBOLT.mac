@@ -32,6 +32,7 @@ CM,temp_ELEM,ELEM
 *ELSE
 	BoltD=ARG1	
 *ENDIF
+
 !-------------------------------STAINLESS_STEEL_A286
 Sty=95000	!Yeild Strength
 BoltA=9.20E-06	!Bolt CTE

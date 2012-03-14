@@ -11,13 +11,17 @@
 !		'elem' --> elements , 'node' --> nodes
 !	ARG2 = component name (must be a string)
 !	ARG3-ARG5: first, last and incrment of things
+!  ARG3 < 0 --> All currently selected things are added
 !======================================================
 compType = ARG1
 compLetter = STRSUB(compType,1,1)
 compName = ARG2
 
 cm,tmp%compType%,compType		!Save original state
-%compLetter%sel,s,,,ARG3,ARG4,ARG5	 !Select Things
+!Select Things
+*if,arg3,ge,0,then
+   %compLetter%sel,s,,,ARG3,ARG4,ARG5	 !Select Things
+*end
 
 !Add to component if it exists
 *if,flag_%compName%,ne,1,then

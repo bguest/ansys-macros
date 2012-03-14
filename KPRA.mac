@@ -13,6 +13,7 @@
 !   from selected key point
 !   -NewKP = projected keypoint
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+_SAVE
 /PREP7
 !------------------SAVE CURRENT SETUP
 CM,temp_AREA,AREA
@@ -110,7 +111,7 @@ P1= $ *DIM,P1,ARRAY,3  	!FOR NEW KP location
    
    KSEL,NONE
    K,,P1(1),P1(2),P1(3)   !CREATE NEW KP
-   *GET,NewKP,KP,,NUM,MAX   !GET NEW KP NUMBER
+   newKP= $ *GET,NewKP,KP,,NUM,MAX   !GET NEW KP NUMBER
    
    CMSEL,S,temp_KP	       !RESET DISPLAY
    KSEL,A,,,NewKP	       !ADD NEW KP TO SELECTED SET

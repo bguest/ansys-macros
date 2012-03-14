@@ -1,0 +1,31 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_SHELL63.mac
+!B.Guest - benguest@gmail.com
+!DESCRIPTION: This macro creates a shell63 property 
+!	with as little code as possible, customization 
+!	over configuration
+!PRECONDITIONS:
+!	ARG1: Resulting element property number
+!	ARG2: Shell Thickness
+!	ARG3: Shell Material (SEE _MAT.mac)
+!======================================================
+
+MatNum = ARG1
+*if,ARG2,gt,0,then !Set thickness
+	T_ = ARG2
+*else
+	T_ = 1
+*endif
+
+ET,MatNum,SHELL181
+R,MatNum,T_,T_,T_,T_
+
+!Set Materials
+*if,arg3,gt,0,then
+	_MAT,arg3,MatNum
+*endif
+
+ATT,matNum
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

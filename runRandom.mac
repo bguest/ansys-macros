@@ -17,7 +17,7 @@
      FMin=0
 !  ARG5 = End Frequency ELSE:
      FMax=2000
-!NOTES: FORCE RESPONSER DOES NOT WORK FOR MPC184'S WITH
+!NOTES: FORCE RESPONSE DOES NOT WORK FOR MPC184'S WITH
 !  KEYOPT,2,0, set KEYOPT,2,1
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 CM,temp_Nodes,Node

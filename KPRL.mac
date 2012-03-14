@@ -13,6 +13,7 @@
 !POSTCONDITIONS: Keypoint is created on line projected
 !   from selected key point
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+_save
 /PREP7
 !------------------SAVE CURRENT SETUP
 CM,temp_LINE,LINE

@@ -9,7 +9,7 @@
 !	ARG4: First Thing (-1 implies all slected things)
 !	ARG5: Last Thing
 !	ARG6: Thing Increment
-!	ARG7: Keypoint Orientation for lines
+!	ARG7: Keypoint Orientation for lines or section number
 !======================================================
 _SAVE
 /prep7
@@ -35,6 +35,8 @@ ATTMESH command not issued because either material or element type was non-posit
 *endif
 
 %lett%clear,all
+!AATT, MAT, REAL, TYPE, ESYS, SECN
+!LATT, MAT, REAL, TYPE,   --, KB,   KE, SECNUM
 %lett%att,mnum,type,type,,ARG7
 %lett%mesh,all							!Mesh Things
 
