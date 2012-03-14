@@ -12,9 +12,9 @@
 
 MatNum = ARG1
 *if,ARG2,gt,0,then !Set thickness
-	T_ = ARG2
+   T_ = ARG2
 *else
-	T_ = 1
+   T_ = 1
 *endif
 
 ET,MatNum,SHELL281
@@ -22,7 +22,7 @@ R,MatNum,T_,T_,T_,T_
 
 !Set Materials
 *if,arg3,gt,0,then
-	_MAT,arg3,MatNum
+   _MAT,arg3,MatNum
 *endif
 
 ATT,matNum

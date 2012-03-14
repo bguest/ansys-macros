@@ -17,8 +17,8 @@
 !	User should change the location of the PARSAV and 
 !	PARRES to a temp directory on their computer.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+_SAVE
 /PREP7
-!PARSAV,ALL,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Save Parameters
 CM,temp_KP,KP
 CM,temp_LINE,LINE
 
@@ -81,6 +81,5 @@ KTKOff = $ *DIM,KTKOff,ARRAY,3   !GET OFFSET
 *do,i,1,KTKNumLines
 	LGEN,2,KTKLines(i),,,KTKOff(1),KTKOff(2),KTKOff(3)
 *enddo
-!PARRES,,F:\_ANSYS\TEMP\_LGEN_KTK.txt  !Resume Saved Parameters
 !======THE--END========THE--END========THE--END=========
 !ITS THE END OF THE MACRO AS WE KNOW IT, AND I FEEL FINE

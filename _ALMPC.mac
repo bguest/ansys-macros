@@ -1,0 +1,108 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!_ALMPC.mac
+!DESCRIPTION: This macro creates a "Spider Web" of 
+!  MPCs from a Keypoint to an line or lines
+!PRECONDITIONS:
+!  _ALMPC,Keypoint,Line,Link?,Lagrange?
+!  Arguments:
+!     ARG1 = Keypoint for Spiderweb Center
+!        ELSE: User is requested to enter Keypoint
+!     ARG2 = First line OR <0 for ALL Selected lines
+!     ARG3 = Constraint Type
+!        0 --> Rigid Beam (6DOF Constrained per Node)
+!        1 --> Rigid Link (3DOF Constrained per Node)
+!     ARG4 = Constraint Type
+!        0 --> Direct Elimination Method
+!        1 --> Lagrange Multiplier Method
+!     ARG5 = Number of AKMPC's to be created
+!        (use cation with this.)
+!POSTCONDITIONS:
+!  Elements Created / Modified:
+!  Element type 997-994 = MPC184
+!  Element type 998 = "Zero" MASS21
+! See Description...
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+_save
+CM,temp_node,NODE
+CM,temp_elem,elem
+CM,temp_line,line
+CM,temp_KP,KP
+/prep7
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!MATERIALS
+!======================================================
+MatNum = 997-1*ARG3-2*ARG4 !MPC184: Rigid Link
+!------------------------------------------------------
+ET,MatNum,MPC184
+KEYOPT,MatNum,1,1-ARG3  !LINK / BEAM
+KEYOPT,MatNum,2,ARG4    !Constraitn TYpe 
+R,MatNum                !No Real Constants
+MP,ALPX,MatNum,0.0   !CTE
+
+!======================================================
+MatNum = 998 !MASS21: TEMP MASS
+!======================================================
+ET,MatNum,MASS21
+R,MatNum,0.0,0.0,0.0
+!------------------Dumbie Material-----------------
+MP,DENS,MatNum,0.0
+
+*if,arg5,eq,0,then
+   num_akmpc = 1
+*endif
+
+*do,akmpc_idx,1,num_akmpc
+   !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+   !GET MASTER KEYPOINT
+   *IF,ARG1,EQ,0,THEN
+      *MSG,UI
+      Select Master Keypoint
+      
+      KSEL,R,P
+      *GET,masterKP,KP,O,NUM,MAX  !Get Highest Selected KP
+   *ELSE
+      MasterKP = ARG1
+   *ENDIF
+   
+   !GET LINES
+   *IF,ARG2,EQ,0,THEN
+      *MSG,UI
+      Select Lines
+      
+      LSEL,R,P
+   *ELSEIF,ARG2,GT,0,THEN
+      LSEL,S,,,ARG2
+   *ENDIF    !ELSE ASSUME LINESS ARE SELECTED
+   
+   !Create Element at Keypoint
+   ESEL,none
+   ATT,998
+   kclear,masterKP
+   KMESH,masterKP !Mesh Node
+   NSLE
+   *GET, masterNode, NODE, 0, NUM, MAX, , 
+   
+   !Get List of Nodes on Surface
+   NSLL,S,1 !Select Nodes
+   NSEL,U,,,masterNode
+   *GET,countNodes,NODE,,Count
+   nodeNum= $ *VGET,nodeNum,NODE,,NLIST
+   
+   !Create Spider Web
+   NSEL,A,,,masterNode  !Reselect MasterNode
+   ATT,997-1*ARG3-2*ARG4
+   *do,i,1,countNodes
+      NDIST,masterNode,nodeNum(i)  !MAKE SURE ELEMENT HAS
+      *IF,_return,GT,0,THEN        !^Length
+         E,masterNode,nodeNum(i)
+      *ENDIF
+   *ENDDO
+   
+   CMSEL,A,temp_line
+   CMSEL,A,temp_KP
+*enddo
+CMSEL,A,temp_Node
+cmsel,a,temp_elem
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE

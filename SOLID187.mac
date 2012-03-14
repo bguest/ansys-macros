@@ -1,0 +1,23 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! Solid187.mac
+! Description: This file creates a solid 187 element
+!  description and material if requested
+! Preconditions:
+!  ARG1: Resulting element property number
+!  ARG2: Shell Material (SEE _MAT.mac)
+!======================================================
+
+MatNum = ARG1
+
+ET,MatNum,Solid187
+R,MatNum,
+
+!Set Materials
+*if,arg2,gt,0,then
+   _MAT,arg2,MatNum
+*endif
+
+ATT,matNum
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

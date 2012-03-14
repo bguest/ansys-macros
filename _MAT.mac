@@ -22,7 +22,7 @@
 !     806 -> Stainless Steel 15-5 PH
 !     807 -> G10 (XY/Z) Orthotropic
 !     808 -> HYSOL EA9394
-!     809 -> MS1A 
+!     809 -> MS1A (52% FV) Min Properties
 !    -- 830 - 849 : Reserved For HEXCEL HPR
 !     831 -> Hexcel HRP – 3/16 – 5.5 pcf
 !    -- 850 - 870 : Reserved For Composites
@@ -30,8 +30,11 @@
 !     854 -> YSH70 : Historical SAM
 !     855 -> S2 Glass/Epoxy Unidirectional Facesheet
 !    -- 871 - 892 : Reserved For HEXCEL 5056
-!     876 -> Hexcel 5/32 – 5056 – .0007
+!     873 -> Hexcel 1/8  – 5056 – .001,  4.5pcf
+!     876 -> Hexcel 5/32 – 5056 – .0007, 2.6pcf
 !     877 -> Hexcel 5/32 – 5056 – .001
+!     884 -> Hexcel 1/4  – 5056 – .0007, 1.6pcf
+!     889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
 !     899 -> Call to Material File Footer
 !  ARG2 = Resulting material number
 !     [Default] = ARG1
@@ -181,6 +184,16 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    E11      = 0.615e6*psi
    PR12     = 0.45
    rho      = 1.36*gm/mL
+
+*elseif,ARG1,eq,809,then
+   ! MS1A
+   MatName  = 'MS1A (52% FV) Min Properties'
+   ref      = 'MS1A_test_data.xls, YLA, Inc. MS-1A Product Bulletin'
+   E11      = 10.37*msi
+   rho      = 1.55*gm/cm**3
+  ! G12      = 3*msi
+   PR12     = 0.3 ! Guess...
+
 !------------------------------------------------------
 !Hexcel 
 !HRP (HRP Fiberglass Reinforced Phenolic Honeycomb)
@@ -192,10 +205,10 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    rho  = 5.5*pcf
    S11c = 750*psi
    E33  = 95*ksi
-   S13  = 390*psi
-   G13  = 19.0*ksi*K_Factor
-   S23  = 200*psi
-   G23  = 11.0*ksi*K_Factor
+   S13  = 390*psi*K_Factor
+   G13  = 19.0*ksi
+   S23  = 200*psi*K_Factor
+   G23  = 11.0*ksi
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -212,11 +225,11 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 ! S11c = 750 *psi
 ! E33  = 95  *ksi
 !        490
-! S13  = 390 *psi
-! G13  = 19.0*ksi*K_Factor
+! S13  = 390 *psi*K_Factor
+! G13  = 19.0*ksi
 !        265
-! S23  = 200 *psi
-! G23  = 11.0*ksi*K_Factor
+! S23  = 200 *psi*K_Factor
+! G23  = 11.0*ksi
 
 !832 HRP – 3/16 – 7.0 1150 900 1300 1040 136 650 510 30.0 370 290 14.0
 !833 HRP – 3/16 – 8.0 1350 1100 1530 1280 164 750 TBD TBD 460 370 19.0
@@ -344,20 +357,19 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !HEXCEL 5056
 
 !  HEXCELL --> Input Converter
-! CD   = 3/16
 ! rho  = 5.5 *pcf
-!        800  
-!        620  
-!        900  
+!        ###  
+!        ###  
+!        ###  
 ! S11c = 750 *psi
 ! E33  = 95  *ksi
-!        490  
 !        ###  
-! S13  = 390 *psi
-! G13  = 19.0*ksi*K_Factor
-!        265  
-! S23  = 200 *psi
-! G23  = 11.0*ksi*K_Factor
+!        ###  
+! S13  = 390 *psi*K_Factor
+! G13  = 19.0*ksi
+!        ###  
+! S23  = 200 *psi*K_Factor
+! G23  = 11.0*ksi
 
 ! !Assumed Hexcel Properties
 ! E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -367,7 +379,24 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 
 !871 1/16 – 5056 – .001 9.2 1700p 1300p 1800p 1400p 500p 850x 980p 760p 155.0p 600p 460p 50.0p
 !872 1/8 – 5056 – .0007 3.1 320 250 350 260 97 170 250 200 45.0 155 110 20.0
-!873 1/8 – 5056 – .001 4.5 630 475 690 500 185 320 440 350 70.0 255 205 28.0
+
+*elseif,ARG1,eq,873,then
+   MatName = 'Hexcel 1/8–5056–.001,4.5pcf'
+   ref  = 'HexWeb™ Honeycomb Attributes and Properties'
+   rho  = 4.5*pcf
+   S11c = 500*psi
+   E33  = 185*ksi
+   S13  = 350*psi*K_Factor
+   G13  = 70.0*ksi
+   S23  = 205*psi*K_Factor
+   G23  = 28.0*ksi
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
 !874 1/8 – 5056 – .0015 6.1 1120 760 1200 825 295 535 690 525 102.0 400 305 38.0
 !875 1/8 – 5056 – .002 8.1 1750 1200 1900 1300 435 810 945 740 143.0 560 440 51.0
 
@@ -377,10 +406,10 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    rho  = 2.6*pcf
    S11c = 185*psi
    E33  = 70*ksi
-   S13  = 152*psi
-   G13  = 37.0*ksi*K_Factor
-   S23  = 80*psi
-   G23  = 17.0*ksi*K_Factor
+   S13  = 152*psi*K_Factor
+   G13  = 37.0*ksi
+   S23  = 80*psi*K_Factor
+   G23  = 17.0*ksi
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -389,15 +418,15 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
 
 *elseif,arg1,eq,877,then
-   MatName = 'Hexcel 5/32–5056–.001,3.8pcf'
+   MatName = 'Hexcel 5/32–5056–.001, 3.8pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 3.8*pcf
    S11c = 375*psi
    E33  = 140*ksi
-   S13  = 272*psi
-   G13  = 57.0*ksi*K_Factor
-   S23  = 155*psi
-   G23  = 24.0*ksi*K_Factor
+   S13  = 272*psi*K_Factor
+   G13  = 57.0*ksi
+   S23  = 155*psi*K_Factor
+   G23  = 24.0*ksi
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -411,12 +440,46 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !881 3/16 – 5056 – .001 3.1 380 250 410 260 97 170 265 200 45.0 150 110 20.0
 !882 3/16 – 5056 – .0015 4.4 620 460 670 490 180 310 425 340 68.0 245 198 27.0
 !883 3/16 – 5056 – .002 5.7 920 685 1000 735 270 480 565 480 94.0 330 280 36.0
-!884 1/4 – 5056 – .0007 1.6 100 75 110 80 30 50 90 78 20.0 60 38 10.5
+
+*elseif,arg1,eq,884,then
+   MatName = 'Hexcel 1/4–5056–.0007, 1.6pcf'
+   ref  = 'HexWeb™ Honeycomb Attributes and Properties'
+   rho  = 1.6*pcf
+   S11c = 80*psi
+   E33  = 30*ksi
+   S13  = 78*psi*K_Factor
+   G13  = 20.0*ksi
+   S23  = 38*psi*K_Factor
+   G23  = 10.5*ksi
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
 !885 1/4 – 5056 – .001 2.3 240 145 265 155 58 100 180 130 32.0 100 62 15.0
 !886 1/4 – 5056 – .0015 3.4 400 300 480 315 115 200 290 230 50.0 175 130 22.0
 !887 1/4 – 5056 – .002 4.3 580 440 620 465 172 300 400 325 67.0 230 190 27.0
 !888 1/4 – 5056 – .0025 5.2 790 600 820 645 230 410 490 425 84.0 300 245 32.0
-!889 3/8 – 5056 – .0007 1.0 55 25 60 35 15 35 55 45 15.0 35 25 6.8
+
+*elseif,arg1,eq,889,then
+   MatName = 'Hexcel 3/8–5056–.0007, 1.0pcf'
+   ref  = 'HexWeb™ Honeycomb Attributes and Properties'
+   rho  = 1.0*pcf
+   S11c = 35*psi
+   E33  = 15*ksi 
+   S13  = 45*psi*K_Factor
+   G13  = 15.00*ksi
+   S23  = 25*psi*K_Factor
+   G23  = 6.80*ksi
+
+   !Assumed Hexcel Properties
+   E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
+   PR12 = 0.01 $ PR13 = 0.01 $ PR23 = 0.01
+   S11t = 10e9*psi !Big Numbers
+   S22t = 10e9*psi $ S33t = 10e9*psi $ S12  = 10e9*psi
+
 !890 3/8 – 5056 – .001 1.6 100 75 110 80 30 50 90 78 20.0 60 38 10.5
 !891 3/8 – 5056 – .0015 2.3 215 155 225 155 58 100 170 130 32.0 95 62 15.0
 !892 3/8 – 5056 – .002 3.0 320 240 340 260 92 160 245 190 43.0 145 100 19.0
