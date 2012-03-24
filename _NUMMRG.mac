@@ -21,10 +21,18 @@
 *ENDIF
 
 *if,flagNoMrgKP,EQ,1,THEN
+	cm,temp_kp,kp    ! First 
+	cmsel,s,noMrgKP
+	nslk,u
+	cmsel,s,temp_kp
 	CMSEL,u,noMrgKP
 *endif
 
 *if,flagNoMrgNode,EQ,1,then
+	cm,temp_node,node
+	cmsel,s,noMrgNodes
+	ksln,u
+	cmsel,s,temp_node
 	CMSEL,u,noMrgNodes
 *endif
 
