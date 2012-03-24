@@ -14,27 +14,7 @@
 !          to the minimum tensile or compressive strength
 !     0 -> Tensile and compressive strengths are not 
 !          messed with.
-!  ARG1 = Material Number
-!     802 -> Aluminum 7075-T73
-!     803 -> Titanium Ti-6Al-4V
-!     804 -> Stainless Steel A286
-!     805 -> Aluminum 6061-T651
-!     806 -> Stainless Steel 15-5 PH
-!     807 -> G10 (XY/Z) Orthotropic
-!     808 -> HYSOL EA9394
-!     809 -> MS1A (52% FV) Min Properties
-!    -- 830 - 849 : Reserved For HEXCEL HPR
-!     831 -> Hexcel HRP – 3/16 – 5.5 pcf
-!    -- 850 - 870 : Reserved For Composites
-!     850 -> M55J Historical Minimum
-!     854 -> YSH70 : Historical SAM
-!     855 -> S2 Glass/Epoxy Unidirectional Facesheet
-!    -- 871 - 892 : Reserved For HEXCEL 5056
-!     873 -> Hexcel 1/8  – 5056 – .001,  4.5pcf
-!     876 -> Hexcel 5/32 – 5056 – .0007, 2.6pcf
-!     877 -> Hexcel 5/32 – 5056 – .001
-!     884 -> Hexcel 1/4  – 5056 – .0007, 1.6pcf
-!     889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
+!  ARG1 = Material Number (SEE _MAT_NUMBERS.txt)
 !     899 -> Call to Material File Footer
 !  ARG2 = Resulting material number
 !     [Default] = ARG1
@@ -111,7 +91,7 @@ ID,Name,psi,Ratio (PRXY),in/in/degC,lbm/in^3,Factor,
 MatName  = 'No Material Assigned'
 ref = 'Default Material'
 PR12 = 0.3
-CTEX = 0
+cteX = 0
 rho = 1 
 E11 = 1 $ E22 = 0 $ E33 = 0 
 G12 = 0 $ G13 = 0 $ G23 = 0 
@@ -209,6 +189,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 19.0*ksi
    S23  = 200*psi*K_Factor
    G23  = 11.0*ksi
+   cteX = 8.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -390,6 +371,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 70.0*ksi
    S23  = 205*psi*K_Factor
    G23  = 28.0*ksi
+   cteX = 13.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -410,6 +392,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 37.0*ksi
    S23  = 80*psi*K_Factor
    G23  = 17.0*ksi
+   cteX = 13.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -427,6 +410,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 57.0*ksi
    S23  = 155*psi*K_Factor
    G23  = 24.0*ksi
+   cteX = 13.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -451,6 +435,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 20.0*ksi
    S23  = 38*psi*K_Factor
    G23  = 10.5*ksi
+   cteX = 13.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number
@@ -473,6 +458,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    G13  = 15.00*ksi
    S23  = 25*psi*K_Factor
    G23  = 6.80*ksi
+   cteX = 13.2e-6/degF
 
    !Assumed Hexcel Properties
    E11 = E33*0.05 $ E22 = E33*0.05 $ G12 = 10 !Small Number

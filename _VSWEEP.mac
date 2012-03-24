@@ -47,7 +47,7 @@ R,MNum          !No Real Constants
 
 !CREATE MATERIAL
 *IF,MNum,GE,802,AND,MNum,LE,899,THEN 
-   _MAT,MNum
+   _MAT2,MNum
 *ENDIF
 
 *IF,MNum,EQ,0,THEN    !-----IF NO MatNum Provided

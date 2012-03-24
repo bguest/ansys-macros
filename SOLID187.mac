@@ -14,7 +14,7 @@ R,MatNum,
 
 !Set Materials
 *if,arg2,gt,0,then
-   _MAT,arg2,MatNum
+   _MAT2,arg2,MatNum
 *endif
 
 ATT,matNum

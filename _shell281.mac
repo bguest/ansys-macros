@@ -22,7 +22,7 @@ R,MatNum,T_,T_,T_,T_
 
 !Set Materials
 *if,arg3,gt,0,then
-   _MAT,arg3,MatNum
+   _MAT2,arg3,MatNum
 *endif
 
 ATT,matNum

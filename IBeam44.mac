@@ -72,7 +72,7 @@ RMORE, SHEARZ, SHEARY, TKZ/2, TKY/2, TKZ/2, TKY/2,
 
 !Set material
 *if,arg6,gt,0,then
-   _MAT,arg6,MatNum
+   _MAT2,arg6,MatNum
 *endif
 
 !======THE--END========THE--END========THE--END========

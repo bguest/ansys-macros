@@ -41,7 +41,7 @@ RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2,
 
 !Set material
 *if,arg4,gt,0,then
-	_MAT,arg4,MatNum
+	_MAT2,arg4,MatNum
 *endif
 
 !======THE--END========THE--END========THE--END========

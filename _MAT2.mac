@@ -1,33 +1,13 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 ! _MAT2.mac 
-! Description: This file contains material blocks used
-!  for creating ansys material properites
+! Description: This file acts as a wraper for _MAT.mac
+!  such that materials can be droped in or copied a 
+!  more user friendly way than with _MAT.mac.
 !PRECONDITIONS:
 !  - UNITS: if psi is not set, units will be reset!
 !  mFactor (optional) mass factor ie 1.10 = 10% extra mass
 !  PanelThick = PanelThickness if material is Hexcel
-!  ARG1 = Material Number
-!     802 -> Aluminum 7075-T73
-!     803 -> Titanium Ti-6Al-4V
-!     804 -> Stainless Steel A286
-!     805 -> Aluminum 6061-T651
-!     806 -> Stainless Steel 15-5 PH
-!     807 -> G10 (XY/Z) Orthotropic
-!     808 -> HYSOL EA9394
-!     809 -> MS1A (52% FV) Min Properties
-!    -- 830 - 849 : Reserved For HEXCEL HPR
-!     831 -> Hexcel HRP – 3/16 – 5.5 pcf
-!    -- 850 - 870 : Reserved For Composites
-!     850 -> M55J Historical Minimum
-!     854 -> YSH70 : Historical SAM
-!     855 -> S2 Glass/Epoxy Unidirectional Facesheet
-!    -- 871 - 892 : Reserved For HEXCEL 5056
-!     873 -> Hexcel 1/8  – 5056 – .001,  4.5pcf
-!     876 -> Hexcel 5/32 – 5056 – .0007, 2.6pcf
-!     877 -> Hexcel 5/32 – 5056 – .001
-!     884 -> Hexcel 1/4  – 5056 – .0007, 1.6pcf
-!     889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
-!     899 -> Call to Material File Footer
+!  ARG1 = Material Number (SEE _MAT_NUMBERS.txt)
 !  ARG2 = Resulting material number
 !     [Default] = ARG1
 !  ARG3 = Load Failure Criteria
@@ -35,37 +15,55 @@
 !     1 -> Load FC Failure Criteria
 !
 !!!!!!!!!!!!!!!!!!!!!!NOTES!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! MANY MATERIALS HAVE NOT YET BEEN INCLUDED IN THIS
-! FILE, THE LIST ABOVE WAS SIMPLY COPIED FROM _MAT.mac
-! please check that new materials do not already exist 
-! in _MAT.mac
+! This file wraps the functionality of _MAT.mac and 
+! allows users to copy blocks of code into 
 !======================================================
 
-*IF,ARG1,EQ,802,THEN 
-   MatName = 'Aluminum 7075-T73'
-   ref     = 'MIL-HDBK-5E'
-   E11     = 10.3e6*psi
-   rho     = 0.1*lbm/in**3
-   cteX    = 12.4E-6/degF
-   PR12    = 0.33
-   MP,EX,MNum,E11,    !Modulus
-   MP,prxy,MNum,PR12  !Poison's Ratio
-   MP,DENS,MNum,rho*mFactor
-   MP,ALPX,MNum,cteX
+!Mass Factors
+*if,mFactor,le,0,then   !Account for mass factors
+   mFactor = 1
+*endif
 
-*ELSEIF,ARG1,EQ,803,THEN
-   MatName = 'Ti-6Al-4V'
-   ref     = 'MIL-HDBK-5E'
-   E11     = 16.0e6*psi
-   rho     = 0.16*lbm/in**3
-   PR12    = 0.34
-   cteX    = 4.8e-6/degF !AT 70degF
-   MP,EX,MNum,E11
-   MP,prxy,MNum,PR12
-   MP,DENS,MNum,rho*mFactor
-   MP,ALPX,MNum,cteX
+*if,arg2,gt,0,then   !Set material number
+   MNum = ARG2
 *else
-   _mat,arg1,arg2
+   MNum = ARG1
+*endif
+
+! Units
+*if,psi,eq,0,then
+   UNITS
+*endif
+
+!======================================================
+! MATERIAL PROPERTY DEFINTIONS
+
+!EXAMPLE MATERIAL OK TO OVERWRITE!
+*IF,ARG1,EQ,820,THEN 
+   !REF: MIL-HDBK-5E
+   MP,EX,MNum,10.3e6        
+   MP,PRXY,MNum,0.33
+   MP,DENS,MNum,0.1/G
+   MP,ALPX,MNum,12.4E-6
+   *if,arg3,eq,1,then
+      !----FAILURE CRITERIA (YEILD STRENGTHS)
+      FC,MNum,S,XTEN,56e3 !Tensile stress, X-direction
+      FC,MNum,S,YTEN,56e3 !Tensile stress, y-direction
+      FC,MNum,S,ZTEN,56e3 !Tensile stress, Z-direction 
+      FC,MNum,S,XY  ,38e3 !XY shear stress(Ultimate Strength)
+      FC,MNum,S,YZ  ,38e3 !YZ shear stress(Ultimate Strength)
+      FC,MNum,S,XZ  ,38e3 !XZ shear stress(Ultimate Strength)
+   *endif
+
+!EXAMPLE MATERIAL OK TO OVERWRITE!
+*ELSEIF,ARG1,EQ,821,THEN
+   !REF: MIL-HDBK-5E
+   MP,EX,MNum,10.0e6
+   MP,PRXY,MNum,0.33
+   MP,DENS,MNum,0.101/G
+
+*else  ! If you don't find it here try _MAT.mac
+   _mat,arg1,arg2 
 *endif
 
 !======THE--END========THE--END========THE--END========
