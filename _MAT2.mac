@@ -1,0 +1,72 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! _MAT2.mac 
+! Description: This file contains material blocks used
+!  for creating ansys material properites
+!PRECONDITIONS:
+!  - UNITS: if psi is not set, units will be reset!
+!  mFactor (optional) mass factor ie 1.10 = 10% extra mass
+!  PanelThick = PanelThickness if material is Hexcel
+!  ARG1 = Material Number
+!     802 -> Aluminum 7075-T73
+!     803 -> Titanium Ti-6Al-4V
+!     804 -> Stainless Steel A286
+!     805 -> Aluminum 6061-T651
+!     806 -> Stainless Steel 15-5 PH
+!     807 -> G10 (XY/Z) Orthotropic
+!     808 -> HYSOL EA9394
+!     809 -> MS1A (52% FV) Min Properties
+!    -- 830 - 849 : Reserved For HEXCEL HPR
+!     831 -> Hexcel HRP – 3/16 – 5.5 pcf
+!    -- 850 - 870 : Reserved For Composites
+!     850 -> M55J Historical Minimum
+!     854 -> YSH70 : Historical SAM
+!     855 -> S2 Glass/Epoxy Unidirectional Facesheet
+!    -- 871 - 892 : Reserved For HEXCEL 5056
+!     873 -> Hexcel 1/8  – 5056 – .001,  4.5pcf
+!     876 -> Hexcel 5/32 – 5056 – .0007, 2.6pcf
+!     877 -> Hexcel 5/32 – 5056 – .001
+!     884 -> Hexcel 1/4  – 5056 – .0007, 1.6pcf
+!     889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
+!     899 -> Call to Material File Footer
+!  ARG2 = Resulting material number
+!     [Default] = ARG1
+!  ARG3 = Load Failure Criteria
+!     0 -> Don't load Failure Criteria
+!     1 -> Load FC Failure Criteria
+!
+!!!!!!!!!!!!!!!!!!!!!!NOTES!!!!!!!!!!!!!!!!!!!!!!!!!!!
+! MANY MATERIALS HAVE NOT YET BEEN INCLUDED IN THIS
+! FILE, THE LIST ABOVE WAS SIMPLY COPIED FROM _MAT.mac
+! please check that new materials do not already exist 
+! in _MAT.mac
+!======================================================
+
+*IF,ARG1,EQ,802,THEN 
+   MatName = 'Aluminum 7075-T73'
+   ref     = 'MIL-HDBK-5E'
+   E11     = 10.3e6*psi
+   rho     = 0.1*lbm/in**3
+   cteX    = 12.4E-6/degF
+   PR12    = 0.33
+   MP,EX,MNum,E11,    !Modulus
+   MP,prxy,MNum,PR12  !Poison's Ratio
+   MP,DENS,MNum,rho*mFactor
+   MP,ALPX,MNum,cteX
+
+*ELSEIF,ARG1,EQ,803,THEN
+   MatName = 'Ti-6Al-4V'
+   ref     = 'MIL-HDBK-5E'
+   E11     = 16.0e6*psi
+   rho     = 0.16*lbm/in**3
+   PR12    = 0.34
+   cteX    = 4.8e-6/degF !AT 70degF
+   MP,EX,MNum,E11
+   MP,prxy,MNum,PR12
+   MP,DENS,MNum,rho*mFactor
+   MP,ALPX,MNum,cteX
+*else
+   _mat,arg1,arg2
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
