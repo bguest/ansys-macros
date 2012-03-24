@@ -21,7 +21,7 @@ cm,tmp%compType%,compType		!Save original state
 !Select Things
 *if,arg3,ge,0,then
    %compLetter%sel,s,,,ARG3,ARG4,ARG5	 !Select Things
-*end
+*endif
 
 !Add to component if it exists
 *if,flag_%compName%,ne,1,then
@@ -31,8 +31,8 @@ cm,tmp%compType%,compType		!Save original state
 *endif
 cm,compName,compType
 
-cmsel,s,tmp%compType%		!Resume original State
-cmdele,tmp%compType%			!Delete temp component
+cmsel,s,tmp%compType%	!Resume original State
+cmdele,tmp%compType%		!Delete temp component
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
