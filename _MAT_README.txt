@@ -33,7 +33,7 @@ _MAT,<Standard Material Number>,<Number Assingment>
  889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
  899 -> Reserved for _MAT.mac
 
-TMI
+TMI (Too Much Information)
 =====================================================
 _MAT2.mac actually wraps _MAT.mac it does by calling _MAT.mac if it can not find a property in _MAT2.mac. This is done so that data is not duplicated from one file to the next.
 

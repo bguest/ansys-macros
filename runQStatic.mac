@@ -31,7 +31,8 @@
 ANTYPE,STATIC
 NLGEOM,OFF
 LSDELE,ALL
-!PSTRES,ON
+! SSTIF,ON
+! PSTRES,ON
 
 !Apply Loading Unless no Gravity Loads Appliedw
 *IF,Gx,EQ,0,AND,Gy,EQ,0,THEN

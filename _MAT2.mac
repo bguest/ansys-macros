@@ -43,7 +43,7 @@
    !REF: MIL-HDBK-5E
    MP,EX,MNum,10.3e6        
    MP,PRXY,MNum,0.33
-   MP,DENS,MNum,0.1/G
+   MP,DENS,MNum,0.1/Gravity
    MP,ALPX,MNum,12.4E-6
    *if,arg3,eq,1,then
       !----FAILURE CRITERIA (YEILD STRENGTHS)
@@ -60,7 +60,7 @@
    !REF: MIL-HDBK-5E
    MP,EX,MNum,10.0e6
    MP,PRXY,MNum,0.33
-   MP,DENS,MNum,0.101/G
+   MP,DENS,MNum,0.101/Gravity
 
 *else  ! If you don't find it here try _MAT.mac
    _mat,arg1,arg2 
