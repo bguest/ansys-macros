@@ -18,7 +18,6 @@
 !   and tri elements
 !NOTES: WILL NOT WORK WITH SHELL ELEMENTS (USE NPRES)
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-PARSAV,ALL,F:\_ANSYS\TEMP\NPRES2.txt  !Save Parameters
 
 CM,temp_VOLU,VOLU
 CM,temp_AREA,AREA
@@ -38,9 +37,9 @@ CM,temp_ELEM,ELEM
 *ENDIF
 
 *IF,ARG2,EQ,6,OR,ARG2,EQ,8,THEN
-	!====================================================
+	!================================================
 	!999.SHELL 93: TEMP MATERIAL
-	!----------------------------------------------------
+	!------------------------------------------------
 	!8-Node Structural Shell
 	/PREP7
 	MatNum = 999
@@ -147,7 +146,6 @@ PressureSpaceFunction,ARG3
 	Loop=Loop-1
 *ENDDO
 
-
 !--DERIVE LOADS FOR SHELL 93 ELEMENTS-----------------		
 *DIM,NPres,ARRAY,HighNode,3	!For Nodal Pressures
 Loop=NumElem
@@ -170,17 +168,17 @@ Loop=NumElem
 	
 	!IF QUAD 8 ----------------------------
 	*ELSEIF,ARG2,EQ,8,THEN         
-	  !FOR Corner nodes (See Fig 3.9-5 p58 of Finite Element Modeling for Stress Analysis by Robert D.Cook
-	  *DO,i,1,4 								 
+		!FOR Corner nodes (See Fig 3.9-5 p58 of Finite Element Modeling for Stress Analysis by Robert D.Cook
+		*DO,i,1,4 								 
 	   	*GET,N,ELEM,CurElem,NODE,i
-	  	*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
+	  		*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
 				NPres(N,j)=NPres(N,j)-EPres(Loop,j)/12
 			*ENDDO
 		*ENDDO
 		!For Midside Nodes
 		*DO,i,5,8
 			*GET,N,ELEM,CurElem,NODE,i 
-	  	*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
+	  		*DO,j,1,3                !For Each Direction (1=X,2=Y,3=J)
 				NPres(N,j)=NPres(N,j)+EPres(Loop,j)/3
 			*ENDDO
 		*ENDDO
@@ -228,7 +226,6 @@ CMSEL,A,NPRES_ELEM
 CMSEL,S,temp_NODE
 CMSEL,A,NPRES_NODE
 
-PARRES,,F:\_ANSYS\TEMP\NPRES2.txt  !Resume Saved Parameters
 !=========THE--END========THE--END========THE--END=====
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
 

@@ -1,185 +1,94 @@
-/PMACRO
-SAVE,saved,db,,ALL
-!GET NODES ON SURFACE
-/SOLU
-FDELE,ALL
-/PMACRO
-	!SELECTS NODES ATTACHED TO AREAS. (SEE _NSLA.mac)
-	asel,s,p    
-	lsla
-	ksll
-	nsla
-	nsll,a  
-	nslk,a 
-	!SELECT ELEMENTS ATTACHED TO AREA
-	esla
-!MAKE COMPONENTS
-CM,NPRES_NODE,NODE
-CM,NPRES_ELEM,ELEM
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! NPRES.mac
+! Description: this macro applys a traction to nodes
+!  as described by the PressureSpaceFunction
+! Preconditions:
+!  PressureSpaceFunction results is macro that sets
+!    Pz,Py,Pz based on Location X,Y,Z 
+!    ie (Pz,Py,Pz) = Function(X,Y,Z)
+!  ARG1 = First Area to apply force to or <0 for ALL
+!    ELSE, User prompted to select Areas
+!  ARG2 = Last Area to apply force to
+!  ARG3 = Incrment of areas
+!======================================================
+_save
 
-*GET,HighElem,ELEM,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED ELEMENT
-*GET,LowElem,ELEM,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED ELEMENT
-*GET,NumElem,ELEM,0,COUNT  !GET NUMBER OF ACTIVE Elements
+*if,arg1,gt,0,then
+   asel,s,,,arg1,arg2,arg3
+*else
+	*msg,warn
+Pick areas to be npressed
+   asel,s,p 
+*endif
 
-*GET,HighNode,NODE,0,NUM,MAX !GET NUMBER OF HIGHEST SELECTED NODE
-*GET,LowNode,NODE,0,NUM,MIN  !GET NUMBER OF LOWEST SELECTED NODE
-*GET,NumNode,NODE,0,COUNT  	!GET NUMBER OF ACTIVE Nodes
+nsla,,1 !SELECTS NODES ATTACHED TO AREAS. (SEE _NSLA.mac)
+esla    !SELECT ELEMENTS ATTACHED TO AREA
 
-!-------Get Element Numbers
-*DIM,Select,ARRAY,HighElem
-	!Create Array for the selection status of Elements  
-*VGET,Select,ELEM,,ESEL    	!Get Selection Status of Elements
+*vget,Elems,ELEM,,ELIST
+*get,numElem,elem,count
 
-*DIM,Elems,ARRAY,NumElem   	!Create Array for Element Numbers
+*do,elemNum,1,numElems
 
-Loop=HighElem-LowElem+1	  	!SET Loop to Highest Element-Lowest Element+1
-CurElem=HighElem
-CurResult=NumElem          	!SET CurResult to Number of Elements
-*DOWHILE,Loop 		    		!For active Elements
-	*IF,Select(CurElem),EQ,1,THEN    !If the Element is selected
-		Elems(CurResult)=CurElem !Store Element Number in Elems
-		CurResult=CurResult-1
-	*ENDIF
-	CurElem=CurElem-1
-	Loop=Loop-1
-*ENDDO
-	
-!-------GET AREAS
-*DIM,EAreas,ARRAY,NumElem		!Create Array for Element areas
-Loop=NumElem
-*DOWHILE,Loop !FOR EACH Element
-	CurElem=Elems(Loop)    		!GET Current Element
-	ESEL,S,,,CurElem       		!Select Current Element
-	*GET,EArea,ELEM,CurElem,AREA  	!GET AREA OF SELECTED ELEMENT
-	EAreas(Loop)=EArea		!Store Area in EAreas ARRAY
-	Loop=Loop-1
-*ENDDO
-!--RESUME NODES AND ELEMENTS
-CMSEL,S,NPRES_NODE
-CMSEL,S,NPRES_ELEM
-	
-!-------GET ELEMENT LOCATIONS
-CSYS,0				!SET COORDINATE SYSTEM
-*DIM,Loc,ARRAY,NumElem,3	!CREATE Array for Element Locations
-Loop=NumElem
-*DOWHILE,Loop 		!FOR EACH ELEMENT
-	CurElem=Elems(Loop)			!GET Current Element
-	*GET,TempLoc,ELEM,CurElem,CENT,X 	!GET X Coordinate
-	Loc(Loop,1)=TempLoc				!STORE x coordinate
-	*GET,TempLoc,ELEM,CurElem,CENT,Y 	!GET Y Coordinate
-	Loc(Loop,2)=TempLoc				!STORE Y Coordinate
-	*GET,TempLoc,ELEM,CurElem,CENT,Z 	!GET Z Coordinate
-	Loc(Loop,3)=TempLoc
-	Loop=Loop-1
-*ENDDO
+   ! Get area and centroid
+   *get,A,elem,Elems(elemNum),area   !Area
+   *get,X,elem,Elems(elemNum),cent,X !X Location
+   *get,Y,elem,Elems(elemNum),cent,Y !Y Locatoin
+   *get,Z,elem,Elems(elemNum),cent,Z !Z Location
 
-!-------DERIVE ELEMENT LOADS
-*DIM,EPres,ARRAY,NumELem,3	!Create Array For Element Loads
-Loop=NumElem
-*DOWHILE,Loop
-	A=EAreas(Loop)
-	X=Loc(Loop,1)
-	Y=Loc(Loop,2)
-	Z=Loc(Loop,3)
-!-------------------------Fx,Fy,Fz=FUNCTION(X,Y,Z)-------------------
-Theata=ATAN2(Y,X)
-PI=ACOS(-1)
-W=1
-R=1
-Nu=1
-T1=78.431
-*IF,Theata,LT,0,THEN
-	Theata=2*PI+Theata
-*ENDIF
-P=T1/(R*W)*EXP(-Theata*Nu)
-Fr=Nu*P
+   Px = 0 $ Py = 0 $ Pz = 0
+   PressureSpaceFunction
+   Fx = Px*Area $ Fy = Py*Area $ Fz = Pz*Area
 
-Fx=Fr*SIN(Theata)-P*COS(Theata)
-Fy=-Fr*SIN(Theata)-P*SIN(Theata)
-Fz=0
-!-------------------------------------------------------
-	EPres(Loop,1)=Fx*A
-	EPres(Loop,2)=Fy*A
-	EPres(Loop,3)=Fz*A
-	Loop=Loop-1
-*ENDDO
+   !Get Number of Nodes on Element
+   nCount,Elems(elemNum) ! Assigns count
 
+   ! Depending nodes 
+   *if,count,eq,3,or,count,eq,4,then
+      ! Devide Load over nodes
+      *do,i,1,count,
+         nodeNumber = NELEM(elemNum,i)
+         *GET,Fxx,node,nodeNumber,F,Fx
+         *GET,Fyy,node,nodeNumber,F,Fy
+         *GET,Fzz,node,nodeNumber,F,Fz
+         F,nodeNumber,Fx,Fxx+Fx/count
+         F,nodeNumber,Fy,Fyy+Fy/count
+         F,nodeNumber,Fz,Fzz+Fz/count
+      *enddo
 
-!--DERIVE LOADS FOR TRIANGULAR SHELL 93 ELEMENTS-----------------		
-*DIM,NPres,ARRAY,HighNode,3	!For Nodal Pressures
-Loop=NumElem
-*DOWHILE,Loop
-	CurElem=Elems(Loop)			
-	*GET,N,ELEM,CurElem,NODE,5
-	NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
-	NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
-	NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
-	*GET,N,ELEM,CurElem,NODE,6
-	NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
-	NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
-	NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
-	*GET,N,ELEM,CurElem,NODE,8
-	NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
-	NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
-	NPres(N,3)=NPres(N,3)+EPres(Loop,3)/3
-	Loop=Loop-1
-*ENDDO
+   *elseif,count,eq,6,then ! TRI6's
+      nds = $ *dim,nds,array,3
+      nds(1) = NELEM(elemNum,5), NELEM(elemNum,6), NELEM(elemNum,8)
+      *do,i,1,3
+         *GET,Fxx,node,nds(i),F,Fx
+         *GET,Fyy,node,nds(i),F,Fy
+         *GET,Fzz,node,nds(i),F,Fz
+         F,nds(i),Fx,Fxx+Fx/3
+         F,nds(i),Fy,Fyy+Fy/3
+         F,nds(i),Fz,Fzz+Fz/3
+      *enddo
 
-!--GET Selected Node Numbers--
-*DIM,NSelect,ARRAY,HighNode	!Create Array for the selection status of Nodes
-*VGET,NSelect,NODE,,NSEL    	!Get Selection Status of Nodes
+   *else,if,count,eq,8,then ! Quad 8's
+      *do,i,1,4
+         nodeNumber = NELEM(elemNum,i)
+         *GET,Fxx,node,nodeNumber,F,Fx
+         *GET,Fyy,node,nodeNumber,F,Fy
+         *GET,Fzz,node,nodeNumber,F,Fz
+         F,nodeNumber,Fx,Fxx+Fx/12
+         F,nodeNumber,Fy,Fyy+Fy/12
+         F,nodeNumber,Fz,Fzz+Fz/12
+      *enddo
+      *do,i,5,8
+         nodeNumber = NELEM(elemNum,i)
+         *GET,Fxx,node,nodeNumber,F,Fx
+         *GET,Fyy,node,nodeNumber,F,Fy
+         *GET,Fzz,node,nodeNumber,F,Fz
+         F,nodeNumber,Fx,Fxx+Fx/3
+         F,nodeNumber,Fy,Fyy+Fy/3
+         F,nodeNumber,Fz,Fzz+Fz/3
+      *enddo
+   *endif
 
-*DIM,Nodes,ARRAY,NumNode   	!Create Array for Element Nodes
-
-Loop=HighNode-LowNode+1		!SET Loop to Highest Node-Lowest Node+1
-CurNode=HighNode
-CurResult=NumNode          	!SET CurResult to Number of Nodes
-*DOWHILE,Loop 		    		!For active Nodes
-	*IF,NSelect(CurNode),EQ,1,THEN    !If the Node is selected
-		Nodes(CurResult)=CurNode !Store Node Number in Node
-		CurResult=CurResult-1
-	*ENDIF
-	CurNode=CurNode-1
-	Loop=Loop-1
-*ENDDO
-
-!---APPLY FORCES
-/SOLU
-Loop=NumNode
-*DOWHILE,Loop
-	CurNode=Nodes(Loop)		!Set Curretn Node
-	F,CurNode,FX,NPres(CurNode,1)	!Apply Nodal Force in X-Direction
-	F,CurNode,FY,NPres(CurNode,2)	!Apply Nodal Force in Y-Direction
-	F,CurNode,FZ,NPres(CurNode,3)	!Apply Nodal Force in Z-Direction
-	Loop=Loop-1
-*ENDDO
-
-!==============CLEAN UP...
-*SET,CurElem
-*SET,CurNode
-*SET,CurResult
-*SET,EArea
-*SET,EAreas
-*SET,Elems
-*SET,EPres
-*SET,FR
-*SET,FX
-*SET,FY
-*SET,FZ
-*SET,HighElem
-*SET,HighNode
-*SET,Loc
-*SET,Loop
-*SET,LowElem
-*SET,LowNode
-*SET,N
-*SET,NSelect
-*SET,Nodes
-*SET,NPres
-*SET,Select
-*SET,X
-*SET,Y
-*SET,Z
+*enddo
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE PROGRAM AS WE KNOW IT AND I FEEL FINE

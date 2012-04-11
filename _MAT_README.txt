@@ -4,7 +4,7 @@ _MAT.mac and _MAT2.mac contain Standard Material Properties. There are two files
 Please Take care not to use a materials number in _MAT.mac or _MAT2.mac that is listed here or is already in _MAT.mac or _MAT2.mac
 
 Use _MAT.mac and _MAT2.mac in the same way:
-_MAT,<Standard Material Number>,<Number Assingment> 
+_MAT(2),<Standard Material Number>,<Number Assingment> 
 
   Material Number List
 ====================================================
@@ -40,7 +40,7 @@ _MAT2.mac actually wraps _MAT.mac it does by calling _MAT.mac if it can not find
  HOW TO USE PROPERTIES W/O MACROS
 =====================================================
 
-1) Copy parameter assingments from _MAT.mac into you material file ie for aluminum
+1) Copy parameter assingments from _MAT.mac into your material file ie for aluminum
 
 MatName = 'Aluminum 7075-T73'
 ref     = 'MIL-HDBK-5E'
