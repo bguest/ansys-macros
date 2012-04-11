@@ -1,0 +1,52 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! nCount.mac
+! Description: the macro sets count equal to the 
+!  number of nodes on the element number ARG1
+! Preconditions:
+!  ARG1 -> Element Number 
+! Postconditions:
+!  count = number of nodes on element
+!======================================================
+!Get Number of Nodes on Element
+count = 0
+loop =  1
+eNumb = ARG1
+
+!Count Up From to 20, on first zero, exit
+*dowhile,loop
+   count = count + 1 
+   nd = NELEM(eNumb,count+1)  ! Get Node at location
+   *if,nd,eq,0,or,count,ge,20,then ! if no node, break
+      loop = 0 !Break
+   *endif
+*enddo
+
+! Get Nodes
+nds = $ *dim,nds,array,count
+*do,i,1,count,
+   nds(i) = NELEM(eNumb,i)
+*enddo
+
+! Check for duplicates
+dups = 0
+*do,i,1,count-1
+   *do,j,i+1,count
+      *if,nds(i),eq,nds(j),then
+         dups = dups + 1
+      *endif
+   *enddo
+*enddo
+
+count = count - dups
+
+!Check for beams with orientation
+*if,count,eq,3,then
+   *get,L,elem,eNumb,leng
+   ndist,NELEM(eNumb,1),NELEM(eNumb,2)
+   *if,_return,eq,L,then
+      count = 2
+   *endif
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
