@@ -6,6 +6,7 @@
 !PRECONDITIONS:
 !  ARG1 = Line to be meshed
 !     ELSE, User prompted to select lines
+!     --> -1 implies all selected lines
 !  ARG2 = Material Number of Line to be meshed
 !     ELSE, User is prompted for mat number
 !  ARG3 = Number of Elements per line (Default = 1)
@@ -50,18 +51,18 @@ CM,temp_KP,KP
    NO MATNUM PROVIDED
                         !Do Nothing
 *ELSE                   !----ELSE
-   *IF,ARG1,EQ,0,THEN
-      *MSG,UI
-      SELECT LINE TO BE MESHED
+  *if,ARG1,EQ,0,THEN
+    *MSG,UI
+    SELECT LINE TO BE MESHED
    
-      LSEL,r,p
-   *ELSE
-      LSEL,S,,,ARG1
-   *ENDIF
-   LCLEAR,ALL
-   LESIZE,ALL,,,LNum,,1
-   LATT,MNum,MNum,MNum,,orientKP
-   LMESH,ALL
+    LSEL,r,p
+  *elseif,arg1,ne,-1,then
+    LSEL,S,,,ARG1
+  *ENDIF
+  LCLEAR,ALL
+  LESIZE,ALL,,,LNum,,1
+  LATT,MNum,MNum,MNum,,orientKP
+  LMESH,ALL
 *ENDIF
 
 !=======================CLEAN UP=======================

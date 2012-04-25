@@ -1,0 +1,14 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! RunAll.mac
+! Description: This file runs all the unit tests for 
+!  the ansys macros
+!======================================================
+/output,OUT_UNIT,out ! Clear Output
+/output
+
+UNIT_BEAM44
+UNIT_LMESH
+UNIT_NPRES
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

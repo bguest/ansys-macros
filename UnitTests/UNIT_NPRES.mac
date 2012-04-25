@@ -1,0 +1,54 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UNIT_NPRES.mac
+! Description: This file runs a set of unit tests on
+!  the NPRES macro
+!======================================================
+
+! Thin shell over block in tension
+!======================================================
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+
+block,0,1,0,1,0,1   ! Geometery
+  
+MP,prxy,1,0.0 ! Mesh Volume
+MP,EX,1,10e6
+et,1,SOLID45
+real,1,
+esize,0.25
+vatt,1,1,1
+vmesh,all
+
+asel,s,,,2          ! Mesh Top
+et,2,shell181
+r,2,0.001,0.001,0.001,0.001
+aatt,1,2,2
+amesh,all
+
+asel,s,,,1 ! Constraints
+nsla,,1
+d,all,all
+
+!Apply NPRES
+esel,s,type,,2
+nsle
+UNIT_LC = 1    ! Directive for PressureSpaceFunction
+npres,-1
+allsel
+
+/solu
+ANTYPE,STATIC
+SOLVE
+
+/post1
+set,1,1
+
+ND = NODE(KX(5),KY(5),KZ(5))
+*GET,NdZ,node,ND,U,Z
+UnitAssertEqual,NdZ,1e-7,'_NPRES Test 0.0'
+*GET,NdZ,node,46,u,Z
+UnitAssertEqual,NdZ,1e-7,'_NPRES Test 0.1'
+
+:END
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

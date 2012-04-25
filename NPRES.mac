@@ -3,50 +3,37 @@
 ! Description: this macro applys a traction to nodes
 !  as described by the PressureSpaceFunction
 ! Preconditions:
+!	Elements For NPRES are already selected
 !  PressureSpaceFunction results is macro that sets
 !    Pz,Py,Pz based on Location X,Y,Z 
 !    ie (Pz,Py,Pz) = Function(X,Y,Z)
-!  ARG1 = First Area to apply force to or <0 for ALL
-!    ELSE, User prompted to select Areas
-!  ARG2 = Last Area to apply force to
-!  ARG3 = Incrment of areas
 !======================================================
 _save
 
-*if,arg1,gt,0,then
-   asel,s,,,arg1,arg2,arg3
-*else
-	*msg,warn
-Pick areas to be npressed
-   asel,s,p 
-*endif
-
-nsla,,1 !SELECTS NODES ATTACHED TO AREAS. (SEE _NSLA.mac)
-esla    !SELECT ELEMENTS ATTACHED TO AREA
-
 *vget,Elems,ELEM,,ELIST
-*get,numElem,elem,count
+*get,numElem,elem,,count
 
-*do,elemNum,1,numElems
+*do,elemIdx,1,numElem
 
    ! Get area and centroid
-   *get,A,elem,Elems(elemNum),area   !Area
-   *get,X,elem,Elems(elemNum),cent,X !X Location
-   *get,Y,elem,Elems(elemNum),cent,Y !Y Locatoin
-   *get,Z,elem,Elems(elemNum),cent,Z !Z Location
+   eNumber = Elems(elemIdx)
+   *get,A,elem,eNumber,area   !Area
+   *get,X,elem,eNumber,cent,X !X Location
+   *get,Y,elem,eNumber,cent,Y !Y Locatoin
+   *get,Z,elem,eNumber,cent,Z !Z Location
 
    Px = 0 $ Py = 0 $ Pz = 0
    PressureSpaceFunction
-   Fx = Px*Area $ Fy = Py*Area $ Fz = Pz*Area
+   Fx = Px*A $ Fy = Py*A $ Fz = Pz*A
 
    !Get Number of Nodes on Element
-   nCount,Elems(elemNum) ! Assigns count
+   nCount,eNumber ! Assigns count
 
    ! Depending nodes 
    *if,count,eq,3,or,count,eq,4,then
       ! Devide Load over nodes
-      *do,i,1,count,
-         nodeNumber = NELEM(elemNum,i)
+      *do,i,1,count
+         nodeNumber = NELEM(eNumber,i)
          *GET,Fxx,node,nodeNumber,F,Fx
          *GET,Fyy,node,nodeNumber,F,Fy
          *GET,Fzz,node,nodeNumber,F,Fz
@@ -57,7 +44,7 @@ esla    !SELECT ELEMENTS ATTACHED TO AREA
 
    *elseif,count,eq,6,then ! TRI6's
       nds = $ *dim,nds,array,3
-      nds(1) = NELEM(elemNum,5), NELEM(elemNum,6), NELEM(elemNum,8)
+      nds(1) = NELEM(eNumber,5), NELEM(eNumber,6), NELEM(eNumber,8)
       *do,i,1,3
          *GET,Fxx,node,nds(i),F,Fx
          *GET,Fyy,node,nds(i),F,Fy
@@ -67,9 +54,9 @@ esla    !SELECT ELEMENTS ATTACHED TO AREA
          F,nds(i),Fz,Fzz+Fz/3
       *enddo
 
-   *else,if,count,eq,8,then ! Quad 8's
+   *elseif,count,eq,8,then ! Quad 8's
       *do,i,1,4
-         nodeNumber = NELEM(elemNum,i)
+         nodeNumber = NELEM(eNumber,i)
          *GET,Fxx,node,nodeNumber,F,Fx
          *GET,Fyy,node,nodeNumber,F,Fy
          *GET,Fzz,node,nodeNumber,F,Fz
@@ -78,7 +65,7 @@ esla    !SELECT ELEMENTS ATTACHED TO AREA
          F,nodeNumber,Fz,Fzz+Fz/12
       *enddo
       *do,i,5,8
-         nodeNumber = NELEM(elemNum,i)
+         nodeNumber = NELEM(eNumber,i)
          *GET,Fxx,node,nodeNumber,F,Fx
          *GET,Fyy,node,nodeNumber,F,Fy
          *GET,Fzz,node,nodeNumber,F,Fz
@@ -86,6 +73,7 @@ esla    !SELECT ELEMENTS ATTACHED TO AREA
          F,nodeNumber,Fy,Fyy+Fy/3
          F,nodeNumber,Fz,Fzz+Fz/3
       *enddo
+
    *endif
 
 *enddo

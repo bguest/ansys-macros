@@ -1,0 +1,82 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UNIT_BEAM44.mac
+! Description: This file runs unit tests on the 
+!  _BEAM44 macro
+!======================================================
+
+!======================================================
+!#0.0 : Test that torsional stiffness is correct
+! Description: Simple Beam, fixed at one end, torque 
+!  axial torque applied to the other end. Test to make
+!  sure rotational displacment is as expected.
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+
+LL = 10
+k,1,0,0,0
+k,2,LL,0,0
+l,1,2
+
+_mat,802,1
+GG = E11/(2*(1+PR12))
+AA = 10
+IXX = 1
+IYY = 10
+IZZ = 10
+_Beam44,1,AA,IXX,IYY,IZZ
+
+lesize,1,,,10,
+latt,1,1,1,
+lmesh,1
+
+TT = 10
+dk,1,all,
+fk,2,MX,TT,
+
+/solu
+ANTYPE,STATIC
+SOLVE
+
+/post1
+set,1,1
+
+phi = TT*LL/GG/IXX           ! Calculate Rotation
+ND = NODE(KX(2),KY(2),KZ(2)) 
+*get,ndRt,node,ND,rot,x      ! Get Rotation
+UnitAssertEqual,ndRT,phi,'_BEAM44 Test 0.0'
+
+!======================================================
+!#1.0 : Test that asthetic section sizes are set 
+! correctly for torsional beam
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+pi=acos(-1)
+
+kEshapeSection = 1
+JJ = 99
+_Beam44,1,1,JJ,1,1
+
+DD = (32*JJ/PI)**(1/4)
+UnitAssertEqual,DD,TKZ,'_BEAM44 Test 1.0'
+
+!======================================================
+!#2.0 : Test that asthetic section sizes are set 
+! correctly for bending beams
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+pi=acos(-1)
+
+kEshapeSection = 0
+IYY = 90
+IZZ = 80
+TKZ2 = (144*Iyy**3/Izz)**(1/8)
+TKY2 = (144*Izz**3/Iyy)**(1/8)
+
+_Beam44,1,1,1,IYY,IZZ,
+
+UnitAssertEqual,TKZ,TKZ2,'_BEAM44 Test 2.0'
+UnitAssertEqual,TKY,TKY2,'_BEAM44 Test 2.1'
+
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

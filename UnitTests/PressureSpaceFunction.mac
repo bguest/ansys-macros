@@ -1,0 +1,3 @@
+*if,UNIT_LC,eq,1,then
+   PZ = 1
+*endif

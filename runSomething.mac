@@ -4,6 +4,8 @@
 ! Description: Append this macro as the last line of 
 !	a build file to run the specified analysis after
 !	the model has been build
+! IE:
+! runSomething,arg1,arg2,arg3,arg4,arg5,arg6
 !ARGUMENTS
 !	ARG1: If not 0 ==> Run Simulation after.
 !		1 -> RunModes,arg2,arg3,arg4,arg5,arg6

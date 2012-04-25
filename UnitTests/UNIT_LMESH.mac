@@ -1,0 +1,32 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UNIT_LMESH.mac
+! Description: This file runs unit tests on the LMESH
+!  macro
+!======================================================
+
+!#0.0 : -1 Results in all selected lines being meshed
+!======================================================
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+
+k,1,0,0,0
+k,2,1,0,0
+k,3,0,1,0
+k,4,1,1,0
+k,5,0,2,0
+k,6,1,2,0
+
+L,1,2 !L1
+L,3,4 !L2
+L,5,6 !L3
+
+lsel,s,,,1,2
+SqBeam44,1,.1,.1,,802
+_lmesh,-1,1,1,
+
+allsel
+*get,elemCount,elem,0,count
+unitAssertEqual,2,elemCount,'_LMESH 0.0'
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

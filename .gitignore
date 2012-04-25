@@ -3,3 +3,16 @@
 
 # Projects
 .eprj
+
+# Run Files
+*.out
+*.BCS
+*.emat
+*.err
+*.esav
+*.full
+*.log
+*.mtr
+*.out
+*.rst
+*.stat

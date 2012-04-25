@@ -1,0 +1,21 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UnitAssertEqual.mac
+! Description: Macro to assert equalness
+! ARG1,ARG2: Two parameters that should be equalness
+! ARG3: Message for failure
+!  Default: <ARG2> ne <ARG2>
+!======================================================
+*if,arg1,ne,arg2,then   
+   /output,OUT_UNIT,out,,APPEND
+   *msg,warn,arg3,arg1,arg2
+%C Failed, %G is not equal to %G
+   /output
+*else
+   /OUTPUT,OUT_UNIT,out,,APPEND
+   *msg,note,arg3
+%C Passed
+   /output
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
