@@ -17,6 +17,9 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 /NOPR
 /PREP7
+*MSG,WARN
+THIS METHOD HAS BEEN DEPRECATED, RECOMEND USING _SHELL63.mac and or ATMESH.mac
+
 !-------------SAVE CURRENT SETUP
 CM,temp_Area,LINE
 
@@ -60,9 +63,6 @@ CMSEL,A,temp_Area
 
 !--DELETE TEMPORARY COMPONENTS
 CMDELE,temp_area
-
-*MSG,WARN
-THIS METHOD HAS BEEN DEPRECATED, RECOMEND USING _SHELL63.mac and or ATTMESH.mac
 
 :END
 !======THE--END========THE--END========THE--END========

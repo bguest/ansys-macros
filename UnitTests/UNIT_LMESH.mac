@@ -26,7 +26,7 @@ _lmesh,-1,1,1,
 
 allsel
 *get,elemCount,elem,0,count
-unitAssertEqual,2,elemCount,'_LMESH 0.0'
+unitAssertEqual,2,elemCount,'_LMESH Test 0.0'
 
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

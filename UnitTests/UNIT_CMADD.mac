@@ -1,0 +1,41 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! UNIT_CMADD.mac
+! Description: This file runs unit tests for the
+!   CMADD.mac. CMADD adds things to a component group
+!======================================================
+
+!======================================================
+! #0 : Tests that CMADD adds a single component to a 
+!      component group. 
+fini $ /cle $ /prep7
+FlagNoReadWrite = 1 
+
+k,1,0,0,0
+k,2,1,0,0
+k,3,0,1/2,0
+k,4,1,1/2,0
+k,5,0,2/2,0
+k,6,1,2/2,0
+
+L,1,2 !L1
+L,3,4 !L2
+L,5,6 !L3
+TT = _return
+
+cmadd,'line','testies',TT,
+cmsel,s,testies
+
+*get,lineCount,line,0,count 
+UnitAssertEqual,1,lineCount,'CMADD Test 0.0'
+
+!------------------------------------------------------
+!#0.1 : Test that will add second line by varaible
+AA = 1
+cmadd,'line','testies',AA,
+cmsel,s,testies
+
+*get,lineCount,line,0,count 
+UnitAssertEqual,2,lineCount,'CMADD Test 0.1'
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
