@@ -13,6 +13,8 @@
 !======================================================
 _SAVE
 /prep7
+*msg,warn
+ATTMESH has been deprecated, use ATMESH instead
 
 geomType = ARG1
 lett		= strsub(geomType,1,1)
