@@ -156,6 +156,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    E22     = 2.7e6*psi
    E33     = 2.3e6*psi
    rho     = 0.065*lbm/in**3
+   cteX    = 6.6e-6/degF
 
 *elseif,ARG1,eq,808,then
    ! HYSOL EA9394
