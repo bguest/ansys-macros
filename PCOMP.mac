@@ -49,7 +49,8 @@ useSandwich = ARG4	!Sandwich option
 	!LAYERED DATA:
 	!RMORE,<MatNum>,THEATA,TK(I), TK(J), TK(K), TK(L) 	
 	*do,i,1,numLay
-		RMORE,layMat(i),layAngle(i),layThick(i),layThick(i),layThick(i),layThick(i)
+		t = layThick(i)
+		RMORE,layMat(i),layAngle(i),t,t,t,t
 	*enddo
 	KEYOPT,MNum,1,numLay
 	KEYOPT,MNum,9,useSandwich
@@ -70,7 +71,7 @@ NO.	Angle	Thickness	MatNum
 		layThk_ = layThick(i)
 		layMat_ = layMat(i)
 		*vwrite,i,layMat_,layAng_,layThk_
-%13.5E	%13.5E	%13.5E	%13.5E
+%I	%I	%13G	%13G
 	*enddo
 
 	*cfclos
