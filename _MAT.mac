@@ -183,7 +183,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    !HRP – 3/16 – 5.5 pcf 800 620 900 750 95 490 390 19.0 265 200 11.0
    MatName = 'Hexcel HPR-3/16-5.5pcf'
    rho  = 5.5*pcf
-   S11c = 750*psi
+   S33c = 750*psi
    E33  = 95*ksi
    S13  = 390*psi*K_Factor
    G13  = 19.0*ksi
@@ -203,7 +203,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !        800
 !        620
 !        900
-! S11c = 750 *psi
+! S33c = 750 *psi
 ! E33  = 95  *ksi
 !        490
 ! S13  = 390 *psi*K_Factor
@@ -342,7 +342,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 !        ###  
 !        ###  
 !        ###  
-! S11c = 750 *psi
+! S33c = 750 *psi
 ! E33  = 95  *ksi
 !        ###  
 !        ###  
@@ -365,7 +365,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    MatName = 'Hexcel 1/8–5056–.001,4.5pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 4.5*pcf
-   S11c = 500*psi
+   S33c = 500*psi
    E33  = 185*ksi
    S13  = 350*psi*K_Factor
    G13  = 70.0*ksi
@@ -386,7 +386,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    MatName = 'Hexcel 5/32–5056–.0007,2.6pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 2.6*pcf
-   S11c = 185*psi
+   S33c = 185*psi
    E33  = 70*ksi
    S13  = 152*psi*K_Factor
    G13  = 37.0*ksi
@@ -404,7 +404,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    MatName = 'Hexcel 5/32–5056–.001, 3.8pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 3.8*pcf
-   S11c = 375*psi
+   S33c = 375*psi
    E33  = 140*ksi
    S13  = 272*psi*K_Factor
    G13  = 57.0*ksi
@@ -429,7 +429,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    MatName = 'Hexcel 1/4–5056–.0007, 1.6pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 1.6*pcf
-   S11c = 80*psi
+   S33c = 80*psi
    E33  = 30*ksi
    S13  = 78*psi*K_Factor
    G13  = 20.0*ksi
@@ -450,7 +450,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
 *elseif,arg1,eq,886 
    MatName = 'Hexcel 1/4–5056–.0015, 3.4pcf'
    rho  = 3.4*pcf
-   S11c = 315*psi
+   S33c = 315*psi
    E33  = 115*ksi
    S13  = 230*psi*K_Factor
    G13  = 50.0*ksi
@@ -470,7 +470,7 @@ eps11t= 0 $ eps11c= 0 $ eps22t= 0 $ eps22c= 0 $ eps12 = 0
    MatName = 'Hexcel 3/8–5056–.0007, 1.0pcf'
    ref  = 'HexWeb™ Honeycomb Attributes and Properties'
    rho  = 1.0*pcf
-   S11c = 35*psi
+   S33c = 35*psi
    E33  = 15*ksi 
    S13  = 45*psi*K_Factor
    G13  = 15.00*ksi

@@ -65,7 +65,7 @@ MP,DENS,MNum,0 !Dummy Material
 Composite Layup Number %I
 
 	*vwrite
-NO.	Angle	Thickness	MatNum
+NO.	MatNum	Angle	Thickness
 	*do,i,1,numLay
 		layAng_ = layAngle(i)
 		layThk_ = layThick(i)
