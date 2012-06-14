@@ -2,6 +2,6 @@
 /COLOR, PBAK,OFF  
 /CMAP,WHITE,TXT,C:\ANSYS_MACROS
 *if,arg1,ge,1,then
-	/WINDOW,1,-1,.15,-1,-.2  
+	/WINDOW,1,-1,.25,-1,-.1 
 *endif
 /REPLOT 

@@ -521,6 +521,12 @@ MP,prxy,MNum,PR12  !Poison's Ratio
 
 MP,DENS,MNum,rho*mFactor
 MP,ALPX,MNum,cteX
+*if,cteY,ne,0,then
+   MP,ALPY,MNum,cteY
+*endif
+*if,cteZ,ne,0,then
+   MP,ALPY,MNum,cteZ
+*endif
 
 ! Adjust values if is for random
 *if,isForRandom,eq,1,then

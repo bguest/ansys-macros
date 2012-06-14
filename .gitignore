@@ -16,3 +16,6 @@
 *.out
 *.rst
 *.stat
+
+#Binary Files
+*.avi

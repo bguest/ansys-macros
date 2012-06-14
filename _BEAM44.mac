@@ -64,8 +64,8 @@ MatNum = ARG1
 
 !------------------------------------------------------
 ET,MatNum,BEAM44
-R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
-RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+R ,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE,     AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
 RMORE, , , , , , , 
 RMORE,B44ShearZ,B44ShearY, TKZ/2, TKY/2, TKZ/2, TKY/2, 
 
