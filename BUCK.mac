@@ -88,7 +88,7 @@ MaxFC=0     !SET Failure Criteria at 0
    VxAdd = $ *dim,VxAdd ,array,elmDiff
    VyAdd = $ *dim,VyAdd ,array,elmDiff
 
-   *do,i,1,elmCount,increment
+   *do,i,1,elmCount,
       eNumb = addedLoads(i,1)
       NxAdd(eNumb)=  addedLoads(i,2) 
       NyAdd(eNumb)=  addedLoads(i,3) 
