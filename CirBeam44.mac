@@ -8,7 +8,7 @@
 !	ARG1: Resulting element property number
 !	ARG2: Outer Diameter [Default = 1]
 !	ARG3: Thickness [Default = OD/2]
-!	ARG4: Material (See _MAT.mac)[optional]
+!	ARG4: Material (See _MAT_README.txt)[optional]
 !======================================================
 MatNum = ARG1
 

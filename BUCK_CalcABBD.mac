@@ -1,0 +1,87 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! BUCK_CalcABBD.mac
+! Description: This macro is a SubRoutine of BUCK.mac
+!  this subroutine calculates the facesheet stiffness 
+!  values from the current element section, see 
+!  BUCK.mac for more informaiton on how it is used.
+!======================================================
+
+!-------------------ALLOCATE ARRAYS
+theata= $ *DIM,theata,ARRAY,numLay
+E1=     $ *DIM,E1    ,ARRAY,numLay
+E2=     $ *DIM,E2    ,ARRAY,numLay
+Nu12=   $ *DIM,Nu12  ,ARRAY,numLay
+Nu21=   $ *DIM,Nu21  ,ARRAY,numLay
+G12=    $ *DIM,G12   ,ARRAY,numLay
+z=      $ *DIM,z     ,ARRAY,numLay+1
+qbar=   $ *DIM,qbar  ,ARRAY,6,numLay
+
+!-----------------------GET DATA
+*DO,j,1,numLay
+   *GET,theata(j),SHEL,secnNUM,LAYD,j,ANGL  !Get Ply Angle
+   *GET,layMat,SHEL,secnNum,LAYD,j,MAT      !Material number of Ply
+   *GET,E1(j),EX,layMat                     !EX of Ply
+   *GET,E2(j),EY,layMat                     !EY of Ply
+   *GET,Nu12(j),PRXY,layMat
+   *GET,G12(j),GXY,layMat
+   *IF,E2(j),LT,10e-6,THEN      !Test to see is ply is isotropic
+      E2(j)=E1(j)                 !IF Iso, Asign E2
+   *ENDIF
+   Nu21(j)=E2(j)*Nu12(j)/E1(j)
+   *IF,G12(j),LT,10e-6,THEN       
+      G12(j)=E1(j)/(2*(1+Nu12(j)))
+   *ENDIF
+*ENDDO
+
+!Compute Stuff===================================
+hh = 0  !-------TOTAL THICKNESS
+*DO,j,1,numLay
+   hh=hh+thick(j)
+*ENDDO
+xbar=hh/2
+z(1)=0-(hh/2)
+
+! Compute = Qbar Terms
+*DO,j,1,numLay  
+  z(j+1)=z(j)+thick(j)                       
+  q11=E1(j)/(1-(Nu12(j)*Nu21(j)))
+  q22=E2(j)/(1-(Nu12(j)*Nu21(j)))
+  q12=E2(j)*Nu12(j)/(1-(Nu12(j)*Nu21(j)))
+  q66=G12(j)
+
+  s=sin(theata(j)*PI/180)    !to shorten expersions
+  s2=s*s $ s3=s**3 $ s4=s**4
+  c=cos(theata(j)*PI/180)
+  c2=c*c $ c3=c**3 $ c4=c**4
+  !qbar11 Term = Qxx
+  qbar(1,j)=(c4*Q11)+(s4*Q22)+(2*c2*s2*Q12)+(4*c2*s2*Q66)
+  !qbar12 Term = Qxy
+  qbar(2,j)=(c2*s2*Q11)+(c2*s2*Q22)+((c4+s4)*Q12)-(4*c2*s2*Q66)
+  !qbar16 Term = Qxs
+  qbar(3,j)=(c3*s*Q11)-(c*s3*Q22)-(c*s*(c2-s2)*Q12)-(2*c*s*(c2-s2)*Q66)
+  !qbar22 Term = Qyy
+  qbar(4,j)=(s4*Q11)+(c4*Q22)+(2*c2*s2*Q12)+(4*c2*s2*Q66)
+  !qbar26 Term = Qys
+  qbar(5,j)=(c*s3*Q11)-(c3*s*Q22)+(c*s*(c2-s2)*Q12)+(2*c*s*(c2-s2)*Q66)
+  !qbar66 Term = Qss
+  qbar(6,j)=(c2*s2*Q11)-(c2*s2*Q22)-(2*c2*s2*Q12)+(((c2-s2)**2)*Q66)
+*ENDDO
+
+!%Compute ABBD ---------------------------------
+a= $ *DIM,a,ARRAY,6 $ *VFILL,a,RAMP,0,0
+d= $ *DIM,d,ARRAY,6 $ *VFILL,d,RAMP,0,0
+*DO,x,1,6
+   *DO,j,1,numLay
+      a(x)=a(x)+(qbar(x,j)*(z(j+1)-z(j)))
+      d(x)=d(x)+((1/3)*qbar(x,j)*((z(j+1)**3)-(z(j)**3)))
+   *ENDDO
+*ENDDO
+!%Assemble Stiffness Matrix C===============================================
+A11=a(1) !ABBD(1,1);
+A12=a(2) !ABBD(1,2);
+A22=a(4) !ABBD(2,2);
+A66=a(6) !ABBD(3,3);
+D66=d(6) !ABBD(6,6); 
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

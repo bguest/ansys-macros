@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! gv.mac
+! DESCRIPTION: This macro turns off and on elements in 
+!  gplot display mode
+! PRECONDITIONS:
+!  ARG1: 0 --> Elements off, 1 --> Elements on
+!======================================================
+
+/gtype,1,elem,arg1
+gplot
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

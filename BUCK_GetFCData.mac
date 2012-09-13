@@ -1,0 +1,57 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! BUCK_CalcABBD.mac
+! Description: This macro is a SubRoutine of BUCK.mac
+!  this subroutine fetches the lamina failure criteria
+!  from the FC data.
+! Preconditions: 
+!  shouldGetAllFCData = 
+!   0 --> Only Core data for Shear Strength and 
+!         compression is fetched 
+!   1 --> All FC Data is fetched
+!======================================================
+
+!Alocate Arrays
+Xt=  $ *DIM,Xt    ,ARRAY,numLay+1
+Xc=  $ *DIM,Xc    ,ARRAY,numLay+1
+Yt=  $ *DIM,Yt    ,ARRAY,numLay+1
+Yc=  $ *DIM,Yc    ,ARRAY,numLay+1
+Zt=  $ *DIM,Zt    ,ARRAY,numLay+1
+Zc=  $ *DIM,Zc    ,ARRAY,numLay+1
+Sxy= $ *DIM,Sxy   ,ARRAY,numLay+1
+Syz= $ *DIM,Syz   ,ARRAY,numLay+1
+Sxz= $ *DIM,Sxz   ,ARRAY,numLay+1
+
+*if,shouldGetAllFCData,eq,1,then
+   *DO,j,1,numCore
+      *GET,layMat,SHEL,secnNum,LAYD,j,MAT      !Material number of Ply
+      /output,OUT_FCdata,txt
+      fclist,layMat        !List Failure Criteria of Current Layer
+      /output
+      FCdata= $ *DIM,FCdata,ARRAY,1,9  !Create Array For FC
+      *VREAD,FCdata(1,1),OUT_FCdata,txt,,JIK,9,1,1,5
+      (E11.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3)
+      Xt(j)=FCdata(1,1)
+      Xc(j)=FCdata(1,2)
+      Yt(j)=FCdata(1,3)
+      Yc(j)=FCdata(1,4)
+      Zt(j)=FCdata(1,5)
+      Zc(j)=FCdata(1,6)
+      Sxy(j)=FCdata(1,7)
+      Syz(j)=FCdata(1,8)
+      Sxz(j)=FCdata(1,9)
+   *ENDDO
+*else
+   *GET,layMat,SHEL,secnNum,LAYD,numCore,MAT      !Material number of Ply
+   /output,OUT_FCdata,txt
+   fclist,layMat        !List Failure Criteria of Current Layer
+   /output
+   FCdata= $ *DIM,FCdata,ARRAY,1,9  !Create Array For FC
+   *VREAD,FCdata(1,1),OUT_FCdata,txt,,JIK,9,1,1,5
+   (E11.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3,E10.3)
+   Zc(numCore)=FCdata(1,6)
+   Syz(numCore)=FCdata(1,8)
+   Sxz(numCore)=FCdata(1,9)
+*endif
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

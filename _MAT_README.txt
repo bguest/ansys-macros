@@ -17,6 +17,7 @@ _MAT(2),<Standard Material Number>,<Number Assingment>
  807 -> G10 (XY/Z) Orthotropic
  808 -> HYSOL EA9394
  809 -> MS1A (52% FV) Min Properties
+ 810 -> 60105-T5 Aluminum (80/20 Beams)
  820 -> _MAT2 Example Material
  821 -> _MAT2 Example Material
 -- 830 - 849 : Reserved For HEXCEL HPR
@@ -30,6 +31,7 @@ _MAT(2),<Standard Material Number>,<Number Assingment>
  876 -> Hexcel 5/32 – 5056 – .0007, 2.6pcf
  877 -> Hexcel 5/32 – 5056 – .001
  884 -> Hexcel 1/4  – 5056 – .0007, 1.6pcf
+ 886 -> Hexcel 1/4  - 5056 - .0015, 3.4pcf
  889 -> Hexcel 3/8  – 5056 – .0007, 1.0pcf
  899 -> Reserved for _MAT.mac
 

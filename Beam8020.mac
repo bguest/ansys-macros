@@ -1,0 +1,53 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!Beam8020.mac
+!DESCRIPTION: This macro creates an 80/20 beam with the
+!  properties as described in the 80/20 catalog
+!PRECONDITIONS:
+!  ARG1: Resulting element property number
+!  ARG2: 8020 Extrusion number (as string)
+!    Accepted Values:
+!      '3030' --> 3" x 3" T-Slot
+!      '3060' --> 3" x 6" T-Slot
+!  ARG3: Material (See _MAT_README.txt)
+!======================================================
+MatNum = ARG1
+ExtNum = ARG2
+
+*if,ExtNum,eq,'1530',then
+   AA  = 2.0798*in**2
+   IYY = 1.8042*in**4
+   IZZ = 0.4824*in**4
+   IXX = IYY+IZZ
+   TKZ = 3.0*in
+   TKY = 1.5*in
+
+*elseif,ExtNum,eq,'3030',then
+   AA = 6.4262*in**2
+   IYY = 3.4133*in**4
+   IZZ = 3.4133*in**4
+   IXX = IYY+IZZ
+   TKZ = 3.0*in
+   TKY = 3.0*in
+
+*elseif,ExtNum,eq,'3060',then
+   AA = 6.4262*in**2
+   IYY = 22.0300*in**4
+   IZZ = 6.5164*in**4
+   IXX = IYY+IZZ
+   TKZ = 6.0*in
+   TKY = 3.0*in   
+*endif
+
+!------------------------------------------------------
+ET,MatNum,BEAM44
+R,MatNum, AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE,    AA, IZZ, IYY, TKZ/2, TKY/2, IXX, 
+RMORE, , , , , , , 
+RMORE,, , TKZ/2, TKY/2, TKZ/2, TKY/2, 
+
+!Set material
+*if,arg3,gt,0,then
+   _MAT2,arg3,MatNum
+*endif
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! gl.mac
+! DESCRIPTION: This macro turns off and on lines in 
+!  gplot display mode
+! PRECONDITIONS:
+!  ARG1: 0 --> Lines off, 1 --> Lines on
+!======================================================
+
+/gtype,1,line,arg1
+gplot
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

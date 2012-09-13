@@ -8,7 +8,9 @@
 
 *ask,num,SHELL91 Real Constant Number layup to export to Excel,
 
-type,num$real,num$esel,s,real,,num$eplo$laylist
+type,num $ real,num
+esel,s,real,,num
+eplo$laylist
 
 /output,Layup_R%num%,csv
 !/com,NPOESS layups

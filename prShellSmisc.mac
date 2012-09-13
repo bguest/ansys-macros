@@ -1,0 +1,49 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+!PrBeamSmisc.mac
+!DESCRIPTION: This macro prints out the smisc values
+! for each of the currently selected beams
+!PRECONDITIONS:
+!  ARG1: 0 -> Previous Results are overwritten
+!        1 -> Results are appended to previous
+!POSTCONDITONS:
+!  OUT_BeamSmisc.out contains  smisc values 
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+cm,temp_elem,elem
+
+!Get elemens and number of elements
+currentElem = $ *vget,currentElem,elem,,elist
+*get,curElemCount,elem,0,count
+
+!Alocate arrays
+*do,i,1,8
+   smisc%i% = $ *dim,smisc%i%,array,curElemCount
+*enddo
+
+!For each element for each smisc number, get
+! value and put it into an array
+*do,elemIdx,1,curElemCount,
+   *do,i,1,8,  
+      *get,tempSmisc,elem,currentElem(elemIdx),smisc,i,
+      smisc%i%(elemIdx) = tempSmisc
+   *enddo
+*enddo
+
+!Open File to write to
+*if,arg1,eq,1,then
+   *cfopen,OUT_ShellSmisc,out,,APPEND
+*else
+   *cfopen,OUT_ShellSmisc,out
+*endif
+
+*if,arg1,ne,1,then
+   *vwrite
+Elem Number	TX	TY	TXY	MX	MY	MXY	NX	NY
+*endif
+
+*vwrite,currentElem(1),smisc1(1),smisc2(1),smisc3(1),smisc4(1),smisc5(1),smisc6(1),smisc7(1),smisc8(1),
+%I	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G
+
+      
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

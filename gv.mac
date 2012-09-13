@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! gv.mac
+! DESCRIPTION: This macro turns off and on volumes in 
+!  gplot display mode
+! PRECONDITIONS:
+!  ARG1: 0 --> Volumes off, 1 --> Volumes on
+!======================================================
+
+/gtype,1,volu,arg1
+gplot
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

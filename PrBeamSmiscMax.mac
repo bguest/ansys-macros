@@ -50,13 +50,18 @@ realIndex = 1
 *enddo
 
 !Open File to write to
-*cfopen,OUT_MaxSmisc,out
-*if,arg1,eq,1,then
-	*vwrite
-Element Type,SMISC1/7,SMISC2/8,SMISC3/9,SMISC4/10,SMISC5/11,SMISC6/12,
+*if,arg2,eq,1,then
+   *cfopen,OUT_BeamSmiscMax,out,,APPEND
+   !Doesn't print header when appended
 *else
-	*vwrite
-Element Type,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,SMISC7,SMISC8,SMISC9,SMISC10,SMISC11,SMISC12
+   *cfopen,OUT_BeamSmiscMax,out
+	*if,arg1,eq,1,then
+		*vwrite
+   Element Type	SMISC1/7	SMISC2/8	SMISC3/9	SMISC4/10	SMISC5/11	SMISC6/12
+	*else
+		*vwrite
+   Element Type	SMISC1	SMISC2	SMISC3	SMISC4	SMISC5	SMISC6	SMISC7	SMISC8	SMISC9	SMISC10	SMISC11	SMISC12
+	*endif
 *endif
 
 !For the selected elements, for each element type
@@ -102,10 +107,10 @@ Element Type,SMISC1,SMISC2,SMISC3,SMISC4,SMISC5,SMISC6,SMISC7,SMISC8,SMISC9,SMIS
 	realNum = realNumbers(realIdx)
 	*if,arg1,eq,1,then ! If sould get maximum of 1/7
 		*vwrite,realNum,smiscMax1,smiscMax2,smiscMax3,smiscMax4,smiscMax5,smiscMax6,
-%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+%I	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G
    *else
    	*vwrite,realNum,smiscMax1,smiscMax2,smiscMax3,smiscMax4,smiscMax5,smiscMax6,smiscMax7,smiscMax8,smiscMax9,smiscMax10,smiscMax11,smiscMax12
-%I,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G,%16.5G
+%I	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G	%16.5G
 	*endif
 		
 *enddo

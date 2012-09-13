@@ -1,11 +1,12 @@
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 !PrBeamSmisc.mac
-!B.Guest - benguest@gmail.com
 !DESCRIPTION: This macro prints out the smisc values
 ! for each of the currently selected beams
 !PRECONDITIONS:
 !	ARG1: 0 -> All 12 SMISC Values
 !			1 -> Max of SMISC1/7,SMISC2/8,ect.
+!  ARG2: 0 -> Previous Results are overwritten
+!        1 -> Results are appended to previous
 !POSTCONDITONS:
 !	OUT_BeamSmisc.out contains  smisc values 
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -31,7 +32,12 @@ currentElem = $ *vget,currentElem,elem,,elist
 *enddo
 
 !Open File to write to
-*cfopen,OUT_BeamSmisc,out
+*if,arg2,eq,1,then
+   *cfopen,OUT_BeamSmisc,out,,APPEND
+*else
+   *cfopen,OUT_BeamSmisc,out
+*endif
+
 *if,arg1,eq,1,then
 	*vwrite
 Element Number	SMISC1/7	SMISC2/8	SMISC3/9	SMISC4/10	SMISC5/11	SMISC6/12	

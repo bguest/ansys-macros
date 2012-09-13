@@ -1,0 +1,13 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! gk.mac
+! DESCRIPTION: This macro turns off and on keypoints in 
+!  gplot display mode
+! PRECONDITIONS:
+!  ARG1: 0 --> Keypoints off, 1 --> Keypoints on
+!======================================================
+
+/gtype,1,kp,arg1
+gplot
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE
