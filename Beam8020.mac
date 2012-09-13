@@ -27,7 +27,7 @@ ExtNum = ARG2
    shearz = 6/5
    sheary = 6/5
 
-*if,ExtNum,eq,'1530',then
+*elseif,ExtNum,eq,'1530',then
    TKZ = 3.0*in
    TKY = 1.5*in
    AA  = 2.0798*in**2
