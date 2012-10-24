@@ -1,0 +1,16 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! RigidBeam.mac
+! Description: This macro creates a rigid beam property
+! Preconditions: 
+!  ARG1: Resulting element property number
+!======================================================
+mnum = arg1 
+
+et,mnum,MPC184
+keyopt,mnum,1,1 !Rigid Beam (not link)
+keyopt,mnum,2,0 !Direct Elimination Method
+R,mnum          !No Real Constants
+MP,alpx,mnum,0.0 !O CTE
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

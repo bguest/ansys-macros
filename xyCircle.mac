@@ -1,0 +1,24 @@
+!&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+! xyCIRCLE.mac
+! Description: this macro creates a circle in the 
+!  x-y plane given the x and y coordinates and the 
+!  radius
+! Preconditions:
+!  ARG1 --> X Coordinate
+!  ARG2 --> Y Coordinate
+!  ARG3 --> Radius
+!======================================================
+
+X = ARG1
+Y = ARG2
+R = ARG3
+
+K,,X,Y,0 $ PCent = _return
+K,,X,Y,1 $ PAxis = _return
+K,,X+1,Y,0 $ PZero = _return
+
+CIRCLE,PCent,R,PAxis,PZero
+kdele,PAxis $ kdele,PZero
+
+!======THE--END========THE--END========THE--END========
+!ITS THE END OF THE FILE AS WE KNOW IT, AND I FEEL FINE

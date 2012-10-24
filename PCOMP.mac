@@ -10,7 +10,7 @@
 ! ARGUMENTS:
 !	ARG1: Resulting material property number
 !	ARG2: Element Type To be used, supported types are
-!		'SHELL91','SHELL181', 'SHELL281' (More Added On Request)
+!		'SHELL91','SHELL181', 'SHELL281', 'SOLID186' (More Added On Request)
 !	ARG3: Added mass (mass/area)
 !	ARG4: use sandwich option? 1 --> YES, 0 --> NO
 !=====================================================
@@ -37,6 +37,16 @@ useSandwich = ARG4	!Sandwich option
 	R,MNum
 	SECTYPE,MNum,SHELL
 	SECCONTROLS,,,,ADMSUA
+	!SECDATA,<Thickness>,<MatNum>,<Theata>,<NUMPT>,<LayerName>
+	*do,i,1,numLay,
+	   SECDATA,layThick(i),layMat(i),layAngle(i)
+	*enddo
+
+*elseif,EType,EQ,'SOLID185',OR,EType,EQ,'SOLID186',then
+	ET,MNum,EType
+	R,MNum
+	KEYOPT,MNum,3,1 !Layered Solid
+	SECTYPE,MNum,SHELL
 	!SECDATA,<Thickness>,<MatNum>,<Theata>,<NUMPT>,<LayerName>
 	*do,i,1,numLay,
 	   SECDATA,layThick(i),layMat(i),layAngle(i)

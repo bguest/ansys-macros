@@ -36,16 +36,17 @@ CM,temp_ELEM,ELEM
 	*ENDIF
 *ENDIF
 
+!Create Temp Shell Properties
+/PREP7
+MatNum = 999
 *IF,ARG2,EQ,6,OR,ARG2,EQ,8,THEN
-	!================================================
-	!999.SHELL 93: TEMP MATERIAL
-	!------------------------------------------------
 	!8-Node Structural Shell
-	/PREP7
-	MatNum = 999
 	ET,MatNum,SHELL93
 	R,MatNum,0.01,0.001,0.01,0.01, !0.1 = Thickness
-	!<-- NEEDS DEFINITION FOR ARG2 = 3 and 4...
+*ELSEIF,arg2,eq,3,or,arg2,eq,4,THEN
+	ET,MatNum,SHELL181
+	SECTYPE,MatNum,SHELL
+	SECDATA,0.001
 *ENDIF
 
 !------------Material Definition: WIMPY----------------
@@ -87,11 +88,11 @@ CM,NPRES_ELEM,ELEM
 *GET,NumNode,NODE,0,COUNT  	!GET NUMBER OF ACTIVE Nodes
 
 !-------Get Element Numbers
-*DIM,Select,ARRAY,HighElem
+Select = $ *DIM,Select,ARRAY,HighElem
 	!Create Array for the selection status of Elements  
 *VGET,Select,ELEM,,ESEL    	!Get Selection Status of Elements
 
-*DIM,Elems,ARRAY,NumElem   	!Create Array for Element Numbers
+Elems = $ *DIM,Elems,ARRAY,NumElem   	!Create Array for Element Numbers
 
 Loop=HighElem-LowElem+1	  	!SET Loop to Highest Element-Lowest Element+1
 CurElem=HighElem
@@ -106,19 +107,19 @@ CurResult=NumElem          	!SET CurResult to Number of Elements
 *ENDDO
 	
 !-------GET AREAS
-*DIM,EAreas,ARRAY,NumElem		!Create Array for Element areas
+EAreas = $ *DIM,EAreas,ARRAY,NumElem		!Create Array for Element areas
 Loop=NumElem
-*DOWHILE,Loop !FOR EACH Element
+*DOWHILE,Loop                 !FOR EACH Element
 	CurElem=Elems(Loop)    		!GET Current Element
-	*GET,EArea,ELEM,CurElem,AREA  	!GET AREA OF SELECTED ELEMENT
+	*GET,EArea,ELEM,CurElem,AREA  !GET AREA OF SELECTED ELEMENT
 	EAreas(Loop)=EArea		!Store Area in EAreas ARRAY
 	Loop=Loop-1
 *ENDDO
 	
 !-------GET ELEMENT LOCATIONS
-*DIM,Loc,ARRAY,NumElem,3	!CREATE Array for Element Locations
+Loc = $ *DIM,Loc,ARRAY,NumElem,3	!CREATE Array for Element Locations
 Loop=NumElem
-*DOWHILE,Loop 		!FOR EACH ELEMENT
+*DOWHILE,Loop                 !FOR EACH ELEMENT
 	CurElem=Elems(Loop)			!GET Current Element
 	*GET,TempLoc,ELEM,CurElem,CENT,X 	!GET X Coordinate
 	Loc(Loop,1)=TempLoc				!STORE x coordinate
@@ -130,7 +131,7 @@ Loop=NumElem
 *ENDDO
 
 !-------DERIVE ELEMENT LOADS
-*DIM,EPres,ARRAY,NumELem,3	!Create Array For Element Loads
+EPres = $ *DIM,EPres,ARRAY,NumELem,3	!Create Array For Element Loads
 Loop=NumElem
 *DOWHILE,Loop
 	A=EAreas(Loop)
@@ -147,12 +148,21 @@ PressureSpaceFunction,ARG3
 *ENDDO
 
 !--DERIVE LOADS FOR SHELL 93 ELEMENTS-----------------		
-*DIM,NPres,ARRAY,HighNode,3	!For Nodal Pressures
+NPres = $ *DIM,NPres,ARRAY,HighNode,3	!For Nodal Pressures
 Loop=NumElem
 *DOWHILE,Loop
 	CurElem=Elems(Loop)	
+	! Quad 4 -----------------------
+   *if,arg2,eq,4,then
+      *do,i,1,4
+         *GET,N,ELEM,CurElem,NODE,i 
+         *do,j,1,3
+            NPres(N,j) = NPres(N,j) + EPres(Loop,j)/4
+         *enddo
+      *enddo
+
 	!IF Tri 6 -----------------------------
-	*IF,ARG2,EQ,6,THEN
+	*elseif,ARG2,EQ,6,THEN
 		*GET,N,ELEM,CurElem,NODE,5
 		NPres(N,1)=NPres(N,1)+EPres(Loop,1)/3
 		NPres(N,2)=NPres(N,2)+EPres(Loop,2)/3
@@ -187,10 +197,10 @@ Loop=NumElem
 *ENDDO
 
 !--GET Selected Node Numbers--
-*DIM,NSelect,ARRAY,HighNode	!Create Array for the selection status of Nodes
+NSelect = $ *DIM,NSelect,ARRAY,HighNode	!Create Array for the selection status of Nodes
 *VGET,NSelect,NODE,,NSEL    	!Get Selection Status of Nodes
 
-*DIM,Nodes,ARRAY,NumNode   	!Create Array for Element Nodes
+Nodes = $ *DIM,Nodes,ARRAY,NumNode   	!Create Array for Element Nodes
 
 Loop=HighNode-LowNode+1		!SET Loop to Highest Node-Lowest Node+1
 CurNode=HighNode
