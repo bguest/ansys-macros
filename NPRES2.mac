@@ -225,14 +225,14 @@ Loop=NumNode
 	Loop=Loop-1
 *ENDDO
 
+asel,s,type,,999
+aclear,all
+
 !--RESUME TEMPORARY COMPONENTS
 CMSEL,S,temp_VOLU
 CMSEL,S,temp_AREA
 CMSEL,S,temp_LINE
 CMSEL,S,temp_KP
-CMSEL,S,temp_NODE
-CMSEL,S,temp_ELEM
-CMSEL,A,NPRES_ELEM
 CMSEL,S,temp_NODE
 CMSEL,A,NPRES_NODE
 

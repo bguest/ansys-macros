@@ -24,8 +24,8 @@ cm,tmp%compType%,compType		!Save original state
 *endif
 
 !Add to component if it exists
-*if,flag_%compName%,ne,1,then
-	flag_%compName% = 1
+*if,flag%compName%,ne,1,then
+	flag%compName% = 1
 *else
 	cmsel,a,compName
 *endif

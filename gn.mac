@@ -6,7 +6,7 @@
 !  ARG1: 0 --> Nodes off, 1 --> Nodes on
 !======================================================
 
-/gtype,1,elem,arg1
+/gtype,1,node,arg1
 gplot
 
 !======THE--END========THE--END========THE--END========

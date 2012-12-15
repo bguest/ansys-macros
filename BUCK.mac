@@ -30,8 +30,10 @@
 !POST-CONDITIONS: 
 !   See description
 !   -Units set to Radians (*AFUN,RAD Issued)
-!NOTE: run_BuckSettings will override settings in this
+!NOTES:
+!  - run_BuckSettings will override settings in this
 !  file.
+!  - Needs numcmp,elem before this is run.
 !&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 _SAVE
 /post1
@@ -390,3 +392,5 @@ MinMS=1/MaxFC-1
 MINIMUM SANDWICH BUCKLING MARGIN OF SAFETY = %G
 !======THE--END========THE--END========THE--END========
 !ITS THE END OF THE MACRO AS WE KNOW IT AND I FEEL FINE
+
+arrayName = $ *dim,arrayName,array,arraySize

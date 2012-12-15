@@ -6,7 +6,7 @@
 !  ARG1: 0 --> Keypoints off, 1 --> Keypoints on
 !======================================================
 
-/gtype,1,kp,arg1
+/gtype,1,keypoint,arg1
 gplot
 
 !======THE--END========THE--END========THE--END========
